@@ -1,52 +1,52 @@
 # BindBoard
 
-**BindBoard** — приложение для назначения действий на клавиши второй (макро) клавиатуры.  
-Работает через Windows Raw Input — без драйверов и сторонних программ.
+**BindBoard** is a macro keyboard app for Windows. Assign actions to keys on a second keyboard — your main keyboard keeps working as normal.  
+Built on Windows Raw Input API — no drivers, no third-party software required.
 
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## Скриншоты
+## Screenshots
 
-| Клавиатура | Биндинги |
+| Keyboard setup | Bindings |
 |---|---|
 | ![Keyboard](screenshots/BindBoard3.png) | ![Bindings](screenshots/BindBoard1.png) |
 
-| Запуск | Тема |
+| Launch | Theme |
 |---|---|
 | ![Launch](screenshots/BindBoard5.png) | ![Theme](screenshots/BindBoard.png) |
 
 ---
 
-## Возможности
+## Features
 
-- 🎹 **Поддержка нескольких клавиатур** — назначай действия конкретно на вторую клавиатуру, первая работает как обычно
-- 🗂 **Режимы** — создавай несколько наборов биндингов и переключайся между ними одной клавишей
-- 🖥 **Оверлей** — при смене режима на экране мигает подсказка с названием
-- 🚀 **Типы действий**: открыть сайт, запустить программу/ярлык, запустить Steam-игру, звук через Soundpad, сменить режим
-- 🔍 **Apps-picker** — выбирай программы и Steam-игры по названию, без ручного ввода путей и ID
-- 🌐 **Русский и английский интерфейс** — автоопределение по языку системы
-- 🔔 **Иконка в трее** — программа сворачивается в трей, не мешает работе
+- 🎹 **Per-device key interception** — keys from the second keyboard trigger actions; your main keyboard is untouched
+- 🗂 **Modes** — create multiple binding profiles and switch between them with a single key press
+- 🖥 **Mode overlay** — a brief on-screen hint appears whenever you switch modes
+- 🚀 **Action types** — open a URL, launch a program or shortcut, start a Steam game, play a sound via Soundpad, or switch mode
+- 🔍 **App & game picker** — browse installed programs and Steam games by name, no manual path or ID entry needed
+- 🌐 **English & Russian UI** — language is detected automatically from your system locale
+- 🔔 **System tray** — closing the window minimizes to tray; the listener keeps running in the background
 
 ---
 
-## Установка
+## Installation
 
-### Готовый EXE (рекомендуется)
+### Ready-to-run EXE (recommended)
 
-1. Перейди в раздел [Releases](../../releases)
-2. Скачай `BindBoard.zip`
-3. Распакуй в любую папку
-4. Запусти `BindBoard.exe`
+1. Go to [Releases](../../releases)
+2. Download `BindBoard.zip`
+3. Extract to any folder
+4. Run `BindBoard.exe`
 
-> Требуется Windows 10/11 с установленным [WebView2 Runtime](https://developer.microsoft.com/ru-ru/microsoft-edge/webview2/) (обычно уже есть на Windows 11)
+> Requires Windows 10/11 with [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (already included in Windows 11)
 
-### Из исходников
+### From source
 
-**Требования:** Python 3.10+, Windows 10/11
+**Requirements:** Python 3.10+, Windows 10/11
 
 ```bash
 git clone https://github.com/Mark-mark-228/BindBoard.git
@@ -57,64 +57,64 @@ python app.py
 
 ---
 
-## Быстрый старт
+## Quick start
 
-1. Запусти **BindBoard**
-2. Перейди на вкладку **Клавиатура** → нажми **Обновить** → выбери вторую клавиатуру → **Применить раскладку**
-3. Перейди на вкладку **Биндинги** → нажми на любую клавишу → справа выбери действие → **Сохр.**
-4. Перейди на вкладку **Запуск** → нажми **Start**
+1. Launch **BindBoard**
+2. Go to **Keyboard** → click **Refresh** → select your second keyboard → click **Apply layout**
+3. Go to **Bindings** → click any key → choose an action on the right → click **Save**
+4. Go to **Launch** → click **Start**
 
-Всё — клавиши работают!
-
----
-
-## Режимы
-
-Режимы позволяют иметь несколько наборов биндингов на одних и тех же клавишах.
-
-- Нажми **+ Режим** чтобы создать новый профиль
-- Назначь любую клавишу на действие **«Сменить режим»** для переключения между ними
-- При смене режима на экране появится оверлей с названием
+Your keys are live!
 
 ---
 
-## Сборка EXE
+## Modes
+
+Modes let you have multiple sets of bindings on the same physical keys — for example one profile for music control and another for gaming.
+
+- Click **+ Mode** to create a new profile
+- Assign any key the **"Switch mode"** action to jump between profiles
+- A brief overlay appears on screen whenever the mode changes
+
+---
+
+## Building the EXE
 
 ```powershell
 pip install -r requirements.txt
 pyinstaller BindBoard.spec --noconfirm
 ```
 
-Готовая папка появится в `dist\BindBoard\`.
+The output folder will be at `dist\BindBoard\`.
 
 ---
 
-## Структура проекта
+## Project structure
 
 ```
 BindBoard/
-├── app.py           — бэкенд: Raw Input, биндинги, трей, API
-├── app.html         — интерфейс: SPA на HTML/CSS/JS
-├── bindboard.ico    — иконка приложения
-├── BindBoard.spec   — конфиг сборки PyInstaller
-├── requirements.txt — зависимости Python
-├── screenshots/     — скриншоты для README
-└── assets/          — иконки и ресурсы интерфейса
+├── app.py           — backend: Raw Input, bindings engine, tray, API
+├── app.html         — frontend: single-page app (HTML / CSS / JS)
+├── bindboard.ico    — app icon
+├── BindBoard.spec   — PyInstaller build config
+├── requirements.txt — Python dependencies
+├── screenshots/     — README screenshots
+└── assets/          — UI icons and resources
 ```
 
 ---
 
-## Зависимости
+## Dependencies
 
-| Пакет | Назначение |
+| Package | Purpose |
 |---|---|
-| `pywebview` | Окно приложения (Chromium WebView2) |
-| `pystray` | Иконка в системном трее |
-| `Pillow` | Обработка иконок |
-| `pyinstaller` | Сборка в EXE (только для разработки) |
+| `pywebview` | App window (Chromium WebView2) |
+| `pystray` | System tray icon |
+| `Pillow` | Icon processing |
+| `pyinstaller` | EXE build (dev only) |
 
 ---
 
-## Лицензия
+## License
 
-MIT — можно использовать, изменять и распространять свободно.
+MIT — free to use, modify, and distribute.
