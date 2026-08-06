@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# PyInstaller build artifacts
+build/
+dist/
+
+# User config (personal data)
+config.json
+*.tmp
+
+# Logs
+out.txt
+err.txt
+
+# OS
+Thumbs.db
+.DS_Store

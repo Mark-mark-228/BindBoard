@@ -1,0 +1,2514 @@
+﻿<title>BindBoard — Конфигуратор</title>
+<style>
+/* Inter — bundled locally (fonts/) so the UI looks the same regardless of what's installed on the machine */
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/Inter-cyrillic-ext.woff2) format('woff2'); unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/Inter-cyrillic.woff2) format('woff2'); unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/Inter-latin-ext.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/Inter-cyrillic-ext.woff2) format('woff2'); unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/Inter-cyrillic.woff2) format('woff2'); unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/Inter-latin-ext.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/Inter-cyrillic-ext.woff2) format('woff2'); unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/Inter-cyrillic.woff2) format('woff2'); unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/Inter-latin-ext.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/Inter-cyrillic-ext.woff2) format('woff2'); unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/Inter-cyrillic.woff2) format('woff2'); unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/Inter-latin-ext.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/Inter-cyrillic-ext.woff2) format('woff2'); unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/Inter-cyrillic.woff2) format('woff2'); unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/Inter-latin-ext.woff2) format('woff2'); unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+:root {
+  --bg:     #0a0a0b;
+  --s1:     #131315;
+  --s2:     #1b1b1e;
+  --s3:     #242428;
+  --border: #2c2c30;
+  --cyan:   #7c8aff;
+  --cyan-d: rgba(124,138,255,.14);
+  --purple: #b389f9;
+  --pur-d:  rgba(179,137,249,.14);
+  --red:    #f66a6a;
+  --green:  #4ade80;
+  --text:   #ececec;
+  --muted:  #86868c;
+  --muted2: #34343a;
+  --shadow: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,.55);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#555;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;font-size:14px;display:flex;-webkit-font-smoothing:antialiased}
+body{font-feature-settings:'ss01' on,'cv05' on;letter-spacing:-0.006em}
+.icon{display:inline-block;vertical-align:middle;flex-shrink:0}
+
+/* ── SIDEBAR ── */
+#sidebar{width:220px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0 0 16px}
+.logo{padding:16px 14px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.logo span{color:var(--muted);font-weight:400}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;margin:2px 8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--s2);color:var(--text)}
+.nav-item.active{background:var(--cyan-d);color:var(--cyan)}
+.nav-item .nav-ico{width:20px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark{border-radius:7px;flex-shrink:0}
+.logo-mark-light{display:none}
+:root[data-theme="light"] .logo-mark-dark{display:none}
+:root[data-theme="light"] .logo-mark-light{display:inline-block}
+.sidebar-gap{flex:1}
+#apply-btn{margin:0 12px;padding:10px;border:none;border-radius:8px;background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.08em}
+#apply-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+#apply-btn.dirty{background:var(--cyan);color:#0a0a0b;border-color:var(--cyan);box-shadow:0 0 20px rgba(124,138,255,.35)}
+
+/* ── MAIN ── */
+#main{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+.page{padding:28px 32px;display:none;min-height:0}
+.page.active{display:block}
+#binds-page.active{height:100%}
+
+.page-title{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.page-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+
+/* ── KEYBOARD PAGE ── */
+.kb-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.kb-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;transition:border-color .15s}
+.kb-item:hover{border-color:var(--muted2)}
+.kb-item.selected{border-color:var(--cyan);background:var(--cyan-d)}
+.kb-ico{font-size:22px;flex-shrink:0}
+.kb-info{flex:1;min-width:0}
+.kb-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-id{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-badge{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(124,138,255,.3);font-weight:700;letter-spacing:.06em;white-space:nowrap}
+.btn-select{padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-select:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-select.active{background:var(--cyan);border-color:var(--cyan);color:#000}
+.note-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.65}
+.note-box b{color:var(--text)}
+.note-box code{font-size:11.5px;background:var(--s1);padding:2px 5px;border-radius:4px;color:var(--cyan)}
+.row-btn{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.btn{padding:8px 16px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#000}
+.btn.primary:hover{box-shadow:0 0 16px rgba(124,138,255,.3)}
+.btn.danger{background:rgba(246,106,106,.1);border-color:rgba(246,106,106,.3);color:var(--red)}
+.btn.danger:hover{background:rgba(246,106,106,.2)}
+
+/* ── BINDS PAGE ── */
+#binds-page{display:none;flex-direction:column;gap:0;padding:28px 32px;height:100%;min-height:0}
+#binds-page.active{display:flex}
+
+/* Mode tabs */
+#mode-tabs{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.mode-tab{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none}
+.mode-tab:hover{border-color:var(--muted2);color:var(--text)}
+.mode-tab.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-d)}
+.mode-tab .tab-gear{opacity:0;font-size:12px;transition:opacity .15s}
+.mode-tab:hover .tab-gear{opacity:1}
+.tab-add{border-style:dashed;color:var(--muted)}
+
+/* Binds layout */
+#binds-layout{display:flex;gap:20px;flex:1;min-height:0}
+#keyboard-area{flex:1;min-width:0;display:flex;flex-direction:column}
+.keyboard-wrap{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px 16px}
+#keyboard{display:flex;flex-direction:column;gap:5px;width:100%}
+.kb-row{display:flex;gap:4px}
+.key{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;min-width:0;height:48px;padding:3px 4px;
+  background:#181818;border:1px solid #2a2a2a;border-bottom:3px solid #0a0a0a;
+  border-radius:6px;cursor:pointer;user-select:none;transition:all .13s;
+  flex-shrink:0;
+}
+.key:hover{border-color:var(--border);background:#222222}
+.key-name{font-size:12px;font-weight:700;color:#555555;line-height:1}
+.key-bind{font-size:9.5px;margin-top:2px;text-align:center;max-width:46px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.key.bound{border-color:var(--cyan);background:rgba(124,138,255,.08);}
+.key.bound .key-name{color:var(--cyan)}
+.key.bound .key-bind{color:rgba(124,138,255,.8)}
+.key.selected{border-color:var(--cyan)!important;background:rgba(124,138,255,.16)!important;border-bottom-color:#4c56c9!important;box-shadow:0 0 18px rgba(124,138,255,.3)}
+.key.selected .key-name{color:var(--cyan)!important}
+.key.key-wide{flex:4}
+.key.key-esc{border-color:rgba(246,106,106,.4);background:rgba(246,106,106,.05)}
+.key.key-esc .key-name{color:rgba(246,106,106,.6)}
+.key.key-esc.bound{border-color:rgba(246,106,106,.8);background:rgba(246,106,106,.1)}
+.key.key-esc.bound .key-name{color:var(--red)}
+
+/* mode colour: purple */
+.mode-purple .key.bound{border-color:var(--purple);background:rgba(179,137,249,.08)}
+.mode-purple .key.bound .key-name{color:var(--purple)}
+.mode-purple .key.bound .key-bind{color:rgba(179,137,249,.8)}
+.mode-purple .key.selected{border-color:var(--purple)!important;background:rgba(179,137,249,.16)!important;border-bottom-color:#8257d6!important;box-shadow:0 0 18px rgba(179,137,249,.3)}
+
+/* mode: custom via css var (handled inline via data-color) */
+
+/* editor panel */
+#editor-panel{width:270px;flex-shrink:0;display:flex;flex-direction:column;gap:0}
+.editor-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px;flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.editor-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:200px;color:var(--muted);text-align:center;font-size:13px;line-height:1.6}
+.editor-empty .ico{font-size:32px;opacity:.4}
+.editor-key-title{font-size:16px;font-weight:800;color:var(--text)}
+.editor-key-code{font-size:11px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}
+.field input,.field select{padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--s1);color:var(--text);font-size:13px;outline:none;width:100%;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--cyan)}
+.field select option{background:#141820}
+.field-row{display:flex;gap:6px}
+.field-row input{flex:1}
+.btn-sm{padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+.icon-picker{display:flex;flex-wrap:wrap;gap:6px}
+.icon-pick{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--border);background:var(--s1);color:var(--muted);cursor:pointer;transition:all .15s}
+.icon-pick:hover{border-color:var(--muted2);color:var(--text)}
+.icon-pick.selected{border-color:var(--cyan);background:var(--cyan-d);color:var(--cyan)}
+.btn-sm:hover{border-color:var(--cyan);color:var(--cyan)}
+.editor-actions{display:flex;gap:8px;margin-top:auto;padding-top:8px}
+.editor-actions .btn{flex:1;text-align:center;justify-content:center}
+
+/* ── LAUNCH PAGE ── */
+.status-card{display:flex;align-items:center;gap:16px;padding:18px;background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:20px}
+.status-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.status-dot.running{background:var(--green);box-shadow:0 0 12px rgba(74,222,128,.5)}
+.status-dot.stopped{background:var(--muted2)}
+.status-text{flex:1}
+.status-label{font-size:15px;font-weight:700}
+.status-hint{font-size:12px;color:var(--muted);margin-top:2px}
+.launch-btns{display:flex;gap:10px;margin-bottom:24px}
+.lua-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto}
+.lua-box pre{font-size:11.5px;line-height:1.7;color:#8899cc;white-space:pre}
+
+/* ── MODAL ── */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}
+#modal.open{display:flex}
+.modal-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:24px;width:360px;display:flex;flex-direction:column;gap:16px}
+.modal-title{font-size:16px;font-weight:800}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:4px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;transition:transform .25s ease;z-index:1000;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--cyan);color:var(--cyan)}
+#toast.err{border-color:var(--red);color:var(--red)}
+
+/* ── LOADING ── */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:2000;flex-direction:column;gap:12px;color:var(--muted);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.sep{height:1px;background:var(--border);margin:4px 0}
+/* Numpad — real hardware shape: + and Enter span 2 rows, 0 spans 2 columns */
+.numpad-wrap{margin-top:6px}
+.numpad-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:48px;gap:4px;width:100%;max-width:230px}
+.numpad-grid .key{height:auto;min-height:0}
+.detected-keys-grid{display:flex;flex-wrap:wrap;gap:5px;width:100%}
+.detected-keys-grid .key{flex:0 0 auto;width:52px}
+.detected-keys-grid .key.key-wide{width:120px}
+/* ── Layout picker slider ── */
+.tpl-picker{margin-bottom:20px}
+.tpl-slider-wrap{padding:0 4px;margin-bottom:16px;position:relative}
+input[type=range].tpl-slider{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:4px;border-radius:2px;outline:none;cursor:pointer;
+  background:var(--border);
+}
+input[type=range].tpl-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:24px;height:24px;border-radius:7px;
+  background:var(--s2);border:2px solid var(--cyan);
+  cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .1s;
+}
+input[type=range].tpl-slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.15)}
+input[type=range].tpl-slider::-moz-range-thumb{
+  width:24px;height:24px;border-radius:7px;
+  background:var(--s2);border:2px solid var(--cyan);cursor:grab;
+}
+.tpl-sz-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.tpl-sz-btn{
+  padding:5px 13px;border-radius:8px;font-size:12px;font-weight:700;
+  background:var(--s2);border:1px solid var(--border);color:var(--muted);
+  cursor:pointer;transition:all .12s;user-select:none;
+}
+.tpl-sz-btn:hover{border-color:var(--muted2);color:var(--text)}
+.tpl-sz-btn.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-d)}
+/* Live keyboard preview */
+.tpl-prev-kb{
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;overflow-x:auto;min-height:80px;
+}
+.tpl-prev-row{display:flex;gap:3px;margin-bottom:3px}
+.tpl-prev-key{
+  height:28px;border-radius:5px;background:var(--s3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--muted);min-width:0;flex-shrink:0;overflow:hidden;
+  padding:0 3px;white-space:nowrap;text-overflow:ellipsis;
+}
+.tpl-prev-section{
+  flex:20;height:18px;display:flex;align-items:center;
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);opacity:.5;pointer-events:none;padding-left:2px;
+}
+/* (keep legacy mini-preview for compat) */
+.tpl-preview{display:none}
+.tpl-row{display:flex;gap:2px;justify-content:center}
+.tpl-key{height:5px;border-radius:1px;background:var(--border);flex:1;min-width:3px}
+.tpl-key.tpl-wide{flex:2}
+.tpl-key.tpl-xwide{flex:5}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.scan-key-appear{animation:popIn .15s ease-out}
+
+/* ── LIGHT THEME ── */
+:root[data-theme="light"]{
+  --bg:     #f7f7f9;
+  --s1:     #ffffff;
+  --s2:     #f1f1f5;
+  --s3:     #e8e8ee;
+  --border: #dfdfe6;
+  --cyan:   #5b63d3;
+  --cyan-d: rgba(91,99,211,.10);
+  --purple: #9d5cf0;
+  --pur-d:  rgba(157,92,240,.10);
+  --red:    #d94a42;
+  --green:  #22c55e;
+  --text:   #1c1c22;
+  --muted:  #86868f;
+  --muted2: #d3d3dc;
+}
+:root[data-theme="light"] .key{background:#f0f0f4;border-color:#dedee5;border-bottom-color:#c8c8d2}
+:root[data-theme="light"] .key:hover{background:#e7e7ee}
+:root[data-theme="light"] .key-name{color:#86868f}
+:root[data-theme="light"] .field select option{background:#f1f1f5;color:#1c1c22}
+:root[data-theme="light"] .lua-box{background:#f7f7f9}
+
+/* ── SETTINGS PAGE ── */
+.theme-card{background:var(--s2);border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;width:120px;text-align:center;user-select:none;flex-shrink:0}
+.theme-card:hover{border-color:var(--muted)}
+.theme-card.selected{border-color:var(--cyan);background:var(--cyan-d)}
+.theme-card-preview{width:100%;height:58px;border-radius:7px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);position:relative}
+.dark-preview{background:linear-gradient(150deg,#131315 55%,#1b1b1e)}
+.dark-preview::after{content:'';position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:55%;height:4px;border-radius:3px;background:#7c8aff}
+.light-preview{background:linear-gradient(150deg,#f7f7f9 55%,#ffffff)}
+.light-preview::after{content:'';position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:55%;height:4px;border-radius:3px;background:#5b63d3}
+.custom-preview{background:linear-gradient(150deg,var(--s2) 55%,var(--s3));position:relative}
+.custom-preview::after{content:'';position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:55%;height:4px;border-radius:3px;background:var(--cyan)}
+.theme-card-label{font-size:13px;font-weight:700;color:var(--text)}
+.theme-card.selected .theme-card-label{color:var(--cyan)}
+.color-grid{display:flex;flex-direction:column;gap:8px;max-width:400px;margin-bottom:24px}
+.color-row{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.color-row label{font-size:11px;font-weight:700;color:var(--muted);width:110px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.color-row input[type=color]{width:36px;height:30px;border-radius:6px;border:1px solid var(--border);padding:2px 3px;cursor:pointer;background:none;flex-shrink:0}
+.color-val{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ── MODE BAR ── */
+#mode-bar{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:14px;padding:12px 20px;
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  font-size:15px;font-weight:700;color:var(--muted);
+  transition:all .3s ease;user-select:none;
+}
+#mode-bar.active-mode{color:var(--text)}
+#mode-bar .mode-icon{display:inline-flex;transition:transform .3s ease}
+#mode-bar.mode-flash .mode-icon{animation:modePop .4s ease}
+@keyframes modePop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+/* ── SETTINGS MISC ── */
+.settings-section-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.lang-btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.lang-btn:hover{border-color:var(--muted);color:var(--text)}
+.lang-btn.active{border-color:var(--cyan);background:var(--cyan-d);color:var(--cyan)}
+
+/* ── KB RENAME ── */
+.kb-rename-btn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--muted);padding:4px 6px;border-radius:5px;transition:color .15s;flex-shrink:0}
+.kb-rename-btn:hover{color:var(--cyan)}
+.kb-rename-input{padding:4px 8px;border-radius:6px;border:1px solid var(--cyan);background:var(--s1);color:var(--text);font-size:12px;font-weight:600;outline:none;width:150px}
+
+/* ── PROCESS PICKER ── */
+#proc-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:1100;backdrop-filter:blur(4px)}
+#proc-modal.open{display:flex}
+.proc-picker-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;width:500px;max-height:540px;display:flex;flex-direction:column;overflow:hidden}
+.proc-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
+.proc-item:last-child{border-bottom:none}
+.proc-item:hover{background:var(--s2)}
+.proc-ico{color:var(--muted);flex-shrink:0}
+.proc-info{min-width:0;flex:1}
+.proc-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proc-path{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+/* ── APP FILTER ── */
+.filter-app-item{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px}
+.filter-app-name{flex:1;font-size:13px;color:var(--text)}
+.toggle-btn{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s1);color:var(--muted);transition:all .15s}
+.toggle-btn.on{background:var(--cyan-d);border-color:var(--cyan);color:var(--cyan)}
+</style>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="spinner"></div>
+  <span data-i18n="loading">Loading...</span>
+</div>
+
+<!-- App -->
+<nav id="sidebar">
+  <div class="logo">
+    <img class="logo-mark logo-mark-dark" src="assets/logo-sidebar-dark.png" width="32" height="32" alt="BindBoard">
+    <img class="logo-mark logo-mark-light" src="assets/logo-sidebar-light.png" width="32" height="32" alt="BindBoard">
+    <span style="font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)">Bind<span style="color:var(--muted);font-weight:400">Board</span></span>
+  </div>
+  <div class="nav-item active" data-page="keyboard" onclick="navigate('keyboard')"><span class="nav-ico" data-icon="keyboard" data-icon-size="17"></span><span data-i18n="nav_keyboard">Keyboard</span></div>
+  <div class="nav-item" data-page="binds" onclick="navigate('binds')"><span class="nav-ico" data-icon="grid" data-icon-size="17"></span><span data-i18n="nav_binds">Bindings</span></div>
+  <div class="nav-item" data-page="launch" onclick="navigate('launch')"><span class="nav-ico" data-icon="play" data-icon-size="17"></span><span data-i18n="nav_launch">Launch</span></div>
+  <div class="nav-item" data-page="settings" onclick="navigate('settings')"><span class="nav-ico" data-icon="sliders" data-icon-size="17"></span><span data-i18n="nav_theme">Theme</span></div>
+  <div class="nav-item" data-page="about" onclick="navigate('about')"><span class="nav-ico" data-icon="info" data-icon-size="17"></span><span data-i18n="nav_about">About</span></div>
+  <div class="sidebar-gap"></div>
+  <div id="sidebar-listener-btn" onclick="toggleListenerPill()" title="Запустить / Остановить слушатель" style="display:flex;align-items:center;gap:8px;margin:0 8px 8px;padding:9px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--s2);transition:all .15s;user-select:none">
+    <div id="sidebar-listener-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s"></div>
+    <span id="sidebar-listener-txt" style="font-size:12px;font-weight:700;color:var(--muted);transition:color .2s">—</span>
+  </div>
+  <button id="apply-btn" onclick="applyConfig()" style="display:flex;align-items:center;justify-content:center;gap:8px"><span data-icon="save" data-icon-size="14"></span><span data-i18n="btn_save_apply">Save &amp; Apply</span></button>
+</nav>
+
+<div id="main">
+  <!-- ── PAGE: KEYBOARD ── -->
+  <div id="page-keyboard" class="page active">
+    <div class="page-title" data-i18n="pg_keyboard_title">Keyboard</div>
+    <div class="page-sub" data-i18n="pg_keyboard_sub">Scan all keys you need — the app will remember their codes</div>
+
+    <!-- AUTO-DETECTED KEYBOARDS -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase" data-i18n="lbl_connected_kbs">Connected keyboards</div>
+      <button class="btn" style="padding:4px 12px;font-size:11px;display:inline-flex;align-items:center;gap:6px" onclick="detectKeyboards()"><span data-icon="refresh" data-icon-size="13"></span><span data-i18n="btn_refresh">Refresh</span></button>
+    </div>
+    <div id="kb-detected" class="kb-list" style="margin-bottom:24px"></div>
+
+    <!-- LAYOUT TEMPLATE PICKER -->
+    <div class="tpl-picker">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px" data-i18n="lbl_layout_template">Layout template</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px" data-i18n="tpl_slider_hint">Drag the slider or click a size to preview the layout</p>
+
+      <!-- Size buttons -->
+      <div id="tpl-size-btns" class="tpl-sz-btns"></div>
+
+      <!-- Slider -->
+      <div class="tpl-slider-wrap">
+        <input type="range" id="tpl-slider-input" class="tpl-slider" min="0" max="5" step="1" value="5" oninput="onTplSlider(parseInt(this.value))">
+      </div>
+
+      <!-- Live keyboard preview -->
+      <div id="tpl-preview-kb" class="tpl-prev-kb"></div>
+
+      <!-- Apply -->
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+        <button class="btn primary" id="tpl-apply-btn" onclick="applySelectedTemplate()" data-i18n="tpl_apply_btn">Apply layout</button>
+        <span id="tpl-active-label" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+    </div>
+
+    <!-- MANUAL SCAN (fallback for non-standard keyboards) -->
+    <details>
+      <summary style="font-size:12px;color:var(--muted);cursor:pointer;padding:6px 0;user-select:none" data-i18n="summary_manual">▸ Scan keys manually (for non-standard keyboards)</summary>
+      <div style="padding-top:14px">
+        <div id="scan-box" style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:18px">
+          <div id="scan-idle">
+            <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px" data-i18n-html="scan_hint">
+              Press <b style="color:var(--cyan)">▶ Start scanning</b> → press keys on the second keyboard → <b style="color:var(--text)">Finish</b>
+            </p>
+            <div class="row-btn">
+              <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="startScan()"><span data-icon="play" data-icon-size="12"></span><span data-i18n="btn_start_scan">Start scanning</span></button>
+              <span id="scan-detected-count" style="font-size:12px;color:var(--muted)"></span>
+            </div>
+          </div>
+          <div id="scan-active" style="display:none">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1s ease-in-out infinite"></div>
+              <span style="font-size:13px;font-weight:700;color:var(--green)" data-i18n="scan_active_label">Scanning</span>
+              <span id="scan-count" style="font-size:12px;color:var(--muted)">0 keys</span>
+            </div>
+            <div id="scan-grid" style="display:flex;flex-wrap:wrap;gap:4px;min-height:44px;margin-bottom:14px"></div>
+            <div class="row-btn">
+              <button class="btn primary" style="display:inline-flex;align-items:center;gap:6px" onclick="stopScan()"><span data-icon="check" data-icon-size="13"></span><span data-i18n="btn_finish">Finish</span></button>
+              <button class="btn" onclick="cancelScan()" data-i18n="btn_cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+    <div id="kb-list" style="display:none"></div>
+  </div>
+
+  <!-- ── PAGE: BINDS ── -->
+  <div id="binds-page" class="page">
+    <div class="page-title" data-i18n="pg_binds_title">Bindings</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div class="page-sub" style="margin:0" data-i18n="pg_binds_sub">Click a key on the keyboard — configure action on the right</div>
+      <div id="binds-listener-pill" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:100px;background:var(--s2);border:1px solid var(--border);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer" onclick="toggleListenerPill()" title="Click to start / stop listener">
+        <div id="binds-listener-dot" style="width:7px;height:7px;border-radius:50%;background:var(--muted)"></div>
+        <span id="binds-listener-txt">—</span>
+      </div>
+    </div>
+
+    <!-- Mode tabs -->
+    <div id="mode-tabs"></div>
+
+    <!-- Keyboard + Editor -->
+    <div id="binds-layout">
+      <div id="keyboard-area">
+        <div class="keyboard-wrap" id="keyboard-wrap">
+          <div id="keyboard"></div>
+        </div>
+      </div>
+      <div id="editor-panel">
+        <div class="editor-card" id="editor-card">
+          <div class="editor-empty" id="editor-empty">
+            <div class="ico" data-icon="cursor" data-icon-size="30"></div>
+            <div data-i18n-html="editor_empty">Click a key<br>on the left</div>
+          </div>
+          <div id="editor-body" style="display:none;flex-direction:column;gap:12px">
+            <div>
+              <div class="editor-key-title" id="edt-key-title">—</div>
+              <div class="editor-key-code" id="edt-key-code"></div>
+            </div>
+            <div class="sep"></div>
+            <div class="field">
+              <label data-i18n="lbl_action_type">Action type</label>
+              <select id="edt-type" onchange="onTypeChange()">
+                <option value="" data-i18n="opt_nothing">— None —</option>
+                <option value="url" data-i18n="opt_url">Website (URL)</option>
+                <option value="lnk" data-i18n="opt_lnk">Shortcut (.lnk)</option>
+                <option value="exe" data-i18n="opt_exe">Program (.exe)</option>
+                <option value="sound" data-i18n="opt_sound">Sound Soundpad (#)</option>
+                <option value="stop_sound" data-i18n="opt_stop_sound">Stop sound</option>
+                <option value="mode_switch" data-i18n="opt_mode_switch">Switch mode</option>
+              </select>
+            </div>
+            <div id="edt-val-wrap" class="field" style="display:none">
+              <label id="edt-val-label">Value</label>
+              <div class="field-row">
+                <input id="edt-value" type="text" placeholder="https://..." oninput="onValInput()">
+                <button class="btn-sm" id="edt-browse" onclick="browseFile()" style="display:none"><span data-icon="folder" data-icon-size="13"></span></button>
+                <button class="btn-sm" id="edt-pick-proc" onclick="openProcPicker()" style="display:none" title="Choose from installed apps"><span data-icon="monitor" data-icon-size="13"></span> Apps</button>
+              </div>
+            </div>
+            <div id="edt-mode-wrap" class="field" style="display:none">
+              <label data-i18n="lbl_switch_to">Switch to mode</label>
+              <select id="edt-target"></select>
+            </div>
+            <div class="field">
+              <label data-i18n="lbl_label">Label (short)</label>
+              <input id="edt-label" type="text" placeholder="YouTube" maxlength="12">
+            </div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:10px">
+              <label data-i18n="lbl_bind_color" style="flex:1;margin:0">Color</label>
+              <input id="edt-color" type="color" value="#7c8aff" style="width:38px;height:28px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;padding:2px 3px;flex-shrink:0">
+              <button class="btn-sm" onclick="document.getElementById('edt-color').value='#7c8aff'" style="font-size:11px;padding:4px 8px;flex-shrink:0" title="Reset">↺</button>
+            </div>
+            <div class="editor-actions">
+              <button class="btn danger" onclick="clearBind()"><span data-icon="x" data-icon-size="13"></span></button>
+              <button class="btn" style="display:inline-flex;align-items:center;gap:6px;justify-content:center" onclick="testBind()"><span data-icon="play" data-icon-size="12"></span><span data-i18n="btn_test">Test</span></button>
+              <button class="btn primary" onclick="saveBind()" data-i18n="btn_save">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Mode status bar -->
+    <div id="mode-bar">
+      <span class="mode-icon" data-icon="keyboard" data-icon-size="18"></span>
+      <span id="mode-bar-txt" data-i18n="mode_bar_idle">Listener not running</span>
+      <button onclick="showKeyLog()" style="margin-left:auto;background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--muted);cursor:pointer" data-i18n="btn_key_log">key log</button>
+    </div>
+  </div>
+
+  <!-- ── PAGE: SETTINGS ── -->
+  <div id="page-settings" class="page">
+    <div class="page-title" data-i18n="pg_settings_title">Theme &amp; Appearance</div>
+    <div class="page-sub" data-i18n="pg_settings_sub">Choose a theme or customize your colors</div>
+
+    <div class="settings-section-label" data-i18n="lbl_theme">Theme</div>
+    <div style="display:flex;gap:12px;margin-bottom:28px">
+      <div class="theme-card" id="thcard-dark" onclick="selectTheme('dark')">
+        <div class="theme-card-preview dark-preview"></div>
+        <div class="theme-card-label" data-i18n="theme_dark">Dark</div>
+      </div>
+      <div class="theme-card" id="thcard-light" onclick="selectTheme('light')">
+        <div class="theme-card-preview light-preview"></div>
+        <div class="theme-card-label" data-i18n="theme_light">Light</div>
+      </div>
+      <div class="theme-card" id="thcard-custom" onclick="selectTheme('custom')">
+        <div class="theme-card-preview custom-preview"></div>
+        <div class="theme-card-label" data-i18n="theme_custom">Custom</div>
+      </div>
+    </div>
+
+    <div id="custom-editor" style="display:none">
+      <div class="settings-section-label" data-i18n="lbl_colors">Colors</div>
+      <div class="color-grid" id="custom-color-grid"></div>
+    </div>
+
+    <div class="settings-section-label" data-i18n="lbl_language">Language</div>
+    <div style="display:flex;gap:8px;margin-bottom:28px">
+      <button class="lang-btn" data-lang="en" onclick="changeLang('en')">English</button>
+      <button class="lang-btn" data-lang="ru" onclick="changeLang('ru')">Русский</button>
+    </div>
+
+    <!-- Feature 5: Mode overlay toggle -->
+    <div class="settings-section-label" data-i18n="lbl_overlay">Mode switch overlay</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px">
+      <button id="overlay-toggle-btn" class="lang-btn" onclick="toggleOverlaySetting()">—</button>
+      <span style="font-size:12px;color:var(--muted)" data-i18n="sub_overlay">Show mode name on screen when switching with a key</span>
+    </div>
+
+    <!-- Feature 4: App filter -->
+    <div class="settings-section-label" data-i18n="lbl_app_filter">App filter</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px" data-i18n="sub_app_filter">Control when bindings are active based on the foreground app</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="lang-btn" data-fmode="disabled" onclick="setFilterMode('disabled')" id="fmode-disabled" data-i18n="fmode_disabled">Disabled</button>
+      <button class="lang-btn" data-fmode="allow"    onclick="setFilterMode('allow')"    id="fmode-allow"    data-i18n="fmode_allow">Allow list</button>
+      <button class="lang-btn" data-fmode="deny"     onclick="setFilterMode('deny')"     id="fmode-deny"     data-i18n="fmode_deny">Block list</button>
+    </div>
+    <div id="filter-apps-section" style="max-width:440px;display:none">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px" id="filter-mode-hint"></p>
+      <div id="filter-app-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+      <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="addFilterApp()">
+        <span data-icon="plus" data-icon-size="13"></span>
+        <span data-i18n="btn_add_filter_app">Add app</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── PAGE: LAUNCH ── -->
+  <div id="page-launch" class="page">
+    <div class="page-title" data-i18n="pg_launch_title">Launch</div>
+    <div class="page-sub" data-i18n="pg_launch_sub">Control the built-in key interceptor (no third-party apps)</div>
+
+    <div class="status-card">
+      <div class="status-dot stopped" id="status-dot"></div>
+      <div class="status-text">
+        <div class="status-label" id="status-label" data-i18n="listener_not_running">Listener not running</div>
+        <div class="status-hint" id="status-hint" data-i18n="listener_hint_no_kb">First select a keyboard on the Keyboard tab</div>
+      </div>
+    </div>
+
+    <div class="launch-btns">
+      <button class="btn primary" id="btn-start-listener" style="display:inline-flex;align-items:center;gap:6px" onclick="startListener()"><span data-icon="play" data-icon-size="12"></span><span data-i18n="btn_start">Start</span></button>
+      <button class="btn danger" id="btn-stop-listener" style="display:inline-flex;align-items:center;gap:6px" onclick="stopListener()"><span data-icon="square" data-icon-size="12"></span><span data-i18n="btn_stop">Stop</span></button>
+      <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="refreshListenerStatus()"><span data-icon="refresh" data-icon-size="13"></span><span data-i18n="btn_refresh_status">Refresh</span></button>
+    </div>
+
+    <div class="note-box" style="margin-bottom:20px" data-i18n-html="note_how_it_works_html">
+      <b>How it works:</b> BindBoard uses Windows Raw Input API and intercepts keys from the selected keyboard <b>directly</b> — no LuaMacros, no third-party apps.<br><br>Select keyboard → set up bindings → click <b>▶ Start</b>.
+    </div>
+
+    <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px" data-i18n="lbl_current_mode">Current mode</div>
+    <div class="note-box" id="listener-mode-info" style="font-size:12px">—</div>
+  </div>
+</div>
+
+  <!-- ── PAGE: ABOUT ── -->
+  <div id="page-about" class="page">
+    <div class="page-title" data-i18n="nav_about">About</div>
+    <div style="max-width:640px">
+
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:32px;padding:24px;background:var(--s2);border:1px solid var(--border);border-radius:14px">
+        <img class="logo-mark-dark" src="assets/logo-sidebar-dark.png" width="56" height="56" alt="BindBoard" style="border-radius:12px;flex-shrink:0">
+        <img class="logo-mark-light" src="assets/logo-sidebar-light.png" width="56" height="56" alt="BindBoard" style="border-radius:12px;flex-shrink:0;display:none">
+        <div>
+          <div style="font-size:22px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan)">Bind<span style="color:var(--text);font-weight:400">Board</span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="about_version">Version 1.0.0</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px" data-i18n="about_tagline">Per-app macro keyboard for Windows</div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_features_title">What it does</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px">
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="keyboard" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f1_title">Second keyboard</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f1_body">Uses a separate USB keyboard as a dedicated macro pad — your main keyboard works as normal</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="layers" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f2_title">Modes</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f2_body">Switch between profiles on the fly — one key to go from music controls to game macros</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="zap" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f3_title">Action types</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f3_body">Open URLs, launch programs, play Soundpad sounds, switch modes — all from a key press</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="shield" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f4_title">Key suppression</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f4_body">Intercepted keys don't reach other apps — press ESC on the macro pad without closing anything</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="filter" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f5_title">App filter</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f5_body">Allow or block bindings based on which app is in focus</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="monitor" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f6_title">System tray</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f6_body">Closes to tray, not to exit — listener keeps running in the background</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_howto_title">Quick start</div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--border)">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-d);color:var(--cyan);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+          <div style="font-size:13px" data-i18n="about_step1">Go to <b>Keyboard</b> — select the second keyboard from the list and click Save</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--border)">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-d);color:var(--cyan);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+          <div style="font-size:13px" data-i18n="about_step2">Go to <b>Bindings</b> — click any key, choose an action, click Save</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--border)">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-d);color:var(--cyan);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+          <div style="font-size:13px" data-i18n="about_step3">Click <b>Save &amp; Apply</b> at the bottom of the sidebar</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 16px">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--cyan-d);color:var(--cyan);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+          <div style="font-size:13px" data-i18n="about_step4">Click the status button in the sidebar to <b>Start</b> the listener — press keys on the second keyboard</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- Modal -->
+<div id="modal">
+  <div class="modal-card" id="modal-card">
+    <div class="modal-title" id="modal-title">—</div>
+    <div id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Process picker modal (Feature 1) -->
+<div id="proc-modal">
+  <div class="proc-picker-card">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <span data-icon="monitor" data-icon-size="16" style="color:var(--muted)"></span>
+      <span style="font-size:14px;font-weight:700" id="proc-modal-title">Select running app</span>
+      <button onclick="closeProcModal()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0 4px">×</button>
+    </div>
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+      <input id="proc-search" type="text" placeholder="Search by name or path…" oninput="filterProcs()"
+             style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:13px;outline:none">
+    </div>
+    <div id="proc-list" style="flex:1;overflow-y:auto;max-height:380px"></div>
+  </div>
+</div>
+
+<!-- Verify overlay -->
+<div id="verify-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:32px 36px;max-width:420px;width:90%;text-align:center">
+    <div style="margin-bottom:12px;color:var(--cyan)" data-icon="keyboard" data-icon-size="40"></div>
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px" data-i18n="verify_title">Keyboard verification</div>
+    <div id="verify-kb-name" style="font-size:12px;color:var(--muted);margin-bottom:20px">—</div>
+    <div style="font-size:14px;color:var(--text);margin-bottom:20px;line-height:1.6" data-i18n-html="verify_hint_html">
+      Press <b>any key</b> on the selected keyboard<br>
+      <span style="font-size:12px;color:var(--muted)">You have 10 seconds</span>
+    </div>
+    <div style="background:var(--s1);border-radius:100px;height:6px;overflow:hidden;margin-bottom:16px">
+      <div id="verify-bar" style="height:100%;background:var(--cyan);border-radius:100px;width:100%"></div>
+    </div>
+    <div id="verify-status" style="font-size:13px;color:var(--muted);margin-bottom:16px" data-i18n="verify_wait">Waiting...</div>
+    <button class="btn" onclick="closeVerifyOverlay()" style="font-size:12px" data-i18n="btn_skip">Skip</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ICONS — minimal stroke-based SVG set, replaces emoji glyphs
+// ═══════════════════════════════════════════════════════
+const ICONS = {
+  keyboard: { c:'<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="6" y1="9" x2="6" y2="9"/><line x1="10" y1="9" x2="10" y2="9"/><line x1="14" y1="9" x2="14" y2="9"/><line x1="18" y1="9" x2="18" y2="9"/><line x1="6" y1="13" x2="6" y2="13"/><line x1="10" y1="13" x2="10" y2="13"/><line x1="14" y1="13" x2="14" y2="13"/><line x1="18" y1="13" x2="18" y2="13"/><line x1="7" y1="17" x2="17" y2="17"/>' },
+  grid: { c:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>' },
+  play: { c:'<polygon points="5 3 19 12 5 21 5 3"/>', filled:true },
+  sliders: { c:'<line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2"/>' },
+  save: { c:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>' },
+  refresh: { c:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>' },
+  folder: { c:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>' },
+  edit: { c:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>' },
+  x: { c:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' },
+  check: { c:'<polyline points="20 6 9 17 4 12"/>' },
+  cursor: { c:'<path d="M4 4l7.07 17 2.51-7.39L21 11.07 4 4Z"/>', filled:true },
+  globe: { c:'<circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a13 13 0 0 1 3.5 9A13 13 0 0 1 12 21 13 13 0 0 1 8.5 12 13 13 0 0 1 12 3Z"/>' },
+  link: { c:'<path d="M9 17H7a5 5 0 0 1 0-10h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/>' },
+  terminal: { c:'<rect x="3" y="4" width="18" height="16" rx="2"/><polyline points="7 9 10 12 7 15"/><line x1="12" y1="15" x2="17" y2="15"/>' },
+  volume2: { c:'<polygon points="3 9 3 15 7 15 12 20 12 4 7 9 3 9"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.2 5.5a9 9 0 0 1 0 13"/>' },
+  square: { c:'<rect x="5" y="5" width="14" height="14" rx="2"/>' },
+  shuffle: { c:'<polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>' },
+  gear: { c:'<circle cx="12" cy="12" r="3.2"/><line x1="12" y1="3" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="21"/><line x1="3" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="21" y2="12"/><line x1="5.6" y1="5.6" x2="7.3" y2="7.3"/><line x1="16.7" y1="16.7" x2="18.4" y2="18.4"/><line x1="18.4" y1="5.6" x2="16.7" y2="7.3"/><line x1="7.3" y1="16.7" x2="5.6" y2="18.4"/>' },
+  zap: { c:'<polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/>', filled:true },
+  gamepad: { c:'<rect x="2" y="7" width="20" height="11" rx="5.5"/><line x1="6" y1="10.5" x2="6" y2="14.5"/><line x1="4" y1="12.5" x2="8" y2="12.5"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13.5" r="1"/>' },
+  music: { c:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
+  mic: { c:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>' },
+  film: { c:'<rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="7" x2="22" y2="7"/><line x1="2" y1="17" x2="22" y2="17"/><line x1="2" y1="12" x2="22" y2="12"/>' },
+  star: { c:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', filled:true },
+  heart: { c:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/>', filled:true },
+  image:   { c:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>' },
+  monitor: { c:'<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>' },
+  plus:    { c:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' },
+  trash:   { c:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>' },
+  layers:  { c:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+};
+
+function icon(name, size, cls) {
+  const def = ICONS[name];
+  if (!def) return '';
+  size = size || 16;
+  const fill = def.filled ? 'currentColor' : 'none';
+  const stroke = def.filled ? 'none' : 'currentColor';
+  return `<svg class="icon ${cls||''}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${def.c}</svg>`;
+}
+
+function hydrateStaticIcons() {
+  document.querySelectorAll('[data-icon]').forEach(el => {
+    el.innerHTML = icon(el.dataset.icon, el.dataset.iconSize ? +el.dataset.iconSize : 16);
+  });
+}
+
+const MODE_ICON_CHOICES = ['zap','volume2','gamepad','music','mic','film','globe','folder','star','heart','terminal','image'];
+
+function resolveModeIcon(val, size) {
+  size = size || 16;
+  if (val && ICONS[val]) return icon(val, size);
+  if (val) return `<span style="font-size:${size}px;line-height:1">${val}</span>`; // legacy emoji from older configs
+  return icon('zap', size);
+}
+
+let _pickerIcon = 'zap';
+function buildIconPicker(selected) {
+  _pickerIcon = (selected && ICONS[selected]) ? selected : 'zap';
+  return `<div class="icon-picker" id="icon-picker">` +
+    MODE_ICON_CHOICES.map(k => `<div class="icon-pick ${k===_pickerIcon?'selected':''}" data-k="${k}" onclick="pickModeIcon('${k}')">${icon(k,16)}</div>`).join('') +
+    `</div>`;
+}
+function pickModeIcon(key) {
+  _pickerIcon = key;
+  document.querySelectorAll('#icon-picker .icon-pick').forEach(el => el.classList.toggle('selected', el.dataset.k === key));
+}
+
+// ═══════════════════════════════════════════════════════
+//  i18n
+// ═══════════════════════════════════════════════════════
+let _lang = 'en';
+
+const STRINGS = {
+  en: {
+    loading:'Loading...',
+    nav_keyboard:'Keyboard', nav_binds:'Bindings', nav_launch:'Launch', nav_theme:'Theme', nav_about:'About',
+    about_version:'Version 1.0.0', about_tagline:'Per-app macro keyboard for Windows',
+    about_features_title:'What it does', about_howto_title:'Quick start',
+    about_f1_title:'Second keyboard', about_f1_body:'Uses a separate USB keyboard as a dedicated macro pad — your main keyboard works as normal',
+    about_f2_title:'Modes', about_f2_body:'Switch between profiles on the fly — one key to go from music controls to game macros',
+    about_f3_title:'Action types', about_f3_body:'Open URLs, launch programs, play Soundpad sounds, switch modes — all from a key press',
+    about_f4_title:'Key suppression', about_f4_body:"Intercepted keys don't reach other apps — press ESC on the macro pad without closing anything",
+    about_f5_title:'App filter', about_f5_body:'Allow or block bindings based on which app is in focus',
+    about_f6_title:'System tray', about_f6_body:'Closes to tray, not to exit — listener keeps running in the background',
+    about_step1:'Go to <b>Keyboard</b> — select the second keyboard from the list and click Save',
+    about_step2:'Go to <b>Bindings</b> — click any key, choose an action, click Save',
+    about_step3:'Click <b>Save &amp; Apply</b> at the bottom of the sidebar',
+    about_step4:'Click the status button in the sidebar to <b>Start</b> the listener — press keys on the second keyboard',
+    btn_save_apply:'Save & Apply',
+    pg_keyboard_title:'Keyboard',
+    pg_keyboard_sub:'Scan all keys you need — the app will remember their codes',
+    lbl_connected_kbs:'Connected keyboards', btn_refresh:'Refresh',
+    summary_manual:'▸ Scan keys manually (for non-standard keyboards)',
+    lbl_layout_template:'Layout template', lbl_or_scan:'Or scan manually',
+    tpl_slider_hint:'Drag the slider or click a size to preview the layout',
+    tpl_apply_btn:'Apply layout',
+    tpl_active_now: name => `Active: ${name}`,
+    scan_hint:'Press <b style="color:var(--cyan)">▶ Start scanning</b> → press keys on the second keyboard → <b style="color:var(--text)">Finish</b>',
+    btn_start_scan:'Start scanning', btn_finish:'Finish', btn_cancel:'Cancel',
+    scan_active_label:'Scanning',
+    scan_keys_count: n => `${n} keys`,
+    scan_saved_count: n => `Saved: ${n} keys ✓`,
+    scan_done_toast: n => `Done! Found ${n} keys`,
+    kb_badge_active:'ACTIVE', kb_btn_use:'Use', kb_btn_selected:'Selected ✓',
+    kb_rename_title:'Rename', kb_none:'No keyboards found',
+    kb_error: e => `Detection error: ${e}`,
+    pg_binds_title:'Bindings',
+    pg_binds_sub:'Click a key on the keyboard — configure action on the right',
+    listener_off:'Listener off — click to start', listener_on:'Listener active',
+    editor_empty:'Click a key<br>on the left',
+    lbl_action_type:'Action type',
+    opt_nothing:'— None —', opt_url:'Website (URL)', opt_lnk:'Shortcut (.lnk)',
+    opt_exe:'Program (.exe)', opt_sound:'Sound Soundpad (#)',
+    opt_stop_sound:'Stop sound', opt_mode_switch:'Switch mode', opt_steam:'Steam game (App ID)',
+    lbl_url:'URL', lbl_filepath:'File path', lbl_sound_num:'Sound number',
+    lbl_switch_to:'Switch to mode', lbl_steam_id:'Steam App ID', lbl_label:'Label (short)', lbl_bind_color:'Color',
+    btn_test:'Test', btn_save:'Save',
+    mode_bar_idle:'Listener not running', mode_bar_prefix:'Mode: ', btn_key_log:'key log',
+    btn_add_mode:'+ Mode',
+    modal_new_mode:'New mode', modal_edit_mode:'Edit mode',
+    lbl_mode_name:'Name', lbl_mode_color:'Color', lbl_mode_icon:'Icon',
+    btn_create:'Create', btn_delete:'Delete', btn_save_modal:'Save',
+    pg_launch_title:'Launch',
+    pg_launch_sub:'Control the built-in key interceptor (no third-party apps)',
+    listener_not_running:'Listener not running',
+    listener_hint_no_kb:'First select a keyboard on the Keyboard tab',
+    listener_running:'Listener active',
+    btn_start:'Start', btn_stop:'Stop', btn_refresh_status:'Refresh',
+    note_how_it_works_html:'<b>How it works:</b> BindBoard uses Windows Raw Input API and intercepts keys from the selected keyboard <b>directly</b> — no LuaMacros, no third-party apps.<br><br>Select keyboard → set up bindings → click <b>▶ Start</b>.',
+    lbl_current_mode:'Current mode',
+    listener_status_device: d => `Device: ${d}`,
+    listener_status_mode: (m,v) => `Mode: ${m}  |  VID/PID: ${v}`,
+    hint_select_start:'Select a keyboard and click ▶ Start',
+    pg_settings_title:'Theme & Appearance',
+    pg_settings_sub:'Choose a theme or customize your colors',
+    lbl_theme:'Theme', theme_dark:'Dark', theme_light:'Light', theme_custom:'Custom',
+    lbl_colors:'Colors', lbl_language:'Language',
+    color_bg:'Window bg', color_s1:'Sidebar', color_s2:'Cards', color_s3:'Hover',
+    color_border:'Borders', color_cyan:'Accent', color_purple:'Accent 2',
+    color_text:'Text', color_muted:'Muted text',
+    toast_bind_saved:'Bind saved', toast_bind_cleared:'Bind cleared',
+    toast_config_saved:'Config saved ✓', toast_config_error:'Save error',
+    toast_listener_started:'Listener started ✓', toast_listener_stopped:'Listener stopped',
+    toast_no_keyboard:'Select a keyboard first',
+    toast_device_not_found:'Device not found — reconnect keyboard',
+    toast_log_empty:'Log empty — press keys on macro keyboard',
+    toast_test_ok:'Launched!',
+    toast_test_err: e => `Error: ${e}`,
+    toast_test_nothing:'Nothing to test',
+    toast_template_applied: name => `Template "${name}" applied`,
+    toast_kb_verified: name => `✓ ${name} — verified`,
+    toast_cant_delete_last:'Cannot delete the last mode',
+    verify_title:'Keyboard verification', verify_wait:'Waiting...',
+    verify_ok:'✓ Keyboard responding!',
+    verify_fail:'✕ No response — check connection',
+    verify_hint_html:'Press <b>any key</b> on the selected keyboard<br><span style="font-size:12px;color:var(--muted)">You have 10 seconds</span>',
+    btn_skip:'Skip',
+    modal_key_log:'Key log (last 20 events)',
+    th_vk:'VK', th_mode:'Mode', th_bind:'Bind', th_result:'Result', no_bind:'no bind', btn_close:'Close',
+    lbl_overlay:'Mode switch overlay', sub_overlay:'Show mode name on screen when switching with a key',
+    overlay_on:'Overlay: ON', overlay_off:'Overlay: OFF',
+    lbl_app_filter:'App filter', sub_app_filter:'Control when bindings are active based on the foreground app',
+    fmode_disabled:'Disabled', fmode_allow:'Allow list', fmode_deny:'Block list',
+    filter_hint_allow:'Bindings work ONLY when one of these apps is in focus',
+    filter_hint_deny:'Bindings are BLOCKED when one of these apps is in focus',
+    btn_add_filter_app:'Add app',
+    proc_modal_title:'Choose running app',
+    proc_searching:'Loading process list…', proc_none:'No processes found',
+    tpl_full_name:'Full (100%)', tpl_full_sub:'104 keys with numpad',
+    tpl_tkl_name:'TKL (80%)', tpl_tkl_sub:'87 keys, no numpad',
+    tpl_75_name:'75%', tpl_75_sub:'~84 keys',
+    tpl_65_name:'65%', tpl_65_sub:'~68 keys',
+    tpl_60_name:'60%', tpl_60_sub:'~61 keys',
+    tpl_40_name:'40%', tpl_40_sub:'~48 keys, no numbers',
+    tpl_numpad_name:'Numpad', tpl_numpad_sub:'17 keys', lbl_numpad_section:'Numpad',
+    key_code_label: (code, mode) => `code ${code} · mode: ${mode}`,
+    renderKeyboard_empty:'Select a template on the <b style="color:var(--text)">Keyboard</b> tab',
+  },
+  ru: {
+    loading:'Загрузка...',
+    nav_keyboard:'Клавиатура', nav_binds:'Биндинги', nav_launch:'Запуск', nav_theme:'Тема', nav_about:'О программе',
+    about_version:'Версия 1.0.0', about_tagline:'Макро-клавиатура для Windows с фильтром по приложениям',
+    about_features_title:'Возможности', about_howto_title:'Быстрый старт',
+    about_f1_title:'Вторая клавиатура', about_f1_body:'Использует отдельную USB-клавиатуру как макро-пад — основная клавиатура работает как обычно',
+    about_f2_title:'Режимы', about_f2_body:'Переключайся между профилями на лету — одна клавиша меняет набор биндингов',
+    about_f3_title:'Типы действий', about_f3_body:'Открыть URL, запустить программу, воспроизвести звук в Soundpad, сменить режим — всё с одной клавиши',
+    about_f4_title:'Подавление клавиш', about_f4_body:'Перехваченные клавиши не достигают других программ — ESC на макро-паде не закроет ничего',
+    about_f5_title:'Фильтр приложений', about_f5_body:'Включай или блокируй биндинги в зависимости от активного окна',
+    about_f6_title:'Системный трей', about_f6_body:'Закрывается в трей, а не завершается — слушатель продолжает работать в фоне',
+    about_step1:'Открой <b>Клавиатура</b> — выбери вторую клавиатуру из списка и нажми Сохранить',
+    about_step2:'Открой <b>Биндинги</b> — кликни клавишу, выбери действие, нажми Сохранить',
+    about_step3:'Нажми <b>Сохранить и применить</b> внизу сайдбара',
+    about_step4:'Нажми кнопку статуса в сайдбаре чтобы <b>запустить</b> слушатель — теперь жми клавиши на второй клавиатуре',
+    btn_save_apply:'Сохранить и применить',
+    pg_keyboard_title:'Клавиатура',
+    pg_keyboard_sub:'Просканируй все нужные кнопки — приложение запомнит их коды',
+    lbl_connected_kbs:'Подключённые клавиатуры', btn_refresh:'Обновить',
+    summary_manual:'▸ Просканировать клавиши вручную (для нестандартных клавиатур)',
+    lbl_layout_template:'Шаблон раскладки', lbl_or_scan:'Или просканировать',
+    tpl_slider_hint:'Двигай слайдер или нажми на размер — увидишь раскладку',
+    tpl_apply_btn:'Применить раскладку',
+    tpl_active_now: name => `Активна: ${name}`,
+    scan_hint:'Нажми <b style="color:var(--cyan)">▶ Начать сканирование</b> → жми кнопки на второй клавиатуре → <b style="color:var(--text)">Завершить</b>',
+    btn_start_scan:'Начать сканирование', btn_finish:'Завершить', btn_cancel:'Отмена',
+    scan_active_label:'Сканирование',
+    scan_keys_count: n => `${n} кнопок`,
+    scan_saved_count: n => `Сохранено: ${n} кнопок ✓`,
+    scan_done_toast: n => `Готово! Обнаружено ${n} кнопок`,
+    kb_badge_active:'АКТИВНА', kb_btn_use:'Использовать', kb_btn_selected:'Выбрана ✓',
+    kb_rename_title:'Переименовать', kb_none:'Клавиатуры не найдены',
+    kb_error: e => `Ошибка определения: ${e}`,
+    pg_binds_title:'Биндинги',
+    pg_binds_sub:'Нажми на кнопку клавиатуры — справа настрой действие',
+    listener_off:'Слушатель выкл. — нажми чтобы запустить', listener_on:'Слушатель активен',
+    editor_empty:'Нажми на кнопку<br>клавиатуры слева',
+    lbl_action_type:'Тип действия',
+    opt_nothing:'— Ничего —', opt_url:'Сайт (URL)', opt_lnk:'Ярлык (.lnk)',
+    opt_exe:'Программа (.exe)', opt_sound:'Звук Soundpad (#)',
+    opt_stop_sound:'Стоп звука', opt_mode_switch:'Сменить режим', opt_steam:'Steam-игра (App ID)',
+    lbl_url:'URL', lbl_filepath:'Путь к файлу', lbl_sound_num:'Номер звука',
+    lbl_switch_to:'Переключить в режим', lbl_steam_id:'Steam App ID', lbl_label:'Название (кратко)', lbl_bind_color:'Цвет',
+    btn_test:'Тест', btn_save:'Сохр.',
+    mode_bar_idle:'Слушатель не запущен', mode_bar_prefix:'Режим: ', btn_key_log:'лог клавиш',
+    btn_add_mode:'+ Режим',
+    modal_new_mode:'Новый режим', modal_edit_mode:'Настройка режима',
+    lbl_mode_name:'Название', lbl_mode_color:'Цвет', lbl_mode_icon:'Иконка',
+    btn_create:'Создать', btn_delete:'Удалить', btn_save_modal:'Сохранить',
+    pg_launch_title:'Запуск',
+    pg_launch_sub:'Управление встроенным перехватчиком клавиш (без сторонних программ)',
+    listener_not_running:'Слушатель не запущен',
+    listener_hint_no_kb:'Сначала выбери клавиатуру на вкладке «Клавиатура»',
+    listener_running:'Слушатель активен',
+    btn_start:'Запустить', btn_stop:'Остановить', btn_refresh_status:'Обновить',
+    note_how_it_works_html:'<b>Как это работает:</b> BindBoard использует Windows Raw Input API и перехватывает нажатия выбранной клавиатуры <b>напрямую</b> — без LuaMacros и без сторонних программ.<br><br>Выбери клавиатуру → настрой биндинги → нажми <b>▶ Запустить</b>.',
+    lbl_current_mode:'Текущий режим',
+    listener_status_device: d => `Устройство: ${d}`,
+    listener_status_mode: (m,v) => `Режим: ${m}  |  VID/PID: ${v}`,
+    hint_select_start:'Выбери клавиатуру и нажми ▶ Запустить',
+    pg_settings_title:'Тема и внешний вид',
+    pg_settings_sub:'Выбери тему или настрой свои цвета',
+    lbl_theme:'Тема', theme_dark:'Тёмная', theme_light:'Светлая', theme_custom:'Своя',
+    lbl_colors:'Цвета', lbl_language:'Язык',
+    color_bg:'Фон окна', color_s1:'Боковая панель', color_s2:'Карточки', color_s3:'Hover',
+    color_border:'Рамки', color_cyan:'Акцент', color_purple:'Второй акцент',
+    color_text:'Текст', color_muted:'Второстепенный',
+    toast_bind_saved:'Бинд сохранён', toast_bind_cleared:'Бинд очищен',
+    toast_config_saved:'Конфиг сохранён ✓', toast_config_error:'Ошибка сохранения',
+    toast_listener_started:'Слушатель запущен ✓', toast_listener_stopped:'Слушатель остановлен',
+    toast_no_keyboard:'Сначала выбери клавиатуру',
+    toast_device_not_found:'Устройство не найдено — переподключи клавиатуру',
+    toast_log_empty:'Лог пуст — нажми клавиши на макро-клавиатуре',
+    toast_test_ok:'Запущено!',
+    toast_test_err: e => `Ошибка: ${e}`,
+    toast_test_nothing:'Нечего тестировать',
+    toast_template_applied: name => `Шаблон «${name}» применён`,
+    toast_kb_verified: name => `✓ ${name} — подтверждена`,
+    toast_cant_delete_last:'Нельзя удалить единственный режим',
+    verify_title:'Проверка клавиатуры', verify_wait:'Ожидание...',
+    verify_ok:'✓ Клавиатура отвечает!',
+    verify_fail:'✕ Нет ответа — проверь подключение',
+    verify_hint_html:'Нажми <b>любую кнопку</b> на выбранной клавиатуре<br><span style="font-size:12px;color:var(--muted)">У тебя есть 10 секунд</span>',
+    btn_skip:'Пропустить',
+    modal_key_log:'Лог клавиш (последние 20)',
+    th_vk:'VK', th_mode:'Режим', th_bind:'Бинд', th_result:'Результат', no_bind:'нет бинда', btn_close:'Закрыть',
+    lbl_overlay:'Оверлей смены режима', sub_overlay:'Показывать название режима на экране при переключении клавишей',
+    overlay_on:'Оверлей: ВКЛ', overlay_off:'Оверлей: ВЫКЛ',
+    lbl_app_filter:'Фильтр приложений', sub_app_filter:'Управляй тем, при каком приложении в фокусе работают биндинги',
+    fmode_disabled:'Выкл', fmode_allow:'Белый список', fmode_deny:'Чёрный список',
+    filter_hint_allow:'Биндинги работают ТОЛЬКО когда в фокусе одно из этих приложений',
+    filter_hint_deny:'Биндинги ЗАБЛОКИРОВАНЫ когда в фокусе одно из этих приложений',
+    btn_add_filter_app:'Добавить приложение',
+    proc_modal_title:'Выбрать запущенное приложение',
+    proc_searching:'Загружаем список процессов…', proc_none:'Процессы не найдены',
+    tpl_full_name:'Полная (100%)', tpl_full_sub:'104 кл. с нампадом',
+    tpl_tkl_name:'TKL (80%)', tpl_tkl_sub:'87 кл., без нампада',
+    tpl_75_name:'75%', tpl_75_sub:'~84 кл.',
+    tpl_65_name:'65%', tpl_65_sub:'~68 кл.',
+    tpl_60_name:'60%', tpl_60_sub:'~61 кл.',
+    tpl_40_name:'40%', tpl_40_sub:'~48 кл., без цифр',
+    tpl_numpad_name:'Нампад', tpl_numpad_sub:'17 кл.', lbl_numpad_section:'Нампад',
+    key_code_label: (code, mode) => `код ${code} · режим: ${mode}`,
+    renderKeyboard_empty:'Выбери шаблон на вкладке <b style="color:var(--text)">Клавиатура</b>',
+  }
+};
+
+function t(key) { return STRINGS[_lang]?.[key] ?? STRINGS.en[key] ?? key; }
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t(el.getAttribute('data-i18n'));
+    if (typeof v === 'string') el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t(el.getAttribute('data-i18n-html'));
+    if (typeof v === 'string') el.innerHTML = v;
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === _lang);
+  });
+}
+
+function changeLang(lang) {
+  _lang = lang;
+  localStorage.setItem('bb-lang', lang);
+  applyLang();
+  // Rebuild any cached dynamic content
+  const grid = document.getElementById('custom-color-grid');
+  if (grid) grid.innerHTML = '';
+  const theme = localStorage.getItem('bb-theme') || 'dark';
+  if (theme === 'custom') buildCustomEditor();
+  // Refresh dynamic pages
+  renderModeTabs();
+  renderTemplateCards();
+  updateListenerPill();
+}
+
+function initLang() {
+  const saved = localStorage.getItem('bb-lang');
+  if (saved) {
+    _lang = saved;
+  } else {
+    // Auto-detect from system/browser language
+    const sys = (navigator.language || 'en').toLowerCase();
+    _lang = sys.startsWith('ru') ? 'ru' : 'en';
+  }
+  applyLang();
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let config = null;
+let currentModeId = null;
+let selectedKey = null;
+let dirty = false;
+let scanInterval = null;
+
+// Relative flex widths for non-standard keys
+const KEY_FLEX = {
+  8:2, 9:1.5, 13:2.25, 20:1.75, 32:6.25,
+  160:2.25, 161:2.75, 162:1.25, 163:1.25, 164:1.25, 165:1.25,
+  91:1.25, 93:1.25, 220:1.5, 219:1, 221:1
+};
+
+// Standard numpad shape shared by every template that has one — real hardware layout:
+// + and Enter are 2-row-tall keys, 0 is 2-column-wide. Rendered as a CSS grid by numpadHtml().
+// NOTE: numpad Enter shares VK code 13 with the main Enter key (Windows does not expose a
+// distinct virtual-key for it — only the scan code's extended-key bit differs, which this
+// binding system does not use). Binding either Enter key edits the same underlying binding.
+const NUMPAD_SHAPE = {
+  num:[144,'Num'], div:[111,'/'],  mul:[106,'*'],  sub:[109,'-'],
+  n7:[103,'7'],    n8:[104,'8'],   n9:[105,'9'],   add:[107,'+'],
+  n4:[100,'4'],    n5:[101,'5'],   n6:[102,'6'],
+  n1:[97,'1'],     n2:[98,'2'],    n3:[99,'3'],    enter:[13,'Enter'],
+  n0:[96,'0'],     dot:[110,'.']
+};
+
+// Pre-built keyboard templates [code, label, ?flex] per row
+// Special codes: 0 = invisible spacer, -1 = section header label (label = text)
+const TEMPLATES = [
+  { id:'full', rows:[
+    [[27,'Esc'],[112,'F1'],[113,'F2'],[114,'F3'],[115,'F4'],[116,'F5'],[117,'F6'],[118,'F7'],[119,'F8'],[120,'F9'],[121,'F10'],[122,'F11'],[123,'F12'],[44,'Print'],[145,'Scr'],[19,'Pause']],
+    [[192,'~'],[49,'1'],[50,'2'],[51,'3'],[52,'4'],[53,'5'],[54,'6'],[55,'7'],[56,'8'],[57,'9'],[48,'0'],[189,'-'],[187,'='],[8,'Backspace'],[45,'Ins'],[36,'Home'],[33,'Pg Up']],
+    [[9,'Tab'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[219,'['],[221,']'],[220,'\\'],[46,'Del'],[35,'End'],[34,'Pg Dn']],
+    [[20,'Capslock'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[222,'"'],[13,'Enter']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift'],[38,'Up']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Menu'],[163,'Ctrl'],[37,'Left'],[40,'Down'],[39,'Right']]
+  ], numpad: NUMPAD_SHAPE },
+  { id:'tkl', rows:[
+    [[27,'Esc'],[112,'F1'],[113,'F2'],[114,'F3'],[115,'F4'],[116,'F5'],[117,'F6'],[118,'F7'],[119,'F8'],[120,'F9'],[121,'F10'],[122,'F11'],[123,'F12'],[44,'Print'],[145,'Scr'],[19,'Pause']],
+    [[192,'~'],[49,'1'],[50,'2'],[51,'3'],[52,'4'],[53,'5'],[54,'6'],[55,'7'],[56,'8'],[57,'9'],[48,'0'],[189,'-'],[187,'='],[8,'Backspace'],[45,'Ins'],[36,'Home'],[33,'Pg Up']],
+    [[9,'Tab'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[219,'['],[221,']'],[220,'\\'],[46,'Del'],[35,'End'],[34,'Pg Dn']],
+    [[20,'Capslock'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[222,'"'],[13,'Enter']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift'],[38,'Up']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Menu'],[163,'Ctrl'],[37,'Left'],[40,'Down'],[39,'Right']]
+  ]},
+  { id:'75', rows:[
+    [[27,'Esc'],[112,'F1'],[113,'F2'],[114,'F3'],[115,'F4'],[116,'F5'],[117,'F6'],[118,'F7'],[119,'F8'],[120,'F9'],[121,'F10'],[122,'F11'],[123,'F12'],[44,'Print'],[46,'Del']],
+    [[192,'~'],[49,'1'],[50,'2'],[51,'3'],[52,'4'],[53,'5'],[54,'6'],[55,'7'],[56,'8'],[57,'9'],[48,'0'],[189,'-'],[187,'='],[8,'Backspace'],[36,'Home']],
+    [[9,'Tab'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[219,'['],[221,']'],[220,'\\'],[33,'Pg Up']],
+    [[20,'Capslock'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[222,'"'],[13,'Enter'],[34,'Pg Dn']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift'],[38,'Up']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Fn'],[163,'Ctrl'],[37,'Left'],[40,'Down'],[39,'Right']]
+  ]},
+  { id:'65', rows:[
+    [[192,'ESC'],[49,'1'],[50,'2'],[51,'3'],[52,'4'],[53,'5'],[54,'6'],[55,'7'],[56,'8'],[57,'9'],[48,'0'],[189,'-'],[187,'='],[8,'Backspace'],[46,'Del']],
+    [[9,'Tab'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[219,'['],[221,']'],[220,'\\'],[36,'Home']],
+    [[20,'Capslock'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[222,'"'],[13,'Enter'],[33,'Pg Up']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift'],[38,'Up'],[34,'Pg Dn']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Fn'],[163,'Ctrl'],[37,'Left'],[40,'Down'],[39,'Right']]
+  ]},
+  { id:'60', rows:[
+    [[27,'Esc'],[49,'1'],[50,'2'],[51,'3'],[52,'4'],[53,'5'],[54,'6'],[55,'7'],[56,'8'],[57,'9'],[48,'0'],[189,'-'],[187,'='],[8,'Backspace']],
+    [[9,'Tab'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[219,'['],[221,']'],[220,'\\']],
+    [[20,'Capslock'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[222,'"'],[13,'Enter']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Fn'],[163,'Ctrl']]
+  ]},
+  { id:'40', rows:[
+    [[27,'Esc'],[81,'Q'],[87,'W'],[69,'E'],[82,'R'],[84,'T'],[89,'Y'],[85,'U'],[73,'I'],[79,'O'],[80,'P'],[8,'Backspace']],
+    [[9,'Tab'],[65,'A'],[83,'S'],[68,'D'],[70,'F'],[71,'G'],[72,'H'],[74,'J'],[75,'K'],[76,'L'],[186,';'],[13,'Enter']],
+    [[160,'Shift'],[90,'Z'],[88,'X'],[67,'C'],[86,'V'],[66,'B'],[78,'N'],[77,'M'],[188,','],[190,'.'],[191,'/'],[161,'Shift']],
+    [[162,'Ctrl'],[91,'Win'],[164,'Alt'],[32,'Space'],[165,'Alt'],[93,'Fn'],[163,'Ctrl']]
+  ]},
+  { id:'numpad', rows:[], numpad: NUMPAD_SHAPE }
+];
+
+// Known key names by VK code
+const KEY_NAMES = {
+  8:'Backspace',9:'Tab',13:'Enter',16:'Shift',17:'Ctrl',18:'Alt',19:'Pause',20:'Capslock',
+  27:'Esc',32:'Space',33:'Pg Up',34:'Pg Dn',35:'End',36:'Home',
+  37:'Left',38:'Up',39:'Right',40:'Down',45:'Ins',46:'Del',
+  48:'0',49:'1',50:'2',51:'3',52:'4',53:'5',54:'6',55:'7',56:'8',57:'9',
+  65:'A',66:'B',67:'C',68:'D',69:'E',70:'F',71:'G',72:'H',73:'I',74:'J',
+  75:'K',76:'L',77:'M',78:'N',79:'O',80:'P',81:'Q',82:'R',83:'S',84:'T',
+  85:'U',86:'V',87:'W',88:'X',89:'Y',90:'Z',
+  91:'Win',92:'Win',93:'Menu',
+  96:'0',97:'1',98:'2',99:'3',100:'4',
+  101:'5',102:'6',103:'7',104:'8',105:'9',
+  106:'*',107:'+',109:'-',110:'.',111:'/',
+  112:'F1',113:'F2',114:'F3',115:'F4',116:'F5',117:'F6',
+  118:'F7',119:'F8',120:'F9',121:'F10',122:'F11',123:'F12',
+  144:'Num',145:'Scr',
+  186:';',187:'=',188:',',189:'-',190:'.',191:'/',192:'~',
+  219:'[',220:'\\',221:']',222:'"'
+};
+
+const TYPE_LABELS = {
+  url:'Сайт (URL)', lnk:'Ярлык (.lnk)', exe:'Программа (.exe)',
+  sound:'Звук #', stop_sound:'Стоп звука', mode_switch:'Смена режима'
+};
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('pywebviewready', init);
+window.addEventListener('load', () => {
+  initTheme();
+  initLang();
+  hydrateStaticIcons();
+  if (!window.pywebview) {
+    document.getElementById('loading').style.display = 'none';
+  }
+});
+
+async function init() {
+  try {
+    config = await window.pywebview.api.load_config();
+    currentModeId = config.modes[0]?.id || null;
+    // Restore key layout from saved template if keys are missing (handles renames too),
+    // or if a known template's numpad shape isn't present yet (configs saved before the
+    // numpad became a real hardware-shaped grid). Bindings are keyed by VK code, not by
+    // position, so re-deriving the layout here never touches or loses existing binds.
+    if (config.key_template) {
+      const idMap = { fullsize: 'tkl', fullsize_us: 'tkl' };
+      const tplId = idMap[config.key_template] || config.key_template;
+      const tpl = TEMPLATES.find(t => t.id === tplId);
+      if (tpl) {
+        config.key_template = tplId;
+        config.key_rows     = tpl.rows.map(r => r.map(k => [...k])); // deep copy so mutations don't touch TEMPLATES
+        config.key_numpad   = tpl.numpad || null;
+        if (!config.detected_keys?.length) {
+          const rowCodes = tpl.rows.flat().filter(([c]) => c > 0).map(([c]) => c);
+          config.detected_keys = rowCodes;
+        }
+        // Fix ESC position: some 65%/75% keyboards send VK 27 for the top-left key
+        // even though the template uses 192 (tilde). If detected_keys has 27 but not
+        // 192, the physical key is a real ESC — remap it everywhere.
+        const dk = config.detected_keys || [];
+        if (dk.includes(27) && !dk.includes(192)) {
+          for (const row of config.key_rows) {
+            for (const key of row) {
+              if (key[0] === 192) { key[0] = 27; }
+            }
+          }
+          // Also migrate any binds saved under "192" → "27"
+          for (const mode of (config.modes || [])) {
+            const binds = mode.binds || {};
+            if ('192' in binds && !('27' in binds)) {
+              binds['27'] = binds['192'];
+              delete binds['192'];
+            } else if ('192' in binds) {
+              delete binds['192'];
+            }
+          }
+        }
+      }
+    }
+    document.getElementById('loading').style.display = 'none';
+    renderTemplateCards();
+    renderModeTabs();
+    renderKeyboard();
+    detectKeyboards();
+    navigate('keyboard');
+    // Global sidebar status poll — runs on every page
+    updateListenerPill();
+    setInterval(updateListenerPill, 250);
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '<div style="color:#f66a6a">Ошибка загрузки: ' + e + '</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+
+  if (page === 'binds') {
+    document.getElementById('binds-page').style.display = 'flex';
+    document.getElementById('binds-page').classList.add('active');
+  } else {
+    document.getElementById('binds-page').style.display = 'none';
+    document.getElementById('binds-page').classList.remove('active');
+    document.getElementById(`page-${page}`)?.classList.add('active');
+  }
+
+  if (page === 'launch')    refreshListenerStatus();
+  if (page === 'settings')  initSettingsPage();
+  if (page === 'binds') {
+    updateListenerPill();
+    startPillPoll();
+  } else {
+    stopPillPoll();
+  }
+}
+
+let _pillInterval = null;
+function startPillPoll() {
+  stopPillPoll();
+  _pillInterval = setInterval(updateListenerPill, 800);
+}
+function stopPillPoll() {
+  if (_pillInterval) { clearInterval(_pillInterval); _pillInterval = null; }
+}
+
+// ═══════════════════════════════════════════════════════
+//  AUTO KEYBOARD DETECTION
+// ═══════════════════════════════════════════════════════
+let _detectedKbs = [];
+
+async function detectKeyboards() {
+  const el = document.getElementById('kb-detected');
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0">Определяем клавиатуры...</div>';
+  let list;
+  try {
+    list = await window.pywebview.api.detect_keyboards();
+  } catch(e) {
+    el.innerHTML = `<div style="color:#f66a6a;font-size:12px">${t('kb_error')(e)}</div>`;
+    return;
+  }
+  // Filter out error entries from Python
+  if (list && list[0] && list[0].error) {
+    el.innerHTML = `<div style="color:#f66a6a;font-size:12px">${t('kb_error')(list[0].error)}</div>`;
+    return;
+  }
+  _detectedKbs = list || [];
+
+  if (!_detectedKbs.length) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:13px">${t('kb_none')}</div>`;
+    return;
+  }
+
+  el.innerHTML = _detectedKbs.map((kb, i) => {
+    const isActive   = config.selected_keyboard === kb.vid_pid;
+    const displayName = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
+    return `<div class="kb-item ${isActive?'selected':''}" id="kb-item-${i}">
+      <div class="kb-ico">${icon('keyboard',20)}</div>
+      <div class="kb-info">
+        <div class="kb-name" id="kb-name-${i}">${escHtml(displayName)}</div>
+        <div class="kb-id">${kb.vid_pid}</div>
+      </div>
+      ${isActive ? `<div class="kb-badge">${t('kb_badge_active')}</div>` : ''}
+      <button class="kb-rename-btn" onclick="startRenameKb(${i})" title="${t('kb_rename_title')}">${icon('edit',14)}</button>
+      <button class="btn-select ${isActive?'active':''}" onclick="applyDetectedKb(${i})">
+        ${isActive ? t('kb_btn_selected') : t('kb_btn_use')}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+// Maps _estimate_size() return values → template ids
+const SIZE_TO_TEMPLATE = {
+  '100%': 'full', 'TKL': 'tkl', '75%': '75', '65%': '65', '60%': '60', '40%': '40'
+};
+
+function applyDetectedKb(idx) {
+  const kb = _detectedKbs[idx];
+  if (!kb) return;
+  config.selected_keyboard = kb.vid_pid;
+  const displayName = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
+  config.selected_keyboard_name = displayName;
+
+  // Auto-apply template when size is known; skip if '?' or already configured
+  const tplId = SIZE_TO_TEMPLATE[kb.size_label];
+  if (tplId) {
+    applyTemplate(tplId);  // sets key_template, key_rows, detected_keys + markDirty
+  } else if (!config.key_template) {
+    config.key_template = '';
+    markDirty();
+  } else {
+    markDirty();
+  }
+
+  detectKeyboards();
+  renderKeyboard();
+  startKbVerify(kb.vid_pid, displayName);
+}
+
+// ── Верификация клавиатуры ──────────────────────────────────
+let _verifyTimer = null;
+
+async function startKbVerify(vidPid, kbName) {
+  // Bug #3: pass vid_pid so the Python verifier uses per-device Raw Input filter
+  await window.pywebview.api.start_verify(vidPid || '');
+  showVerifyOverlay(kbName);
+  _verifyTimer = setInterval(pollVerify, 200);
+}
+
+function showVerifyOverlay(kbName) {
+  const ov = document.getElementById('verify-overlay');
+  document.getElementById('verify-kb-name').textContent = kbName;
+  document.getElementById('verify-bar').style.width = '100%';
+  document.getElementById('verify-bar').style.transition = 'none';
+  document.getElementById('verify-status').textContent = t('verify_wait');
+  document.getElementById('verify-status').style.color = 'var(--muted)';
+  ov.style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('verify-bar').style.transition = 'width 10s linear';
+    document.getElementById('verify-bar').style.width = '0%';
+  }, 50);
+}
+
+async function pollVerify() {
+  const r = await window.pywebview.api.poll_verify();
+  if (r.detected) {
+    clearInterval(_verifyTimer); _verifyTimer = null;
+    await window.pywebview.api.stop_verify();
+    document.getElementById('verify-status').textContent = t('verify_ok');
+    document.getElementById('verify-status').style.color = 'var(--green)';
+    document.getElementById('verify-bar').style.background = 'var(--green)';
+    document.getElementById('verify-bar').style.transition = 'none';
+    document.getElementById('verify-bar').style.width = '100%';
+    setTimeout(() => {
+      document.getElementById('verify-overlay').style.display = 'none';
+      showToast(t('toast_kb_verified')(config.selected_keyboard_name));
+    }, 1200);
+  } else if (r.timeout) {
+    clearInterval(_verifyTimer); _verifyTimer = null;
+    await window.pywebview.api.stop_verify();
+    document.getElementById('verify-status').textContent = t('verify_fail');
+    document.getElementById('verify-status').style.color = 'var(--red)';
+    document.getElementById('verify-bar').style.background = 'var(--red)';
+    document.getElementById('verify-bar').style.transition = 'none';
+    document.getElementById('verify-bar').style.width = '100%';
+  }
+}
+
+function closeVerifyOverlay() {
+  clearInterval(_verifyTimer); _verifyTimer = null;
+  window.pywebview?.api?.stop_verify();
+  document.getElementById('verify-overlay').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  KEY DETECTION / SCANNING
+// ═══════════════════════════════════════════════════════
+let _lastDetected = [];
+
+async function startScan() {
+  await window.pywebview.api.start_detection();
+  _lastDetected = [];
+  document.getElementById('scan-idle').style.display = 'none';
+  document.getElementById('scan-active').style.display = 'block';
+  document.getElementById('scan-grid').innerHTML = '';
+  document.getElementById('scan-count').textContent = t('scan_keys_count')(0);
+  scanInterval = setInterval(pollScan, 350);
+}
+
+async function pollScan() {
+  const keys = await window.pywebview.api.get_detected_keys();
+  if (keys.length === _lastDetected.length) return;
+  const newKeys = keys.slice(_lastDetected.length);
+  _lastDetected = keys;
+  const grid = document.getElementById('scan-grid');
+  newKeys.forEach(code => {
+    const name = KEY_NAMES[code] || String(code);
+    const div = document.createElement('div');
+    div.className = 'key bound scan-key-appear';
+    div.style.cssText = 'width:52px;height:42px;flex:0 0 auto';
+    div.innerHTML = `<span class="key-name" style="font-size:11px">${name}</span><span class="key-bind">${code}</span>`;
+    grid.appendChild(div);
+  });
+  document.getElementById('scan-count').textContent = t('scan_keys_count')(keys.length);
+}
+
+async function stopScan() {
+  clearInterval(scanInterval);
+  scanInterval = null;
+  const keys = await window.pywebview.api.stop_detection();
+  config.detected_keys = keys;
+  markDirty();
+  document.getElementById('scan-active').style.display = 'none';
+  document.getElementById('scan-idle').style.display = 'block';
+  document.getElementById('scan-detected-count').textContent = t('scan_saved_count')(keys.length);
+  renderKeyboard();
+  showToast(t('scan_done_toast')(keys.length));
+}
+
+function cancelScan() {
+  clearInterval(scanInterval);
+  scanInterval = null;
+  window.pywebview.api.stop_detection();
+  document.getElementById('scan-active').style.display = 'none';
+  document.getElementById('scan-idle').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════
+//  KEYBOARDS PAGE
+// ═══════════════════════════════════════════════════════
+async function loadKeyboards() {
+  const el = document.getElementById('kb-list');
+  el.innerHTML = '<div style="color:var(--muted);font-size:13px">Получаем список...</div>';
+  try {
+    const list = await window.pywebview.api.get_keyboards();
+    if (!list || list.length === 0) {
+      el.innerHTML = '<div class="note-box">Клавиатуры не найдены</div>';
+      return;
+    }
+    el.innerHTML = list.map((kb, i) => {
+      const name = kb.FriendlyName || 'Клавиатура';
+      const id   = kb.InstanceId  || '';
+      const sel  = config?.selected_keyboard === name;
+      return `<div class="kb-item ${sel?'selected':''}" id="kbi-${i}">
+        <div class="kb-ico">${icon('keyboard',20)}</div>
+        <div class="kb-info">
+          <div class="kb-name">${name}</div>
+          <div class="kb-id">${id.substring(0,60)}</div>
+        </div>
+        ${sel ? '<div class="kb-badge">ВЫБРАНА</div>' : ''}
+        <button class="btn-select ${sel?'active':''}" onclick="selectKeyboard('${escQ(name)}', '${i}')">
+          ${sel ? 'Выбрана ✓' : 'Выбрать'}
+        </button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="note-box" style="color:var(--red)">Ошибка: ' + e + '</div>';
+  }
+}
+
+function selectKeyboard(name, idx) {
+  config.selected_keyboard = name;
+  markDirty();
+  document.querySelectorAll('.kb-item').forEach((el,i) => {
+    el.classList.toggle('selected', String(i) === String(idx));
+  });
+  document.querySelectorAll('.btn-select').forEach((btn,i) => {
+    const isMe = String(i) === String(idx);
+    btn.className = `btn-select ${isMe?'active':''}`;
+    btn.textContent = isMe ? 'Выбрана ✓' : 'Выбрать';
+  });
+  // update badge
+  document.querySelectorAll('.kb-item').forEach((el,i) => {
+    const badge = el.querySelector('.kb-badge');
+    if (badge) el.removeChild(badge);
+    if (String(i) === String(idx)) {
+      const b = document.createElement('div');
+      b.className = 'kb-badge';
+      b.textContent = 'ВЫБРАНА';
+      el.insertBefore(b, el.querySelector('.btn-select'));
+    }
+  });
+  showToast('Клавиатура выбрана');
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODE TABS
+// ═══════════════════════════════════════════════════════
+function renderModeTabs() {
+  const el = document.getElementById('mode-tabs');
+  let html = config.modes.map(m =>
+    `<div class="mode-tab ${m.id===currentModeId?'active':''}" onclick="selectMode('${escQ(m.id)}')" style="${m.id===currentModeId?`border-color:${m.color};color:${m.color};background:${m.color}18`:''}"
+      title="${escHtml(m.name)}">
+      ${resolveModeIcon(m.icon, 14)} ${escHtml(m.name)}
+      <span class="tab-gear" onclick="openModeEdit('${escQ(m.id)}', event)">${icon('gear',12)}</span>
+    </div>`
+  ).join('');
+  html += `<div class="mode-tab tab-add" onclick="openAddMode()">${t('btn_add_mode')}</div>`;
+  el.innerHTML = html;
+}
+
+function selectMode(id) {
+  currentModeId = id;
+  selectedKey = null;
+  hideEditor();
+  renderModeTabs();
+  renderKeyboard();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TEMPLATES — slider-based picker
+// ═══════════════════════════════════════════════════════
+
+// Templates shown in the slider (left=smallest, right=largest). Numpad is a separate button.
+const TPL_SLIDER_IDS = ['40','60','65','75','tkl','full'];
+const TPL_SLIDER_LABELS = {'40':'40%','60':'60%','65':'65%','75':'75%','tkl':'TKL','full':'100%'};
+let _tplPick = null;  // id currently previewed (may differ from applied config)
+
+function renderTemplateCards() {
+  _tplPick = config?.key_template || 'full';
+  _syncSlider();
+  _renderSizeBtns();
+  _renderTplPreview(_tplPick);
+  _updateActiveLabel();
+}
+
+function _syncSlider() {
+  const slider = document.getElementById('tpl-slider-input');
+  if (!slider) return;
+  const idx = TPL_SLIDER_IDS.indexOf(_tplPick);
+  if (idx >= 0) slider.value = idx;
+}
+
+function _renderSizeBtns() {
+  const el = document.getElementById('tpl-size-btns');
+  if (!el) return;
+  const btns = TPL_SLIDER_IDS.map((id, i) =>
+    `<button class="tpl-sz-btn ${id===_tplPick?'active':''}" onclick="onTplSizeBtn(${i})">${TPL_SLIDER_LABELS[id]}</button>`
+  ).join('');
+  const numpadActive = _tplPick === 'numpad';
+  el.innerHTML = btns +
+    `<button class="tpl-sz-btn ${numpadActive?'active':''}" style="margin-left:8px;border-style:dashed" onclick="onTplSizeBtn(-1)">Numpad</button>`;
+}
+
+const NUMPAD_PREVIEW_ROWS = [
+  ['num','div','mul','sub'], ['n7','n8','n9','add'], ['n4','n5','n6'],
+  ['n1','n2','n3','enter'], ['n0','dot']
+];
+
+function _renderTplPreview(tplId) {
+  const el = document.getElementById('tpl-preview-kb');
+  if (!el) return;
+  const tpl = TEMPLATES.find(t => t.id === tplId);
+  if (!tpl) { el.innerHTML = ''; return; }
+  let html = tpl.rows.map(row => {
+    if (row.length === 1 && row[0][0] === -1) {
+      return `<div class="tpl-prev-row"><div class="tpl-prev-section">${escHtml(row[0][1])}</div></div>`;
+    }
+    const keys = row.map(([code, label, flex]) => {
+      if (code === 0) return `<div style="flex:${flex||1};min-width:0"></div>`;
+      const f = flex || KEY_FLEX[code] || 1;
+      return `<div class="tpl-prev-key" style="flex:${f}">${escHtml(label)}</div>`;
+    }).join('');
+    return `<div class="tpl-prev-row">${keys}</div>`;
+  }).join('');
+  if (tpl.numpad) {
+    html += `<div class="tpl-prev-row"><div class="tpl-prev-section">${escHtml(t('lbl_numpad_section') || 'Numpad')}</div></div>` +
+      NUMPAD_PREVIEW_ROWS.map(r =>
+        `<div class="tpl-prev-row">${r.map(slot => `<div class="tpl-prev-key" style="flex:1">${escHtml(tpl.numpad[slot][1])}</div>`).join('')}</div>`
+      ).join('');
+  }
+  el.innerHTML = html;
+}
+
+function _updateActiveLabel() {
+  const el = document.getElementById('tpl-active-label');
+  if (!el) return;
+  const applied = config?.key_template;
+  if (applied) {
+    const name = t('tpl_' + applied + '_name') || applied;
+    el.textContent = typeof t('tpl_active_now') === 'function'
+      ? t('tpl_active_now')(name) : name;
+  } else {
+    el.textContent = '';
+  }
+}
+
+function onTplSlider(idx) {
+  _tplPick = TPL_SLIDER_IDS[idx] ?? TPL_SLIDER_IDS[TPL_SLIDER_IDS.length - 1];
+  _renderSizeBtns();
+  _renderTplPreview(_tplPick);
+}
+
+function onTplSizeBtn(idx) {
+  if (idx === -1) {
+    _tplPick = 'numpad';
+  } else {
+    _tplPick = TPL_SLIDER_IDS[idx];
+    const slider = document.getElementById('tpl-slider-input');
+    if (slider) slider.value = idx;
+  }
+  _renderSizeBtns();
+  _renderTplPreview(_tplPick);
+}
+
+function applySelectedTemplate() {
+  if (!_tplPick) return;
+  applyTemplate(_tplPick);
+}
+
+function applyTemplate(id) {
+  const tpl = TEMPLATES.find(t => t.id === id);
+  if (!tpl) return;
+  config.key_template = id;
+  config.key_rows = tpl.rows.map(r => r.map(k => [...k])); // copy so later mutations never touch the shared TEMPLATES data
+  config.key_numpad = tpl.numpad || null;
+  // Only real keys (code > 0) go into detected_keys, plus the numpad's codes if present
+  const rowCodes = tpl.rows.flat().filter(([c]) => c > 0).map(([c]) => c);
+  const numpadCodes = tpl.numpad ? Object.values(tpl.numpad).map(([c]) => c) : [];
+  config.detected_keys = [...rowCodes, ...numpadCodes];
+  _tplPick = id;
+  markDirty();
+  _syncSlider();
+  _renderSizeBtns();
+  _renderTplPreview(id);
+  _updateActiveLabel();
+  renderKeyboard();
+  const name = t('tpl_' + tpl.id + '_name') || tpl.id;
+  showToast(t('toast_template_applied')(name));
+}
+
+// ═══════════════════════════════════════════════════════
+//  KEYBOARD RENDER
+// ═══════════════════════════════════════════════════════
+function renderKeyboard() {
+  const mode = config?.modes.find(m => m.id === currentModeId);
+  const binds = mode?.binds || {};
+  const rows  = config?.key_rows  || null;
+  const keys  = config?.detected_keys || [];
+  const el = document.getElementById('keyboard');
+  if (!el) return;
+
+  if (!keys.length) {
+    el.innerHTML = `<div style="text-align:center;padding:36px 20px;color:var(--muted);font-size:13px;line-height:1.8">
+      <div style="margin-bottom:10px;opacity:.4">${icon('keyboard',30)}</div>
+      ${t('renderKeyboard_empty')}
+    </div>`;
+    return;
+  }
+
+  function keyHtml(code, label, flexOverride) {
+    // code 0: invisible spacer (gap between clusters)
+    if (code === 0) {
+      const flex = flexOverride || 1;
+      return `<div style="flex:${flex};min-width:0;pointer-events:none"></div>`;
+    }
+    // code -1: section header spanning the full row
+    if (code === -1) {
+      return `<div style="flex:20;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 2px 2px;pointer-events:none;opacity:.55">${escHtml(label)}</div>`;
+    }
+    const cStr = String(code);
+    const bind = binds[cStr];
+    const isSel = selectedKey === cStr;
+    const flex  = flexOverride || KEY_FLEX[code] || 1;
+    const bindLabel = bind ? (bind.label || shortType(bind)) : '';
+    const col = bind?.color || '#7c8aff';
+    let cls = 'key';
+    if (code === 27) cls += ' key-esc';
+    if (bind) cls += ' bound';
+    if (isSel) cls += ' selected';
+    const boundStyle = bind && !isSel ? `border-color:${col};background:${col}18;` : '';
+    const nameStyle = `font-size:10px;${bind && !isSel ? `color:${col};` : ''}`;
+    const bindStyle = bind && !isSel ? `color:${col}cc;` : '';
+    return `<div class="${cls}" data-code="${cStr}" onclick="selectKey('${cStr}')" style="flex:${flex};min-width:0;${boundStyle}">
+      <span class="key-name" style="${nameStyle}">${label}</span>
+      ${bindLabel ? `<span class="key-bind" style="${bindStyle}">${escHtml(bindLabel)}</span>` : ''}
+    </div>`;
+  }
+
+  function numpadKeyHtml(code, label, gridArea) {
+    const cStr = String(code);
+    const bind = binds[cStr];
+    const isSel = selectedKey === cStr;
+    const bindLabel = bind ? (bind.label || shortType(bind)) : '';
+    let cls = 'key';
+    if (bind) cls += ' bound';
+    if (isSel) cls += ' selected';
+    return `<div class="${cls}" data-code="${cStr}" onclick="selectKey('${cStr}')" style="grid-area:${gridArea}">
+      <span class="key-name" style="font-size:10px">${escHtml(label)}</span>
+      ${bindLabel ? `<span class="key-bind">${escHtml(bindLabel)}</span>` : ''}
+    </div>`;
+  }
+
+  function numpadHtml(np) {
+    if (!np) return '';
+    const cell = (slot, area) => numpadKeyHtml(np[slot][0], np[slot][1], area);
+    return `<div class="numpad-wrap">
+      <div style="color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 2px;opacity:.55">${escHtml(t('lbl_numpad_section') || 'Numpad')}</div>
+      <div class="numpad-grid">
+        ${cell('num','1/1/2/2')}${cell('div','1/2/2/3')}${cell('mul','1/3/2/4')}${cell('sub','1/4/2/5')}
+        ${cell('n7','2/1/3/2')}${cell('n8','2/2/3/3')}${cell('n9','2/3/3/4')}${cell('add','2/4/4/5')}
+        ${cell('n4','3/1/4/2')}${cell('n5','3/2/4/3')}${cell('n6','3/3/4/4')}
+        ${cell('n1','4/1/5/2')}${cell('n2','4/2/5/3')}${cell('n3','4/3/5/4')}${cell('enter','4/4/6/5')}
+        ${cell('n0','5/1/6/3')}${cell('dot','5/3/6/4')}
+      </div>
+    </div>`;
+  }
+
+  if (rows) {
+    // Template/driver mode: render in proper rows
+    // Each key is [vk, label] or [vk, label, flex]
+    el.innerHTML = rows.map(row =>
+      `<div class="kb-row">${row.map(k => keyHtml(k[0], k[1], k[2])).join('')}</div>`
+    ).join('') + numpadHtml(config?.key_numpad);
+  } else {
+    // Scan mode: flat wrap grid
+    el.innerHTML = `<div class="detected-keys-grid">${
+      keys.map(c => keyHtml(c, KEY_NAMES[c] || c)).join('')
+    }</div>`;
+  }
+}
+
+function shortType(b) {
+  if (!b) return '';
+  if (b.type === 'url') return icon('globe',12);
+  if (b.type === 'lnk') return icon('link',12);
+  if (b.type === 'exe') return icon('terminal',12);
+  if (b.type === 'sound') return `#${b.value}`;
+  if (b.type === 'stop_sound') return icon('square',12);
+  if (b.type === 'mode_switch') return icon('shuffle',12);
+  if (b.type === 'steam') return '▶';
+  return '?';
+}
+
+// ═══════════════════════════════════════════════════════
+//  BIND EDITOR
+// ═══════════════════════════════════════════════════════
+function selectKey(code) {
+  selectedKey = code;
+  renderKeyboard();
+
+  const mode = config.modes.find(m => m.id === currentModeId);
+  const bind = mode?.binds?.[code];
+  const allKeys = (config?.key_rows || []).flat();
+  const keyDef = allKeys.find(k => String(k[0]) === code);
+
+  document.getElementById('editor-empty').style.display = 'none';
+  const body = document.getElementById('editor-body');
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+  body.style.gap = '12px';
+
+  document.getElementById('edt-key-title').textContent = keyDef ? keyDef[1] : `Код ${code}`;
+  document.getElementById('edt-key-code').textContent = t('key_code_label')(code, mode?.name || '—');
+
+  document.getElementById('edt-type').value  = bind?.type  || '';
+  document.getElementById('edt-value').value = bind?.value || '';
+  document.getElementById('edt-label').value = bind?.label || '';
+  document.getElementById('edt-color').value = bind?.color || '#7c8aff';
+
+  onTypeChange();
+
+  if (bind?.type === 'mode_switch') {
+    populateModeTarget();
+    document.getElementById('edt-target').value = bind?.target || '';
+  }
+}
+
+function hideEditor() {
+  document.getElementById('editor-empty').style.display = 'flex';
+  document.getElementById('editor-body').style.display  = 'none';
+}
+
+function onTypeChange() {
+  const atype    = document.getElementById('edt-type').value;
+  const valWrap  = document.getElementById('edt-val-wrap');
+  const modeWrap = document.getElementById('edt-mode-wrap');
+  const browse   = document.getElementById('edt-browse');
+  const valLabel = document.getElementById('edt-val-label');
+  const valInput = document.getElementById('edt-value');
+
+  valWrap.style.display  = 'none';
+  modeWrap.style.display = 'none';
+  browse.style.display   = 'none';
+  const pickProc = document.getElementById('edt-pick-proc');
+  if (pickProc) pickProc.style.display = 'none';
+
+  if (atype === 'url') {
+    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_url'); valInput.placeholder = 'https://youtube.com';
+  } else if (atype === 'lnk' || atype === 'exe') {
+    valWrap.style.display = 'flex'; browse.style.display = 'inline-block';
+    if (pickProc) pickProc.style.display = 'flex';
+    valLabel.textContent = t('lbl_filepath'); valInput.placeholder = 'C:\\...\\app.lnk';
+  } else if (atype === 'sound') {
+    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_sound_num'); valInput.placeholder = '1';
+  } else if (atype === 'steam') {
+    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_steam_id'); valInput.placeholder = '1091500';
+  } else if (atype === 'mode_switch') {
+    modeWrap.style.display = 'flex';
+    populateModeTarget();
+  }
+}
+
+function onValInput() {
+  const t = document.getElementById('edt-type').value;
+  const v = document.getElementById('edt-value').value;
+  const lbl = document.getElementById('edt-label');
+  if (!lbl.value && v) {
+    if (t === 'url') {
+      try { lbl.value = new URL(v).hostname.replace('www.','').split('.')[0]; } catch(e) {}
+    } else if (t === 'sound') {
+      lbl.value = '#' + v;
+    }
+  }
+}
+
+function populateModeTarget() {
+  const sel = document.getElementById('edt-target');
+  sel.innerHTML = config.modes
+    .filter(m => m.id !== currentModeId)
+    .map(m => `<option value="${escQ(m.id)}">${escHtml(m.name)}</option>`)
+    .join('');
+}
+
+function saveBind() {
+  if (!selectedKey || !currentModeId) return;
+  const atype = document.getElementById('edt-type').value;
+  const v = document.getElementById('edt-value').value.trim();
+  const l = document.getElementById('edt-label').value.trim();
+  const tgt = document.getElementById('edt-target').value;
+
+  const mode = config.modes.find(m => m.id === currentModeId);
+  if (!mode.binds) mode.binds = {};
+
+  const color = document.getElementById('edt-color').value;
+  if (!atype) { delete mode.binds[selectedKey]; }
+  else {
+    const b = {type: atype, value: v, label: l, color};
+    if (atype === 'mode_switch') { b.target = tgt; b.label = l || '→'; }
+    mode.binds[selectedKey] = b;
+  }
+  markDirty();
+  renderKeyboard();
+  pushConfigToListener();
+  showToast(t('toast_bind_saved'));
+}
+
+function clearBind() {
+  if (!selectedKey || !currentModeId) return;
+  const mode = config.modes.find(m => m.id === currentModeId);
+  if (mode?.binds) delete mode.binds[selectedKey];
+  markDirty();
+  renderKeyboard();
+  pushConfigToListener();
+  document.getElementById('edt-type').value  = '';
+  document.getElementById('edt-value').value = '';
+  document.getElementById('edt-label').value = '';
+  document.getElementById('edt-color').value = '#7c8aff';
+  onTypeChange();
+  showToast(t('toast_bind_cleared'));
+}
+
+async function browseFile() {
+  const path = await window.pywebview.api.browse_file();
+  if (path) {
+    document.getElementById('edt-value').value = path;
+    const lbl = document.getElementById('edt-label');
+    if (!lbl.value) {
+      lbl.value = path.split('\\').pop().replace(/\.(exe|lnk)$/i,'').substring(0,12);
+    }
+  }
+}
+
+async function testBind() {
+  const atype = document.getElementById('edt-type').value;
+  const v = document.getElementById('edt-value').value.trim();
+  if (!atype || (!v && atype !== 'stop_sound')) { showToast(t('toast_test_nothing'), 'err'); return; }
+  const r = await window.pywebview.api.test_action(atype, v);
+  showToast(r.ok ? t('toast_test_ok') : t('toast_test_err')(r.error), r.ok ? 'ok' : 'err');
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODE MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function openAddMode() {
+  showModal(t('modal_new_mode'),
+    `<div class="field"><label>${t('lbl_mode_name')}</label><input id="m-name" type="text" placeholder="My mode" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><input id="m-color" type="color" value="#7c8aff" style="height:34px;border-radius:7px;border:1px solid var(--border);background:var(--s2);cursor:pointer;width:60px"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_icon')}</label>${buildIconPicker('zap')}</div>`,
+    [{label:t('btn_cancel'), cls:'btn'}, {label:t('btn_create'), cls:'btn primary', action: createMode}]
+  );
+  setTimeout(() => document.getElementById('m-name')?.focus(), 50);
+}
+
+function createMode() {
+  const name  = document.getElementById('m-name').value.trim() || 'Режим';
+  const color = document.getElementById('m-color').value || '#7c8aff';
+  const icon  = _pickerIcon || 'zap';
+  const safeName = name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const id = (safeName || 'mode') + '_' + Date.now();
+  config.modes.push({id, name, color, icon, binds: {}});
+  closeModal();
+  markDirty();
+  currentModeId = id;
+  selectedKey = null;
+  hideEditor();
+  renderModeTabs();
+  renderKeyboard();
+}
+
+function openModeEdit(id, ev) {
+  ev.stopPropagation();
+  const mode = config.modes.find(m => m.id === id);
+  if (!mode) return;
+  showModal(t('modal_edit_mode'),
+    `<div class="field"><label>${t('lbl_mode_name')}</label><input id="em-name" type="text" value="${escQ(mode.name)}" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><input id="em-color" type="color" value="${mode.color}" style="height:34px;border-radius:7px;border:1px solid var(--border);background:var(--s2);cursor:pointer;width:60px"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_icon')}</label>${buildIconPicker(mode.icon)}</div>`,
+    [
+      {label:t('btn_delete'), cls:'btn danger', action: () => deleteMode(id)},
+      {label:t('btn_cancel'), cls:'btn'},
+      {label:t('btn_save_modal'), cls:'btn primary', action: () => saveMode(id)}
+    ]
+  );
+}
+
+function saveMode(id) {
+  const mode = config.modes.find(m => m.id === id);
+  if (!mode) return;
+  mode.name  = document.getElementById('em-name').value.trim() || mode.name;
+  mode.color = document.getElementById('em-color').value;
+  mode.icon  = _pickerIcon || mode.icon || 'zap';
+  closeModal();
+  markDirty();
+  renderModeTabs();
+  renderKeyboard();
+}
+
+function deleteMode(id) {
+  if (config.modes.length <= 1) { showToast(t('toast_cant_delete_last'), 'err'); return; }
+  config.modes = config.modes.filter(m => m.id !== id);
+  if (currentModeId === id) currentModeId = config.modes[0].id;
+  closeModal();
+  markDirty();
+  selectedKey = null;
+  hideEditor();
+  renderModeTabs();
+  renderKeyboard();
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAUNCH PAGE — встроенный Raw Input слушатель
+// ═══════════════════════════════════════════════════════
+let _prevMode = null;
+async function updateListenerPill() {
+  if (!window.pywebview) return;
+  const r = await window.pywebview.api.listener_status();
+  const dot     = document.getElementById('binds-listener-dot');
+  const txt     = document.getElementById('binds-listener-txt');
+  const sdot    = document.getElementById('sidebar-listener-dot');
+  const stxt    = document.getElementById('sidebar-listener-txt');
+  const sbtn    = document.getElementById('sidebar-listener-btn');
+  const bar     = document.getElementById('mode-bar');
+  const barTxt  = document.getElementById('mode-bar-txt');
+  const barIcon = bar?.querySelector('.mode-icon');
+
+  if (r.running) {
+    if (dot) { dot.style.background = 'var(--green)'; txt.textContent = t('listener_on'); txt.style.color = 'var(--green)'; }
+    if (sdot) { sdot.style.background = 'var(--green)'; stxt.textContent = t('listener_on'); stxt.style.color = 'var(--green)'; }
+    if (sbtn) sbtn.style.borderColor = 'var(--green)';
+
+    const modeObj = config?.modes?.find(m => m.id === r.mode);
+    const modeName = modeObj?.name || r.mode || '—';
+    if (bar) {
+      if (_prevMode !== null && _prevMode !== modeName) {
+        bar.classList.remove('mode-flash');
+        void bar.offsetWidth;
+        bar.classList.add('mode-flash');
+        setTimeout(() => bar.classList.remove('mode-flash'), 500);
+      }
+      _prevMode = modeName;
+      bar.classList.add('active-mode');
+      if (barTxt) barTxt.textContent = t('mode_bar_prefix') + modeName;
+      if (barIcon) barIcon.innerHTML = icon(modeObj?.icon || 'zap', 18);
+    }
+  } else {
+    if (dot) { dot.style.background = 'var(--red)'; txt.textContent = t('listener_off'); txt.style.color = 'var(--red)'; }
+    if (sdot) { sdot.style.background = 'var(--muted)'; stxt.textContent = t('listener_off'); stxt.style.color = 'var(--muted)'; }
+    if (sbtn) sbtn.style.borderColor = 'var(--border)';
+
+    if (bar) {
+      _prevMode = null;
+      bar.classList.remove('active-mode');
+      if (barTxt) barTxt.textContent = t('mode_bar_idle');
+      if (barIcon) barIcon.innerHTML = icon('keyboard',18);
+    }
+  }
+}
+
+async function refreshListenerStatus() {
+  if (!window.pywebview) return;
+  const r = await window.pywebview.api.listener_status();
+  const dot  = document.getElementById('status-dot');
+  const lbl  = document.getElementById('status-label');
+  const hint = document.getElementById('status-hint');
+  const info = document.getElementById('listener-mode-info');
+  if (r.running) {
+    dot.className = 'status-dot running';
+    lbl.textContent = t('listener_running');
+    hint.textContent = t('listener_status_device')(r.device || r.vid_pid || '—');
+    if (info) info.textContent = t('listener_status_mode')(r.mode || '—', r.vid_pid || '—');
+  } else {
+    dot.className = 'status-dot stopped';
+    lbl.textContent = t('listener_not_running');
+    hint.textContent = t('hint_select_start');
+    if (info) info.textContent = '—';
+  }
+}
+
+async function startListener() {
+  if (!window.pywebview) return;
+  if (!config.selected_keyboard) {
+    showToast(t('toast_no_keyboard'), 'err'); return;
+  }
+  // Сохраняем конфиг чтобы слушатель получил актуальные биндинги
+  await window.pywebview.api.save_config(config);
+  dirty = false;
+  document.getElementById('apply-btn').classList.remove('dirty');
+  const r = await window.pywebview.api.start_listener(
+    config.selected_keyboard,
+    config.selected_keyboard_name || ''
+  );
+  if (r.ok) {
+    showToast(t('toast_listener_started'), 'ok');
+  } else if (r.error === 'device_not_found') {
+    showToast(t('toast_device_not_found'), 'err');
+  } else {
+    showToast(r.error || 'Error', 'err');
+  }
+  setTimeout(() => { refreshListenerStatus(); updateListenerPill(); }, 800);
+}
+
+async function stopListener() {
+  if (!window.pywebview) return;
+  await window.pywebview.api.stop_listener();
+  showToast(t('toast_listener_stopped'));
+  setTimeout(() => { refreshListenerStatus(); updateListenerPill(); }, 800);
+}
+
+// ═══════════════════════════════════════════════════════
+//  APPLY / SAVE
+// ═══════════════════════════════════════════════════════
+let _autoSaveTid = null;
+function markDirty() {
+  dirty = true;
+  document.getElementById('apply-btn').classList.add('dirty');
+  clearTimeout(_autoSaveTid);
+  _autoSaveTid = setTimeout(async () => {
+    if (!window.pywebview || !dirty) return;
+    await window.pywebview.api.save_config(config);
+    await window.pywebview.api.update_listener_config(config);
+  }, 1500);
+}
+
+async function showKeyLog() {
+  if (!window.pywebview) return;
+  const log = await window.pywebview.api.listener_log();
+  if (!log.length) { showToast(t('toast_log_empty'), 'err'); return; }
+  const modeLabel = id => config?.modes?.find(m => m.id === id)?.name || id;
+  const rows = log.slice().reverse().map(e => {
+    const resultCell = e.ok === false
+      ? `<td style="padding:3px 8px;color:var(--red);font-size:11px" title="${escHtml(e.error||'')}">✕ ${escHtml(e.error||'err')}</td>`
+      : e.ok === true
+        ? `<td style="padding:3px 8px;color:var(--green)">✓</td>`
+        : `<td style="padding:3px 8px;color:var(--muted)">—</td>`;
+    return `<tr style="font-size:12px">
+      <td style="padding:3px 8px;color:var(--cyan)">VK ${e.vk}</td>
+      <td style="padding:3px 8px;color:var(--muted)">${escHtml(modeLabel(e.mode))}</td>
+      <td style="padding:3px 8px;color:${e.bind ? 'var(--green)' : 'var(--muted)'}">${escHtml(e.bind || t('no_bind'))}</td>
+      ${resultCell}
+    </tr>`;
+  }).join('');
+  showModal(t('modal_key_log'),
+    `<table style="width:100%;border-collapse:collapse">
+      <tr style="font-size:11px;color:var(--muted)"><th style="text-align:left;padding:3px 8px">${t('th_vk')}</th><th style="text-align:left;padding:3px 8px">${t('th_mode')}</th><th style="text-align:left;padding:3px 8px">${t('th_bind')}</th><th style="text-align:left;padding:3px 8px">${t('th_result')}</th></tr>
+      ${rows}
+    </table>`,
+    [{label:t('btn_close'), cls:'btn'}]
+  );
+}
+
+async function pushConfigToListener() {
+  if (!window.pywebview) return;
+  await window.pywebview.api.save_config(config);
+}
+
+async function applyConfig() {
+  if (!window.pywebview) { showToast('Нет pywebview', 'err'); return; }
+  const r = await window.pywebview.api.save_config(config);
+  if (r.ok) {
+    dirty = false;
+    document.getElementById('apply-btn').classList.remove('dirty');
+    // Push fresh config to listener without restarting it
+    await window.pywebview.api.update_listener_config(config);
+    showToast(t('toast_config_saved'));
+  } else {
+    showToast(t('toast_config_error'), 'err');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════════════
+function showModal(title, bodyHtml, buttons) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-actions').innerHTML = buttons.map((b,i) =>
+    `<button class="${b.cls}" onclick="${b.action ? 'modalBtnAction('+i+')' : 'closeModal()'}">${b.label}</button>`
+  ).join('');
+  window._modalBtns = buttons;
+  document.getElementById('modal').classList.add('open');
+}
+
+function modalBtnAction(i) {
+  const b = window._modalBtns?.[i];
+  if (b?.action) b.action();
+  else closeModal();
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function escQ(s) { return String(s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ═══════════════════════════════════════════════════════
+//  KEYBOARD RENAME
+// ═══════════════════════════════════════════════════════
+function startRenameKb(idx) {
+  const kb = _detectedKbs[idx];
+  if (!kb) return;
+  const nameEl = document.getElementById(`kb-name-${idx}`);
+  if (!nameEl) return;
+  const current = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
+  const input = document.createElement('input');
+  input.className = 'kb-rename-input';
+  input.value = current;
+  input.maxLength = 32;
+  nameEl.replaceWith(input);
+  input.focus();
+  input.select();
+  function commit() {
+    const val = input.value.trim() || kb.name;
+    if (!config.keyboard_names) config.keyboard_names = {};
+    config.keyboard_names[kb.vid_pid] = val;
+    if (config.selected_keyboard === kb.vid_pid) config.selected_keyboard_name = val;
+    markDirty();
+    detectKeyboards();
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = current; input.blur(); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  THEME SYSTEM
+// ═══════════════════════════════════════════════════════
+const DARK_DEFAULTS = {
+  '--bg':'#0a0a0b','--s1':'#131315','--s2':'#1b1b1e','--s3':'#242428',
+  '--border':'#2c2c30','--cyan':'#7c8aff','--purple':'#b389f9',
+  '--text':'#ececec','--muted':'#86868c'
+};
+const LIGHT_DEFAULTS = {
+  '--bg':'#f7f7f9','--s1':'#ffffff','--s2':'#f1f1f5','--s3':'#e8e8ee',
+  '--border':'#dfdfe6','--cyan':'#5b63d3','--purple':'#9d5cf0',
+  '--text':'#1c1c22','--muted':'#86868f'
+};
+const COLOR_LABEL_KEYS = {
+  '--bg':'color_bg','--s1':'color_s1','--s2':'color_s2','--s3':'color_s3',
+  '--border':'color_border','--cyan':'color_cyan','--purple':'color_purple',
+  '--text':'color_text','--muted':'color_muted'
+};
+
+function selectTheme(name) {
+  const root = document.documentElement;
+  root.setAttribute('data-theme', name);
+  localStorage.setItem('bb-theme', name);
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('thcard-' + name);
+  if (card) card.classList.add('selected');
+  const custEd = document.getElementById('custom-editor');
+  if (custEd) custEd.style.display = (name === 'custom') ? 'block' : 'none';
+  if (name !== 'custom') {
+    Object.keys(DARK_DEFAULTS).forEach(p => root.style.removeProperty(p));
+  } else {
+    buildCustomEditor();
+    applyCustomTheme();
+  }
+}
+
+function applyCustomTheme() {
+  const stored = JSON.parse(localStorage.getItem('bb-custom-theme') || '{}');
+  const vals = Object.assign({}, DARK_DEFAULTS, stored);
+  const root = document.documentElement;
+  Object.entries(vals).forEach(([k,v]) => root.style.setProperty(k,v));
+  syncColorPickers(vals);
+}
+
+function syncColorPickers(vals) {
+  Object.keys(DARK_DEFAULTS).forEach(k => {
+    const key = k.slice(2);
+    const inp = document.getElementById('cp-' + key);
+    const lbl = document.getElementById('cv-' + key);
+    if (inp) inp.value = hexExpand(vals[k]);
+    if (lbl) lbl.textContent = vals[k];
+  });
+}
+
+function updateCustomColor(prop, value) {
+  const stored = JSON.parse(localStorage.getItem('bb-custom-theme') || '{}');
+  stored[prop] = value;
+  localStorage.setItem('bb-custom-theme', JSON.stringify(stored));
+  document.documentElement.style.setProperty(prop, value);
+  const lbl = document.getElementById('cv-' + prop.slice(2));
+  if (lbl) lbl.textContent = value;
+}
+
+function hexExpand(hex) {
+  if (!hex) return '#000000';
+  hex = hex.trim();
+  if (/^#[0-9a-fA-F]{3}$/.test(hex))
+    return '#' + hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
+  return hex;
+}
+
+function buildCustomEditor() {
+  const container = document.getElementById('custom-color-grid');
+  if (!container || container.childElementCount > 0) return;
+  Object.entries(COLOR_LABEL_KEYS).forEach(([prop, labelKey]) => {
+    const key = prop.slice(2);
+    const row = document.createElement('div');
+    row.className = 'color-row';
+    const stored = JSON.parse(localStorage.getItem('bb-custom-theme') || '{}');
+    const val = hexExpand(stored[prop] || DARK_DEFAULTS[prop]);
+    row.innerHTML = `<label>${t(labelKey)}</label><input type="color" id="cp-${key}" value="${val}" oninput="updateCustomColor('${prop}',this.value)"><span class="color-val" id="cv-${key}">${val}</span>`;
+    container.appendChild(row);
+  });
+}
+
+function initSettingsPage() {
+  const theme = localStorage.getItem('bb-theme') || 'dark';
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('thcard-' + theme);
+  if (card) card.classList.add('selected');
+  const custEd = document.getElementById('custom-editor');
+  if (custEd) custEd.style.display = (theme === 'custom') ? 'block' : 'none';
+  if (theme === 'custom') { buildCustomEditor(); applyCustomTheme(); }
+  // Sync lang buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === _lang);
+  });
+  // Overlay toggle
+  _syncOverlayBtn();
+  // App filter
+  initAppFilter();
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('bb-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  if (saved === 'custom') {
+    const stored = JSON.parse(localStorage.getItem('bb-custom-theme') || '{}');
+    const vals = Object.assign({}, DARK_DEFAULTS, stored);
+    Object.entries(vals).forEach(([k,v]) => document.documentElement.style.setProperty(k,v));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  FEATURE 1 — Process picker
+// ═══════════════════════════════════════════════════════
+let _allProcs = [], _procsFlat = [];
+let _procPickerTarget = null;  // 'bind' | 'filter'
+let _procPickerFilterCb = null;
+
+async function openProcPicker(target, onSelect) {
+  _procPickerTarget = target || 'bind';
+  _procPickerFilterCb = onSelect || null;
+  const modal = document.getElementById('proc-modal');
+  document.getElementById('proc-modal-title').textContent = t('proc_modal_title');
+  document.getElementById('proc-search').value = '';
+  modal.classList.add('open');
+  const list = document.getElementById('proc-list');
+  list.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">${t('proc_searching')}</div>`;
+  try {
+    const fn = (_procPickerTarget === 'filter')
+      ? window.pywebview.api.list_processes
+      : window.pywebview.api.list_installed_apps;
+    _allProcs = await fn();
+  } catch(e) { _allProcs = []; }
+  renderProcs(_allProcs);
+}
+
+function closeProcModal() {
+  document.getElementById('proc-modal').classList.remove('open');
+}
+
+function filterProcs() {
+  const q = document.getElementById('proc-search').value.toLowerCase();
+  renderProcs(q ? _allProcs.filter(p =>
+    p.name.toLowerCase().includes(q) || (p.exe||'').toLowerCase().includes(q)
+  ) : _allProcs);
+}
+
+function renderProcs(list) {
+  _procsFlat = list;
+  const el = document.getElementById('proc-list');
+  if (!list.length) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">${t('proc_none')}</div>`;
+    return;
+  }
+  el.innerHTML = list.map((p, i) => {
+    const isSteam = p.ftype === 'steam';
+    const ico = p.icon
+      ? `<img src="${p.icon}" style="width:20px;height:20px;border-radius:3px;flex-shrink:0">`
+      : isSteam
+        ? `<span class="proc-ico" style="color:#1b9cd8">${icon('play',14)}</span>`
+        : `<span class="proc-ico">${icon('terminal',14)}</span>`;
+    const badge = isSteam
+      ? `<span style="font-size:9px;font-weight:700;color:#1b9cd8;background:rgba(27,156,216,.15);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">STEAM</span>`
+      : '';
+    const sub = isSteam ? `App ID: ${escHtml(p.exe)}` : escHtml(p.exe||'');
+    return `<div class="proc-item" onclick="selectProc(${i})">
+       ${ico}
+       <div class="proc-info" style="min-width:0">
+         <div class="proc-name" style="display:flex;align-items:center;gap:2px">${escHtml(p.name)}${badge}</div>
+         <div class="proc-path">${sub}</div>
+       </div>
+     </div>`;
+  }).join('');
+}
+
+function selectProc(idx) {
+  const p = _procsFlat[idx];
+  if (!p) return;
+  closeProcModal();
+  if (_procPickerTarget === 'filter') {
+    if (_procPickerFilterCb) _procPickerFilterCb(p);
+    return;
+  }
+  // Steam games → transparent URL bind (steam://rungameid/id)
+  const sel = document.getElementById('edt-type');
+  if (p.ftype === 'steam') {
+    if (sel) { sel.value = 'url'; onTypeChange(); }
+    document.getElementById('edt-value').value = `steam://rungameid/${p.exe}`;
+  } else {
+    if (p.ftype && sel) { sel.value = p.ftype; onTypeChange(); }
+    document.getElementById('edt-value').value = p.exe;
+  }
+  const lbl = document.getElementById('edt-label');
+  if (!lbl.value) lbl.value = p.name.replace(/\.exe$/i,'').substring(0,12);
+}
+
+document.getElementById('proc-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('proc-modal')) closeProcModal();
+});
+
+// ═══════════════════════════════════════════════════════
+//  FEATURE 2 — Start/Stop toggle on Bindings pill
+// ═══════════════════════════════════════════════════════
+async function toggleListenerPill() {
+  if (!window.pywebview) return;
+  const r = await window.pywebview.api.listener_status();
+  if (r.running) {
+    await stopListener();
+  } else {
+    await startListener();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  FEATURE 4 — App filter
+// ═══════════════════════════════════════════════════════
+function initAppFilter() {
+  const af = config.app_filter || {mode:'disabled', apps:[]};
+  _syncFilterModeBtns(af.mode);
+  renderFilterApps(af.apps || []);
+}
+
+function _syncFilterModeBtns(mode) {
+  ['disabled','allow','deny'].forEach(m => {
+    const btn = document.getElementById(`fmode-${m}`);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  const sec = document.getElementById('filter-apps-section');
+  const hint = document.getElementById('filter-mode-hint');
+  if (sec) sec.style.display = (mode === 'disabled') ? 'none' : 'block';
+  if (hint) hint.textContent = mode === 'allow' ? t('filter_hint_allow') : (mode === 'deny' ? t('filter_hint_deny') : '');
+}
+
+function setFilterMode(mode) {
+  if (!config.app_filter) config.app_filter = {mode:'disabled', apps:[]};
+  config.app_filter.mode = mode;
+  _syncFilterModeBtns(mode);
+  markDirty();
+}
+
+function renderFilterApps(apps) {
+  const el = document.getElementById('filter-app-list');
+  if (!el) return;
+  if (!apps.length) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:6px 0">No apps added yet</div>`;
+    return;
+  }
+  el.innerHTML = apps.map((a, i) =>
+    `<div class="filter-app-item">
+       <span class="proc-ico">${icon('terminal',13)}</span>
+       <span class="filter-app-name">${escHtml(a)}</span>
+       <button class="btn-sm" style="padding:4px 8px;font-size:11px" onclick="removeFilterApp(${i})">${icon('trash',13)}</button>
+     </div>`
+  ).join('');
+}
+
+function addFilterApp() {
+  openProcPicker('filter', p => {
+    if (!config.app_filter) config.app_filter = {mode:'disabled', apps:[]};
+    const name = p.name.toLowerCase();
+    if (!config.app_filter.apps.includes(name)) {
+      config.app_filter.apps.push(name);
+      renderFilterApps(config.app_filter.apps);
+      markDirty();
+    }
+  });
+}
+
+function removeFilterApp(idx) {
+  if (!config.app_filter?.apps) return;
+  config.app_filter.apps.splice(idx, 1);
+  renderFilterApps(config.app_filter.apps);
+  markDirty();
+}
+
+// ═══════════════════════════════════════════════════════
+//  FEATURE 5 — Overlay toggle in Settings
+// ═══════════════════════════════════════════════════════
+function _syncOverlayBtn() {
+  const btn = document.getElementById('overlay-toggle-btn');
+  if (!btn) return;
+  const on = config.overlay_enabled || false;
+  btn.textContent = on ? t('overlay_on') : t('overlay_off');
+  btn.classList.toggle('active', on);
+}
+
+function toggleOverlaySetting() {
+  config.overlay_enabled = !config.overlay_enabled;
+  _syncOverlayBtn();
+  markDirty();
+}
+</script>
