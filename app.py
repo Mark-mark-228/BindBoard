@@ -1273,4 +1273,4 @@ def _on_closing():
 
 _window.events.closing += _on_closing
 
-webview.start(debug=False)
+webview.start(debug=False, gui='edgechromium')
