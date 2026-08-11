@@ -1009,6 +1009,24 @@ class API:
         _listener._config = cfg
         return {'ok': True}
 
+    # ── Personal: live window transparency ─────────────────────
+    def set_transparency(self, alpha):
+        """Live-update window-level alpha. 0=invisible, 255=fully opaque. Called from JS slider."""
+        try:
+            GWL_EXSTYLE   = -20
+            WS_EX_LAYERED = 0x00080000
+            LWA_ALPHA_F   = 0x00000002
+            alpha = max(10, min(255, int(alpha)))
+            hwnd = ctypes.windll.user32.FindWindowW(None, 'BindBoard')
+            if not hwnd:
+                return {'ok': False, 'error': 'window not found'}
+            style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+            ctypes.windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED)
+            ctypes.windll.user32.SetLayeredWindowAttributes(hwnd, 0, alpha, LWA_ALPHA_F)
+            return {'ok': True}
+        except Exception as e:
+            return {'ok': False, 'error': str(e)}
+
     def listener_status(self):
         return _listener.status
 

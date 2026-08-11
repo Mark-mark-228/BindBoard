@@ -25,9 +25,9 @@
 :root {
   --bg:     #0a0a0b;
   --s1:     #131315;
-  --s2:     #1b1b1e;
-  --s3:     #242428;
-  --border: #2c2c30;
+  --s2:     rgba(27, 27, 30, 0.80);
+  --s3:     rgba(36, 36, 40, 0.85);
+  --border: rgba(44, 44, 48, 0.70);
   --cyan:   #7c8aff;
   --cyan-d: rgba(124,138,255,.14);
   --purple: #b389f9;
@@ -39,6 +39,11 @@
   --muted2: #34343a;
   --shadow: 0 1px 2px rgba(0,0,0,.35);
   --shadow-lg: 0 24px 64px rgba(0,0,0,.55);
+  /* ── Transparency (controlled by sliders in Theme page) ── */
+  --sidebar-opacity: 1;
+  --sidebar-blur: 0px;
+  --main-opacity: 1;
+  --main-blur: 0px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
@@ -51,7 +56,7 @@ body{font-feature-settings:'ss01' on,'cv05' on;letter-spacing:-0.006em}
 .icon{display:inline-block;vertical-align:middle;flex-shrink:0}
 
 /* ── SIDEBAR ── */
-#sidebar{width:220px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0 0 16px}
+#sidebar{width:220px;flex-shrink:0;background:rgba(19,19,21,var(--sidebar-opacity));border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0 0 16px;backdrop-filter:blur(var(--sidebar-blur));-webkit-backdrop-filter:blur(var(--sidebar-blur))}
 .logo{padding:16px 14px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:8px}
 .logo span{color:var(--muted);font-weight:400}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;margin:2px 8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;user-select:none}
@@ -68,7 +73,7 @@ body{font-feature-settings:'ss01' on,'cv05' on;letter-spacing:-0.006em}
 #apply-btn.dirty{background:var(--cyan);color:#0a0a0b;border-color:var(--cyan);box-shadow:0 0 20px rgba(124,138,255,.35)}
 
 /* ── MAIN ── */
-#main{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;background:rgba(10,10,11,var(--main-opacity));backdrop-filter:blur(var(--main-blur));-webkit-backdrop-filter:blur(var(--main-blur))}
 .page{padding:28px 32px;display:none;min-height:0}
 .page.active{display:block}
 #binds-page.active{height:100%}
@@ -261,6 +266,17 @@ input[type=range].tpl-slider::-moz-range-thumb{
 .tpl-key.tpl-xwide{flex:5}
 @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .scan-key-appear{animation:popIn .15s ease-out}
+
+/* ── TRANSPARENCY SLIDERS ── */
+.transp-section{max-width:420px;margin-bottom:24px}
+.transp-row{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:6px}
+.transp-label{font-size:11px;font-weight:700;color:var(--muted);width:170px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;line-height:1.3}
+.transp-slider{flex:1;height:4px;border-radius:2px;cursor:pointer;accent-color:var(--cyan);-webkit-appearance:none;appearance:none;background:var(--border)}
+.transp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:5px;background:var(--s2);border:2px solid var(--cyan);cursor:grab}
+.transp-slider:active::-webkit-slider-thumb{cursor:grabbing}
+.transp-val{font-size:12px;color:var(--cyan);width:38px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;flex-shrink:0}
+.transp-reset{background:none;border:1px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;font-size:12px;padding:3px 7px;flex-shrink:0;transition:all .15s}
+.transp-reset:hover{border-color:var(--cyan);color:var(--cyan)}
 
 /* ── LIGHT THEME ── */
 :root[data-theme="light"]{
@@ -552,6 +568,41 @@ input[type=range].tpl-slider::-moz-range-thumb{
     <div id="custom-editor" style="display:none">
       <div class="settings-section-label" data-i18n="lbl_colors">Colors</div>
       <div class="color-grid" id="custom-color-grid"></div>
+    </div>
+
+    <!-- ── TRANSPARENCY ── -->
+    <div class="settings-section-label" style="margin-top:4px">Прозрачность</div>
+    <div class="transp-section" id="transp-section">
+      <div class="transp-row">
+        <span class="transp-label">Окно (всё)</span>
+        <input type="range" class="transp-slider" id="tr-window" min="10" max="255" step="1" value="255" oninput="onTranspSlider('window', this.value)">
+        <span class="transp-val" id="tr-window-val">100%</span>
+        <button class="transp-reset" onclick="resetTransp('window')" title="Сбросить">↺</button>
+      </div>
+      <div class="transp-row">
+        <span class="transp-label">Сайдбар — непрозрачность</span>
+        <input type="range" class="transp-slider" id="tr-sidebar-op" min="0" max="100" step="1" value="100" oninput="onTranspSlider('sidebar-op', this.value)">
+        <span class="transp-val" id="tr-sidebar-op-val">100%</span>
+        <button class="transp-reset" onclick="resetTransp('sidebar-op')" title="Сбросить">↺</button>
+      </div>
+      <div class="transp-row">
+        <span class="transp-label">Сайдбар — размытие</span>
+        <input type="range" class="transp-slider" id="tr-sidebar-blur" min="0" max="64" step="1" value="32" oninput="onTranspSlider('sidebar-blur', this.value)">
+        <span class="transp-val" id="tr-sidebar-blur-val">32px</span>
+        <button class="transp-reset" onclick="resetTransp('sidebar-blur')" title="Сбросить">↺</button>
+      </div>
+      <div class="transp-row">
+        <span class="transp-label">Панель — непрозрачность</span>
+        <input type="range" class="transp-slider" id="tr-main-op" min="0" max="100" step="1" value="100" oninput="onTranspSlider('main-op', this.value)">
+        <span class="transp-val" id="tr-main-op-val">100%</span>
+        <button class="transp-reset" onclick="resetTransp('main-op')" title="Сбросить">↺</button>
+      </div>
+      <div class="transp-row">
+        <span class="transp-label">Панель — размытие</span>
+        <input type="range" class="transp-slider" id="tr-main-blur" min="0" max="64" step="1" value="28" oninput="onTranspSlider('main-blur', this.value)">
+        <span class="transp-val" id="tr-main-blur-val">28px</span>
+        <button class="transp-reset" onclick="resetTransp('main-blur')" title="Сбросить">↺</button>
+      </div>
     </div>
 
     <div class="settings-section-label" data-i18n="lbl_language">Language</div>
@@ -1189,6 +1240,8 @@ window.addEventListener('load', () => {
   initTheme();
   initLang();
   hydrateStaticIcons();
+  // Apply saved transparency CSS vars before first paint
+  _applyTranspCSS(_loadTransp());
   if (!window.pywebview) {
     document.getElementById('loading').style.display = 'none';
   }
@@ -1243,6 +1296,8 @@ async function init() {
     renderKeyboard();
     detectKeyboards();
     navigate('keyboard');
+    // Apply window-level transparency via Python API
+    initTransparency();
     // Global sidebar status poll — runs on every page
     updateListenerPill();
     setInterval(updateListenerPill, 250);
@@ -2309,6 +2364,83 @@ function buildCustomEditor() {
   });
 }
 
+// ═══════════════════════════════════════════════════════
+//  TRANSPARENCY SETTINGS (Personal)
+// ═══════════════════════════════════════════════════════
+const TRANSP_DEFAULTS = {
+  'window':       255,   // 0–255 → window-level alpha (255 = fully opaque)
+  'sidebar-op':   100,   // 0–100 → sidebar opacity (CSS)
+  'sidebar-blur': 0,     // 0–64  → blur behind sidebar (px)
+  'main-op':      100,   // 0–100 → main panel opacity (CSS)
+  'main-blur':    0,     // 0–64  → blur behind main panel (px)
+};
+
+function _loadTransp() {
+  return Object.assign({}, TRANSP_DEFAULTS,
+    JSON.parse(localStorage.getItem('bb-transparency') || '{}'));
+}
+
+function _saveTransp(vals) {
+  localStorage.setItem('bb-transparency', JSON.stringify(vals));
+}
+
+function _transpLabel(key, val) {
+  if (key === 'window') return Math.round(val / 255 * 100) + '%';
+  if (key.endsWith('-blur')) return val + 'px';
+  return val + '%';
+}
+
+function _applyTranspCSS(vals) {
+  const root = document.documentElement;
+  root.style.setProperty('--sidebar-opacity', (vals['sidebar-op'] / 100).toFixed(2));
+  root.style.setProperty('--sidebar-blur',    vals['sidebar-blur'] + 'px');
+  root.style.setProperty('--main-opacity',    (vals['main-op'] / 100).toFixed(2));
+  root.style.setProperty('--main-blur',       vals['main-blur'] + 'px');
+}
+
+async function _applyTranspWindow(alpha) {
+  if (window.pywebview?.api) {
+    try { await window.pywebview.api.set_transparency(alpha); } catch(e) {}
+  }
+}
+
+function _syncTranspSliders(vals) {
+  Object.keys(TRANSP_DEFAULTS).forEach(key => {
+    const sl  = document.getElementById('tr-' + key);
+    const lbl = document.getElementById('tr-' + key + '-val');
+    if (!sl || !lbl) return;
+    sl.value = vals[key];
+    lbl.textContent = _transpLabel(key, vals[key]);
+  });
+}
+
+function initTransparency() {
+  const vals = _loadTransp();
+  _applyTranspCSS(vals);
+  _syncTranspSliders(vals);
+  _applyTranspWindow(vals['window']);
+}
+
+function onTranspSlider(key, rawVal) {
+  const val  = parseFloat(rawVal);
+  const vals = _loadTransp();
+  vals[key]  = val;
+  _saveTransp(vals);
+  _applyTranspCSS(vals);
+  const lbl = document.getElementById('tr-' + key + '-val');
+  if (lbl) lbl.textContent = _transpLabel(key, val);
+  if (key === 'window') _applyTranspWindow(val);
+}
+
+function resetTransp(key) {
+  const vals = _loadTransp();
+  vals[key]  = TRANSP_DEFAULTS[key];
+  _saveTransp(vals);
+  _applyTranspCSS(vals);
+  _syncTranspSliders(vals);
+  if (key === 'window') _applyTranspWindow(vals['window']);
+}
+
 function initSettingsPage() {
   const theme = localStorage.getItem('bb-theme') || 'dark';
   document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
@@ -2325,6 +2457,8 @@ function initSettingsPage() {
   _syncOverlayBtn();
   // App filter
   initAppFilter();
+  // Sync transparency sliders with current values
+  _syncTranspSliders(_loadTransp());
 }
 
 function initTheme() {
@@ -2354,10 +2488,9 @@ async function openProcPicker(target, onSelect) {
   const list = document.getElementById('proc-list');
   list.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">${t('proc_searching')}</div>`;
   try {
-    const fn = (_procPickerTarget === 'filter')
-      ? window.pywebview.api.list_processes
-      : window.pywebview.api.list_installed_apps;
-    _allProcs = await fn();
+    // Filter mode: show ALL installed apps (so user can pick apps that aren't running).
+    // Bind mode: same installed apps list. Running-processes mode no longer used.
+    _allProcs = await window.pywebview.api.list_installed_apps();
   } catch(e) { _allProcs = []; }
   renderProcs(_allProcs);
 }
@@ -2477,21 +2610,34 @@ function renderFilterApps(apps) {
     el.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:6px 0">No apps added yet</div>`;
     return;
   }
-  el.innerHTML = apps.map((a, i) =>
-    `<div class="filter-app-item">
-       <span class="proc-ico">${icon('terminal',13)}</span>
-       <span class="filter-app-name">${escHtml(a)}</span>
+  el.innerHTML = apps.map((a, i) => {
+    // Show file icon for .exe entries, monitor icon for others
+    const ico = a.endsWith('.exe') ? icon('terminal',13) : icon('monitor',13);
+    return `<div class="filter-app-item">
+       <span class="proc-ico">${ico}</span>
+       <span class="filter-app-name" style="font-family:monospace;font-size:12px">${escHtml(a)}</span>
        <button class="btn-sm" style="padding:4px 8px;font-size:11px" onclick="removeFilterApp(${i})">${icon('trash',13)}</button>
-     </div>`
-  ).join('');
+     </div>`;
+  }).join('');
 }
 
 function addFilterApp() {
   openProcPicker('filter', p => {
     if (!config.app_filter) config.app_filter = {mode:'disabled', apps:[]};
-    const name = p.name.toLowerCase();
-    if (!config.app_filter.apps.includes(name)) {
-      config.app_filter.apps.push(name);
+    // For installed apps we need the exe FILENAME (e.g. "osu!.exe"), because the
+    // filter matches against the foreground window's process exe name, not the
+    // display name. Extract basename from the exe path; fall back to display name
+    // for UWP / Steam entries that don't have a real path.
+    let filterName;
+    const exe = p.exe || '';
+    if (exe && !exe.startsWith('shell:') && !exe.startsWith('steam://')) {
+      // real path → take just the filename
+      filterName = exe.replace(/\\/g, '/').split('/').pop().toLowerCase();
+    } else {
+      filterName = p.name.toLowerCase();
+    }
+    if (!config.app_filter.apps.includes(filterName)) {
+      config.app_filter.apps.push(filterName);
       renderFilterApps(config.app_filter.apps);
       markDirty();
     }
