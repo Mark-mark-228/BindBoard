@@ -478,13 +478,16 @@ input[type=range].tpl-slider::-moz-range-thumb{
               <label data-i18n="lbl_action_type">Action type</label>
               <select id="edt-type" onchange="onTypeChange()">
                 <option value="" data-i18n="opt_nothing">— None —</option>
-                <option value="url" data-i18n="opt_url">Website (URL)</option>
-                <option value="lnk" data-i18n="opt_lnk">Shortcut (.lnk)</option>
-                <option value="exe" data-i18n="opt_exe">Program (.exe)</option>
-                <option value="uwp" data-i18n="opt_uwp">Store app (UWP)</option>
+                <option value="app" data-i18n="opt_app">Приложение</option>
+                <option value="url" data-i18n="opt_url">Сайт (URL)</option>
                 <option value="sound" data-i18n="opt_sound">Sound Soundpad (#)</option>
                 <option value="stop_sound" data-i18n="opt_stop_sound">Stop sound</option>
                 <option value="mode_switch" data-i18n="opt_mode_switch">Switch mode</option>
+                <!-- legacy types — hidden, kept for backwards compat with old configs -->
+                <option value="lnk"   style="display:none" data-i18n="opt_lnk">Shortcut (.lnk)</option>
+                <option value="exe"   style="display:none" data-i18n="opt_exe">Program (.exe)</option>
+                <option value="uwp"   style="display:none" data-i18n="opt_uwp">Store app (UWP)</option>
+                <option value="steam" style="display:none" data-i18n="opt_steam">Steam</option>
               </select>
             </div>
             <div id="edt-val-wrap" class="field" style="display:none">
@@ -857,8 +860,8 @@ const STRINGS = {
     listener_off:'Listener off — click to start', listener_on:'Listener active',
     editor_empty:'Click a key<br>on the left',
     lbl_action_type:'Action type',
-    opt_nothing:'— None —', opt_url:'Website (URL)', opt_lnk:'Shortcut (.lnk)',
-    opt_exe:'Program (.exe)', opt_sound:'Sound Soundpad (#)',
+    opt_nothing:'— None —', opt_app:'Program', opt_url:'Website (URL)', opt_lnk:'Shortcut (.lnk)',
+    opt_exe:'Program (.exe)', opt_uwp:'Store app (UWP)', opt_sound:'Sound Soundpad (#)',
     opt_stop_sound:'Stop sound', opt_mode_switch:'Switch mode', opt_steam:'Steam game (App ID)',
     lbl_url:'URL', lbl_filepath:'File path', lbl_sound_num:'Sound number',
     lbl_switch_to:'Switch to mode', lbl_steam_id:'Steam App ID', lbl_label:'Label (short)', lbl_bind_color:'Color',
@@ -962,8 +965,8 @@ const STRINGS = {
     listener_off:'Слушатель выкл. — нажми чтобы запустить', listener_on:'Слушатель активен',
     editor_empty:'Нажми на кнопку<br>клавиатуры слева',
     lbl_action_type:'Тип действия',
-    opt_nothing:'— Ничего —', opt_url:'Сайт (URL)', opt_lnk:'Ярлык (.lnk)',
-    opt_exe:'Программа (.exe)', opt_sound:'Звук Soundpad (#)',
+    opt_nothing:'— Ничего —', opt_app:'Приложение', opt_url:'Сайт (URL)', opt_lnk:'Ярлык (.lnk)',
+    opt_exe:'Программа (.exe)', opt_uwp:'Store-приложение', opt_sound:'Звук Soundpad (#)',
     opt_stop_sound:'Стоп звука', opt_mode_switch:'Сменить режим', opt_steam:'Steam-игра (App ID)',
     lbl_url:'URL', lbl_filepath:'Путь к файлу', lbl_sound_num:'Номер звука',
     lbl_switch_to:'Переключить в режим', lbl_steam_id:'Steam App ID', lbl_label:'Название (кратко)', lbl_bind_color:'Цвет',
@@ -1825,16 +1828,18 @@ function onTypeChange() {
   const pickProc = document.getElementById('edt-pick-proc');
   if (pickProc) pickProc.style.display = 'none';
 
-  if (atype === 'url') {
-    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_url'); valInput.placeholder = 'https://youtube.com';
-  } else if (atype === 'lnk' || atype === 'exe') {
+  if (atype === 'app' || atype === 'lnk' || atype === 'exe' || atype === 'uwp') {
     valWrap.style.display = 'flex'; browse.style.display = 'inline-block';
     if (pickProc) pickProc.style.display = 'flex';
-    valLabel.textContent = t('lbl_filepath'); valInput.placeholder = 'C:\\...\\app.lnk';
+    valLabel.textContent = t('lbl_filepath'); valInput.placeholder = 'C:\\...\\app.exe';
+  } else if (atype === 'url') {
+    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_url'); valInput.placeholder = 'https://youtube.com';
   } else if (atype === 'sound') {
     valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_sound_num'); valInput.placeholder = '1';
   } else if (atype === 'steam') {
-    valWrap.style.display = 'flex'; valLabel.textContent = t('lbl_steam_id'); valInput.placeholder = '1091500';
+    valWrap.style.display = 'flex';
+    if (pickProc) pickProc.style.display = 'flex';
+    valLabel.textContent = t('lbl_steam_id'); valInput.placeholder = '1091500';
   } else if (atype === 'mode_switch') {
     modeWrap.style.display = 'flex';
     populateModeTarget();
@@ -2409,16 +2414,12 @@ function selectProc(idx) {
     if (_procPickerFilterCb) _procPickerFilterCb(p);
     return;
   }
-  // Steam / UWP → transparent bind (stored as uwp type)
+  // All app types → universal 'app' type (auto-detects exe/lnk/uwp/steam/url)
   const sel = document.getElementById('edt-type');
+  if (sel) { sel.value = 'app'; onTypeChange(); }
   if (p.ftype === 'steam') {
-    if (sel) { sel.value = 'url'; onTypeChange(); }
     document.getElementById('edt-value').value = `steam://rungameid/${p.exe}`;
-  } else if (p.ftype === 'uwp') {
-    if (sel) { sel.value = 'uwp'; onTypeChange(); }
-    document.getElementById('edt-value').value = p.exe;
   } else {
-    if (p.ftype && sel) { sel.value = p.ftype; onTypeChange(); }
     document.getElementById('edt-value').value = p.exe;
   }
   const lbl = document.getElementById('edt-label');
