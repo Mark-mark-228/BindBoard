@@ -481,6 +481,7 @@ input[type=range].tpl-slider::-moz-range-thumb{
                 <option value="url" data-i18n="opt_url">Website (URL)</option>
                 <option value="lnk" data-i18n="opt_lnk">Shortcut (.lnk)</option>
                 <option value="exe" data-i18n="opt_exe">Program (.exe)</option>
+                <option value="uwp" data-i18n="opt_uwp">Store app (UWP)</option>
                 <option value="sound" data-i18n="opt_sound">Sound Soundpad (#)</option>
                 <option value="stop_sound" data-i18n="opt_stop_sound">Stop sound</option>
                 <option value="mode_switch" data-i18n="opt_mode_switch">Switch mode</option>
@@ -2376,15 +2377,20 @@ function renderProcs(list) {
   }
   el.innerHTML = list.map((p, i) => {
     const isSteam = p.ftype === 'steam';
+    const isUwp   = p.ftype === 'uwp';
     const ico = p.icon
       ? `<img src="${p.icon}" style="width:20px;height:20px;border-radius:3px;flex-shrink:0">`
       : isSteam
         ? `<span class="proc-ico" style="color:#1b9cd8">${icon('play',14)}</span>`
-        : `<span class="proc-ico">${icon('terminal',14)}</span>`;
+        : isUwp
+          ? `<span class="proc-ico" style="color:#9b59b6">${icon('box',14)}</span>`
+          : `<span class="proc-ico">${icon('terminal',14)}</span>`;
     const badge = isSteam
       ? `<span style="font-size:9px;font-weight:700;color:#1b9cd8;background:rgba(27,156,216,.15);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">STEAM</span>`
-      : '';
-    const sub = isSteam ? `App ID: ${escHtml(p.exe)}` : escHtml(p.exe||'');
+      : isUwp
+        ? `<span style="font-size:9px;font-weight:700;color:#9b59b6;background:rgba(155,89,182,.15);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">STORE</span>`
+        : '';
+    const sub = isSteam ? `App ID: ${escHtml(p.exe)}` : isUwp ? 'Microsoft Store' : escHtml(p.exe||'');
     return `<div class="proc-item" onclick="selectProc(${i})">
        ${ico}
        <div class="proc-info" style="min-width:0">
@@ -2403,11 +2409,14 @@ function selectProc(idx) {
     if (_procPickerFilterCb) _procPickerFilterCb(p);
     return;
   }
-  // Steam games → transparent URL bind (steam://rungameid/id)
+  // Steam / UWP → transparent bind (stored as uwp type)
   const sel = document.getElementById('edt-type');
   if (p.ftype === 'steam') {
     if (sel) { sel.value = 'url'; onTypeChange(); }
     document.getElementById('edt-value').value = `steam://rungameid/${p.exe}`;
+  } else if (p.ftype === 'uwp') {
+    if (sel) { sel.value = 'uwp'; onTypeChange(); }
+    document.getElementById('edt-value').value = p.exe;
   } else {
     if (p.ftype && sel) { sel.value = p.ftype; onTypeChange(); }
     document.getElementById('edt-value').value = p.exe;

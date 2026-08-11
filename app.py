@@ -601,6 +601,9 @@ class KeyboardListener:
         try:
             if btype in ('url', 'lnk', 'exe'):
                 os.startfile(v.strip('"\''))
+            elif btype == 'uwp':
+                subprocess.Popen(['explorer.exe', v.strip()],
+                                 creationflags=subprocess.CREATE_NO_WINDOW)
             elif btype == 'steam':
                 os.startfile(f'steam://rungameid/{v}')
             elif btype == 'sound':
@@ -1145,6 +1148,78 @@ class API:
                     kernel32.CloseHandle(hproc)
         except Exception as e:
             return [{'error': str(e)}]
+        # ── UWP / Microsoft Store apps ────────────────────────────
+        try:
+            _ps_cmd = (
+                'Get-AppxPackage | Where-Object { -not $_.IsFramework } | '
+                'Select-Object Name,PackageFamilyName,InstallLocation | '
+                'ConvertTo-Json -Compress'
+            )
+            _ps = subprocess.run(
+                ['powershell', '-NoProfile', '-NonInteractive', '-Command', _ps_cmd],
+                capture_output=True, text=True, timeout=15,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            if _ps.returncode == 0 and _ps.stdout.strip():
+                import json as _json2
+                _uwp_list = _json2.loads(_ps.stdout.strip())
+                if isinstance(_uwp_list, dict):
+                    _uwp_list = [_uwp_list]
+                for _pkg in _uwp_list:
+                    _pfn  = (_pkg.get('PackageFamilyName') or '').strip()
+                    _loc  = (_pkg.get('InstallLocation')  or '').strip()
+                    _rn   = (_pkg.get('Name')             or '').strip()
+                    if not _pfn or not _rn:
+                        continue
+                    _display_name = None
+                    _app_id = 'App'
+                    _manifest_path = os.path.join(_loc, 'AppxManifest.xml')
+                    if os.path.exists(_manifest_path):
+                        try:
+                            with open(_manifest_path, 'r', encoding='utf-8', errors='ignore') as _mf:
+                                _mtext = _mf.read()
+                            if '<Application ' not in _mtext:
+                                continue
+                            _dn = _re.search(r'<DisplayName>([^<]{2,80})</DisplayName>', _mtext)
+                            if _dn and not _dn.group(1).startswith('ms-resource:'):
+                                _display_name = _dn.group(1).strip()
+                            _aid = _re.search(r'<Application\s[^>]*\bId="([^"]+)"', _mtext)
+                            if _aid:
+                                _app_id = _aid.group(1)
+                        except Exception:
+                            pass
+                    if not _display_name:
+                        _display_name = _rn.split('_')[0] if '_' in _rn else _rn
+                    _key = _display_name.lower()
+                    if _key in seen:
+                        continue
+                    seen.add(_key)
+                    # Icon: try Assets folder
+                    _ico_b64 = None
+                    if _loc and os.path.exists(_loc):
+                        for _rel in ('Assets/StoreLogo.png', 'Assets/Square44x44Logo.png',
+                                     'Assets/Logo.png', 'Assets/Square30x30Logo.png'):
+                            _ico_p = os.path.join(_loc, _rel.replace('/', os.sep))
+                            if os.path.exists(_ico_p):
+                                try:
+                                    from PIL import Image as _Img
+                                    import io as _io
+                                    _img = _Img.open(_ico_p).convert('RGBA').resize((20, 20))
+                                    _buf = _io.BytesIO()
+                                    _img.save(_buf, format='PNG')
+                                    _ico_b64 = 'data:image/png;base64,' + _b64.b64encode(_buf.getvalue()).decode()
+                                except Exception:
+                                    pass
+                                break
+                    results.append({
+                        'name': _display_name,
+                        'exe':  f'shell:AppsFolder\\{_pfn}!{_app_id}',
+                        'ftype': 'uwp',
+                        'icon': _ico_b64,
+                    })
+        except Exception:
+            pass
+
         return sorted(results, key=lambda x: x['name'].lower())
 
     # ── Test action ───────────────────────────────────────────
@@ -1153,6 +1228,10 @@ class API:
         try:
             if atype in ('url', 'lnk', 'exe'):
                 os.startfile(value.strip('"\''))
+                return {"ok": True}
+            elif atype == 'uwp':
+                subprocess.Popen(['explorer.exe', value.strip()],
+                                 creationflags=subprocess.CREATE_NO_WINDOW)
                 return {"ok": True}
             elif atype == 'steam':
                 os.startfile(f'steam://rungameid/{value}')
