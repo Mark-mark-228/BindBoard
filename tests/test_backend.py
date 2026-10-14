@@ -454,9 +454,10 @@ class SoundpadTests(unittest.TestCase):
 
     def test_error_reply_falls_back_to_exe(self):
         sp, srv = self.make(b'R-404')
-        with mock.patch.object(sp, 'find_exe', return_value=r'C:ake\Soundpad.exe'),                 mock.patch.object(app.subprocess, 'Popen') as po:
+        with mock.patch.object(sp, 'find_exe', return_value=r'C:\fake\Soundpad.exe'), \
+                mock.patch.object(app.subprocess, 'Popen') as po:
             self.assertEqual(sp.stop(), (True, None))
-            self.assertEqual(po.call_args[0][0], [r'C:ake\Soundpad.exe', '-rc', 'DoStopSound()'])
+            self.assertEqual(po.call_args[0][0], [r'C:\fake\Soundpad.exe', '-rc', 'DoStopSound()'])
         srv.join(2)
         self.assertEqual(srv.received, ['DoStopSound()'])
 

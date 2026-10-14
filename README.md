@@ -93,7 +93,7 @@ Settings live in `%USERPROFILE%\BindBoard\` (`config.json`, `backups\`, `bindboa
 ## Building the EXE
 
 ```powershell
-.uild.ps1
+.\build.ps1
 ```
 
 `build.ps1` installs the requirements, builds with `BindBoard.spec`, runs the new EXE with `--selftest`, then packs the installer (or a ZIP). The build is at `dist\BindBoard\`.
