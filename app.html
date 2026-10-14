@@ -23,8 +23,8 @@
 @font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url(fonts/Inter-latin.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 
 :root {
-  --bg:     #0a0a0b;
-  --s1:     #131315;
+  --bg:     rgba(10, 10, 11, 0.0);
+  --s1:     rgba(19, 19, 21, 0.78);
   --s2:     rgba(27, 27, 30, 0.80);
   --s3:     rgba(36, 36, 40, 0.85);
   --border: rgba(44, 44, 48, 0.70);
@@ -40,17 +40,18 @@
   --shadow: 0 1px 2px rgba(0,0,0,.35);
   --shadow-lg: 0 24px 64px rgba(0,0,0,.55);
   /* ── Transparency (controlled by sliders in Theme page) ── */
-  --sidebar-opacity: 1;
-  --sidebar-blur: 0px;
-  --main-opacity: 1;
-  --main-blur: 0px;
+  --sidebar-opacity: 0.78;
+  --sidebar-blur: 32px;
+  --main-opacity: 0.62;
+  --main-blur: 28px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#555;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:4px;border:1px solid rgba(255,255,255,.06)}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.40)}
+::-webkit-scrollbar-thumb:active{background:var(--cyan)}
 body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI Variable','Segoe UI',system-ui,sans-serif;font-size:14px;display:flex;-webkit-font-smoothing:antialiased}
 body{font-feature-settings:'ss01' on,'cv05' on;letter-spacing:-0.006em}
 .icon{display:inline-block;vertical-align:middle;flex-shrink:0}
@@ -266,6 +267,48 @@ input[type=range].tpl-slider::-moz-range-thumb{
 .tpl-key.tpl-xwide{flex:5}
 @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .scan-key-appear{animation:popIn .15s ease-out}
+
+/* ── CUSTOM COLOR PICKER ── */
+#cp-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:1500;backdrop-filter:blur(6px)}
+#cp-modal.open{display:flex}
+.cp-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;width:288px;display:flex;flex-direction:column;gap:12px;box-shadow:0 28px 70px rgba(0,0,0,.7)}
+.cp-canvas-wrap{position:relative;border-radius:8px;overflow:hidden;cursor:crosshair;user-select:none;height:168px;flex-shrink:0}
+#cp-canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+#cp-cursor{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.55);pointer-events:none;transform:translate(-50%,-50%)}
+.cp-hue-wrap{position:relative;height:14px;border-radius:7px;cursor:pointer;user-select:none;flex-shrink:0;
+  background:linear-gradient(to right,#f00 0%,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%)}
+#cp-hue-thumb{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.4);transform:translate(-50%,-50%);pointer-events:none}
+.cp-bottom{display:flex;gap:10px;align-items:center}
+#cp-preview{width:44px;height:44px;border-radius:8px;border:1px solid var(--border);flex-shrink:0}
+.cp-inputs{display:flex;gap:5px;flex:1;min-width:0}
+.cp-field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cp-field.wide{flex:2.2}
+.cp-field.narrow{flex:1}
+.cp-field input{padding:6px 4px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:12px;outline:none;width:100%;font-family:monospace;text-align:center;transition:border-color .15s;-moz-appearance:textfield}
+.cp-field input::-webkit-inner-spin-button,.cp-field input::-webkit-outer-spin-button{-webkit-appearance:none}
+.cp-field input:focus{border-color:var(--cyan)}
+.cp-field label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.cp-footer{display:flex;gap:8px;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--border)}
+/* Swatch button replacing input[type=color] */
+.color-swatch{width:36px;height:28px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;outline:none;transition:border-color .15s}
+.color-swatch:hover{border-color:var(--cyan)}
+
+/* ── FILTER LIBRARY MODAL ── */
+#filter-lib-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:1200;backdrop-filter:blur(4px)}
+#filter-lib-modal.open{display:flex}
+.flib-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;width:560px;max-height:580px;display:flex;flex-direction:column;overflow:hidden}
+.flib-search{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.flib-search input{flex:1;padding:7px 10px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:13px;outline:none}
+.flib-body{flex:1;overflow-y:auto;padding:14px 16px}
+.flib-cat{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+.flib-cat:first-child{margin-top:0}
+.flib-grid{display:flex;flex-wrap:wrap;gap:6px}
+.flib-item{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:all .13s;user-select:none;font-size:13px}
+.flib-item:hover{border-color:var(--cyan);background:var(--cyan-d);color:var(--cyan)}
+.flib-item.added{border-color:var(--green);background:rgba(74,222,128,.08);color:var(--green);cursor:default}
+.flib-item .flib-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.flib-badge-exe{color:var(--cyan);background:var(--cyan-d)}
+.flib-badge-title{color:var(--purple);background:var(--pur-d)}
 
 /* ── TRANSPARENCY SLIDERS ── */
 .transp-section{max-width:420px;margin-bottom:24px}
@@ -524,8 +567,9 @@ input[type=range].tpl-slider::-moz-range-thumb{
             </div>
             <div class="field" style="flex-direction:row;align-items:center;gap:10px">
               <label data-i18n="lbl_bind_color" style="flex:1;margin:0">Color</label>
-              <input id="edt-color" type="color" value="#7c8aff" style="width:38px;height:28px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;padding:2px 3px;flex-shrink:0">
-              <button class="btn-sm" onclick="document.getElementById('edt-color').value='#7c8aff'" style="font-size:11px;padding:4px 8px;flex-shrink:0" title="Reset">↺</button>
+              <input id="edt-color" type="hidden" value="#7c8aff">
+              <button class="color-swatch" id="edt-color-swatch" data-hex="#7c8aff" style="background:#7c8aff" onclick="_cpOpenForId('edt-color','edt-color-swatch')" type="button"></button>
+              <button class="btn-sm" onclick="_setEdtColor('#7c8aff')" style="font-size:11px;padding:4px 8px;flex-shrink:0" title="Reset">↺</button>
             </div>
             <div class="editor-actions">
               <button class="btn danger" onclick="clearBind()"><span data-icon="x" data-icon-size="13"></span></button>
@@ -575,14 +619,14 @@ input[type=range].tpl-slider::-moz-range-thumb{
     <div class="transp-section" id="transp-section">
       <div class="transp-row">
         <span class="transp-label">Окно (всё)</span>
-        <input type="range" class="transp-slider" id="tr-window" min="10" max="255" step="1" value="255" oninput="onTranspSlider('window', this.value)">
-        <span class="transp-val" id="tr-window-val">100%</span>
+        <input type="range" class="transp-slider" id="tr-window" min="10" max="255" step="1" value="215" oninput="onTranspSlider('window', this.value)">
+        <span class="transp-val" id="tr-window-val">84%</span>
         <button class="transp-reset" onclick="resetTransp('window')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
         <span class="transp-label">Сайдбар — непрозрачность</span>
-        <input type="range" class="transp-slider" id="tr-sidebar-op" min="0" max="100" step="1" value="100" oninput="onTranspSlider('sidebar-op', this.value)">
-        <span class="transp-val" id="tr-sidebar-op-val">100%</span>
+        <input type="range" class="transp-slider" id="tr-sidebar-op" min="0" max="100" step="1" value="78" oninput="onTranspSlider('sidebar-op', this.value)">
+        <span class="transp-val" id="tr-sidebar-op-val">78%</span>
         <button class="transp-reset" onclick="resetTransp('sidebar-op')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
@@ -593,8 +637,8 @@ input[type=range].tpl-slider::-moz-range-thumb{
       </div>
       <div class="transp-row">
         <span class="transp-label">Панель — непрозрачность</span>
-        <input type="range" class="transp-slider" id="tr-main-op" min="0" max="100" step="1" value="100" oninput="onTranspSlider('main-op', this.value)">
-        <span class="transp-val" id="tr-main-op-val">100%</span>
+        <input type="range" class="transp-slider" id="tr-main-op" min="0" max="100" step="1" value="62" oninput="onTranspSlider('main-op', this.value)">
+        <span class="transp-val" id="tr-main-op-val">62%</span>
         <button class="transp-reset" onclick="resetTransp('main-op')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
@@ -629,10 +673,28 @@ input[type=range].tpl-slider::-moz-range-thumb{
     <div id="filter-apps-section" style="max-width:440px;display:none">
       <p style="font-size:12px;color:var(--muted);margin-bottom:10px" id="filter-mode-hint"></p>
       <div id="filter-app-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
-      <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="addFilterApp()">
-        <span data-icon="plus" data-icon-size="13"></span>
-        <span data-i18n="btn_add_filter_app">Add app</span>
-      </button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="addFilterApp()">
+          <span data-icon="plus" data-icon-size="13"></span>
+          <span data-i18n="btn_from_list">From list</span>
+        </button>
+        <button class="btn" id="btn-capture-window" style="display:inline-flex;align-items:center;gap:6px" onclick="captureFilterWindow()">
+          <span data-icon="monitor" data-icon-size="13"></span>
+          <span id="capture-btn-txt" data-i18n="btn_capture_window">Capture window (3s)</span>
+        </button>
+        <button class="btn" style="display:inline-flex;align-items:center;gap:6px" onclick="openFilterLibrary()">
+          <span data-icon="book-open" data-icon-size="13"></span>
+          <span data-i18n="btn_from_library">From library</span>
+        </button>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
+        <input id="filter-manual-input" type="text"
+               style="padding:7px 10px;border-radius:7px;border:1px solid var(--border);background:var(--s1);color:var(--text);font-size:12px;outline:none;flex:1;font-family:monospace;transition:border-color .15s"
+               onfocus="this.style.borderColor='var(--cyan)'" onblur="this.style.borderColor=''"
+               onkeydown="if(event.key==='Enter')addFilterManual()">
+        <button class="btn primary" onclick="addFilterManual()" style="padding:7px 14px;font-size:12px;white-space:nowrap" data-i18n="btn_add_manual">+ Add</button>
+      </div>
+      <div id="filter-type-hint" style="font-size:11px;color:var(--muted);line-height:1.7;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px"></div>
     </div>
 
   </div>
@@ -663,23 +725,31 @@ input[type=range].tpl-slider::-moz-range-thumb{
     <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px" data-i18n="lbl_current_mode">Current mode</div>
     <div class="note-box" id="listener-mode-info" style="font-size:12px">—</div>
   </div>
-</div>
 
   <!-- ── PAGE: ABOUT ── -->
   <div id="page-about" class="page">
     <div class="page-title" data-i18n="nav_about">About</div>
-    <div style="max-width:640px">
+    <div style="max-width:660px">
 
-      <div style="display:flex;align-items:center;gap:18px;margin-bottom:32px;padding:24px;background:var(--s2);border:1px solid var(--border);border-radius:14px">
+      <!-- Hero -->
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;padding:22px 24px;background:var(--s2);border:1px solid var(--border);border-radius:14px">
         <img class="logo-mark-dark" src="assets/logo-sidebar-dark.png" width="56" height="56" alt="BindBoard" style="border-radius:12px;flex-shrink:0">
         <img class="logo-mark-light" src="assets/logo-sidebar-light.png" width="56" height="56" alt="BindBoard" style="border-radius:12px;flex-shrink:0;display:none">
-        <div>
+        <div style="flex:1">
           <div style="font-size:22px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan)">Bind<span style="color:var(--text);font-weight:400">Board</span></div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="about_version">Version 1.0.0</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="about_version">Version 1.0.5</div>
           <div style="font-size:13px;color:var(--muted);margin-top:6px" data-i18n="about_tagline">Per-app macro keyboard for Windows</div>
         </div>
+        <a href="https://github.com/Mark-mark-228/BindBoard" target="_blank"
+           style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:12px;text-decoration:none;flex-shrink:0;transition:all .15s"
+           onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'"
+           onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
       </div>
 
+      <!-- Features -->
       <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_features_title">What it does</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px">
         <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
@@ -714,7 +784,7 @@ input[type=range].tpl-slider::-moz-range-thumb{
           <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="filter" data-icon-size="16"></span>
           <div>
             <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f5_title">App filter</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f5_body">Allow or block bindings based on which app is in focus</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f5_body">Allow or block bindings based on the active window — by exe, title, or file extension</div>
           </div>
         </div>
         <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
@@ -724,8 +794,69 @@ input[type=range].tpl-slider::-moz-range-thumb{
             <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f6_body">Closes to tray, not to exit — listener keeps running in the background</div>
           </div>
         </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="eye" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f7_title">Transparency</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f7_body">Tune window, sidebar, and content opacity and blur independently in the Theme tab</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="sliders" data-icon-size="16"></span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f8_title">Custom themes</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f8_body">Built-in dark and light themes, plus a fully custom palette with per-color pickers</div>
+          </div>
+        </div>
       </div>
 
+      <!-- Action types detail -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_actions_title">Bind actions</div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px">
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:700;color:var(--cyan);background:var(--cyan-d);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px" data-i18n="act_url_badge">URL</span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="act_url_desc">Opens a website in the default browser — paste any https:// link</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:700;color:var(--green);background:rgba(74,222,128,.1);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px" data-i18n="act_app_badge">APP</span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="act_app_desc">Launches any file: .exe, .lnk shortcut, .docx, .pdf, .mp3 — anything Windows can open</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.1);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px" data-i18n="act_sound_badge">SOUND</span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="act_sound_desc">Plays a sound by its Soundpad slot number — Soundpad must be running</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:700;color:var(--muted);background:var(--s1);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px" data-i18n="act_stop_badge">STOP</span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="act_stop_desc">Stops the currently playing Soundpad sound immediately</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 16px">
+          <span style="font-size:10px;font-weight:700;color:var(--purple);background:var(--pur-d);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px" data-i18n="act_mode_badge">MODE</span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="act_mode_desc">Switches to a chosen mode — use one key to toggle between completely different bind sets</div>
+        </div>
+      </div>
+
+      <!-- App filter detail -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_filter_title">How the filter works</div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:28px;font-size:12px;color:var(--muted);line-height:1.8">
+        <div style="margin-bottom:8px" data-i18n="about_filter_intro">Three match modes — the right one is picked automatically based on what you type:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-size:9px;font-weight:700;color:var(--cyan);background:var(--cyan-d);border-radius:3px;padding:1px 6px;flex-shrink:0">EXE</span>
+            <span data-i18n="about_filter_exe">Ends with <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.exe</code> — exact process name match: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">chrome.exe</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">osu!.exe</code></span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-size:9px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.12);border-radius:3px;padding:1px 6px;flex-shrink:0">LNK</span>
+            <span data-i18n="about_filter_lnk">Ends with <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.lnk</code> — matches by shortcut stem in exe name or window title</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-size:9px;font-weight:700;color:var(--purple);background:var(--pur-d);border-radius:3px;padding:1px 6px;flex-shrink:0">TITLE</span>
+            <span data-i18n="about_filter_title_mode">Anything else — substring in the window title: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">youtube</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.docx</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">report</code></span>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)" data-i18n="about_filter_library">The <b>From library</b> button opens 80+ presets across 10 categories — browsers, messengers, games, Office, file formats, and more.</div>
+      </div>
+
+      <!-- Quick start -->
       <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_howto_title">Quick start</div>
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px">
         <div style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--border)">
@@ -746,8 +877,31 @@ input[type=range].tpl-slider::-moz-range-thumb{
         </div>
       </div>
 
+      <!-- Tips -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px" data-i18n="about_tips_title">Tips</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="lightbulb" data-icon-size="16"></span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_tip1">Assign <b>Switch mode</b> to a key — then each mode becomes a full separate layout</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="lightbulb" data-icon-size="16"></span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_tip2">Use <b>Block list</b> in the filter to keep bindings off in games or documents where accidental keypresses matter</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="lightbulb" data-icon-size="16"></span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_tip3">The <b>APP</b> action type opens any file — bind a key to open your daily report, a playlist, or a project folder</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px">
+          <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="lightbulb" data-icon-size="16"></span>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_tip4">Use <b>Capture window (3s)</b> in the filter — switch to any app within 3 seconds and its title is captured automatically</div>
+        </div>
+      </div>
+
     </div>
   </div>
+
+</div><!-- /#main -->
 
 <!-- Modal -->
 <div id="modal">
@@ -794,6 +948,56 @@ input[type=range].tpl-slider::-moz-range-thumb{
   </div>
 </div>
 
+<!-- Custom Color Picker Modal -->
+<div id="cp-modal" onclick="if(event.target===this)_cpCancel()">
+  <div class="cp-card">
+    <div class="cp-canvas-wrap" id="cp-canvas-wrap" onmousedown="_cpCanvasDown(event)">
+      <canvas id="cp-canvas"></canvas>
+      <div id="cp-cursor"></div>
+    </div>
+    <div class="cp-hue-wrap" id="cp-hue-wrap" onmousedown="_cpHueDown(event)">
+      <div id="cp-hue-thumb"></div>
+    </div>
+    <div class="cp-bottom">
+      <div id="cp-preview"></div>
+      <div class="cp-inputs">
+        <div class="cp-field wide">
+          <input id="cp-hex" type="text" maxlength="7" spellcheck="false" oninput="_cpHexInput(this)">
+          <label>HEX</label>
+        </div>
+        <div class="cp-field narrow">
+          <input id="cp-r" type="number" min="0" max="255" oninput="_cpRgbInput()">
+          <label>R</label>
+        </div>
+        <div class="cp-field narrow">
+          <input id="cp-g" type="number" min="0" max="255" oninput="_cpRgbInput()">
+          <label>G</label>
+        </div>
+        <div class="cp-field narrow">
+          <input id="cp-b" type="number" min="0" max="255" oninput="_cpRgbInput()">
+          <label>B</label>
+        </div>
+      </div>
+    </div>
+    <div class="cp-footer">
+      <button class="btn" onclick="_cpCancel()" data-i18n="btn_cancel">Cancel</button>
+      <button class="btn primary" onclick="_cpConfirm()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Library Modal -->
+<div id="filter-lib-modal" onclick="if(event.target===this)closeFilterLibrary()">
+  <div class="flib-card">
+    <div class="flib-search">
+      <span data-icon="search" data-icon-size="15" style="color:var(--muted);flex-shrink:0"></span>
+      <input id="flib-search-inp" type="text" oninput="renderLibrary(this.value)">
+      <button class="btn" onclick="closeFilterLibrary()" style="padding:5px 12px;font-size:12px;flex-shrink:0">✕ Закрыть</button>
+    </div>
+    <div class="flib-body" id="flib-body"></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════
 //  ICONS — minimal stroke-based SVG set, replaces emoji glyphs
@@ -829,6 +1033,7 @@ const ICONS = {
   plus:    { c:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' },
   trash:   { c:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>' },
   layers:  { c:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+  lightbulb: { c:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>' },
 };
 
 function icon(name, size, cls) {
@@ -875,15 +1080,34 @@ let _lang = 'en';
 const STRINGS = {
   en: {
     loading:'Loading...',
-    nav_keyboard:'Keyboard', nav_binds:'Bindings', nav_launch:'Launch', nav_theme:'Theme', nav_about:'About',
-    about_version:'Version 1.0.0', about_tagline:'Per-app macro keyboard for Windows',
+    nav_keyboard:'Keyboard', nav_binds:'Bindings', nav_launch:'Launch', nav_theme:'Settings', nav_about:'About',
+    about_version:'Version 1.0.5', about_tagline:'Per-app macro keyboard for Windows',
     about_features_title:'What it does', about_howto_title:'Quick start',
     about_f1_title:'Second keyboard', about_f1_body:'Uses a separate USB keyboard as a dedicated macro pad — your main keyboard works as normal',
     about_f2_title:'Modes', about_f2_body:'Switch between profiles on the fly — one key to go from music controls to game macros',
     about_f3_title:'Action types', about_f3_body:'Open URLs, launch programs, play Soundpad sounds, switch modes — all from a key press',
     about_f4_title:'Key suppression', about_f4_body:"Intercepted keys don't reach other apps — press ESC on the macro pad without closing anything",
-    about_f5_title:'App filter', about_f5_body:'Allow or block bindings based on which app is in focus',
+    about_f5_title:'App filter', about_f5_body:'Allow or block bindings based on the active window — by exe, title, or file extension',
     about_f6_title:'System tray', about_f6_body:'Closes to tray, not to exit — listener keeps running in the background',
+    about_f7_title:'Transparency', about_f7_body:'Tune window, sidebar, and content opacity and blur independently in the Theme tab',
+    about_f8_title:'Custom themes', about_f8_body:'Built-in dark and light themes, plus a fully custom palette with per-color pickers',
+    about_actions_title:'Bind actions',
+    act_url_badge:'URL', act_url_desc:'Opens a website in the default browser — paste any https:// link',
+    act_app_badge:'APP', act_app_desc:'Launches any file: .exe, .lnk shortcut, .docx, .pdf, .mp3 — anything Windows can open',
+    act_sound_badge:'SOUND', act_sound_desc:'Plays a sound by its Soundpad slot number — Soundpad must be running',
+    act_stop_badge:'STOP', act_stop_desc:'Stops the currently playing Soundpad sound immediately',
+    act_mode_badge:'MODE', act_mode_desc:'Switches to a chosen mode — use one key to toggle between completely different bind sets',
+    about_filter_title:'How the filter works',
+    about_filter_intro:'Three match modes — the right one is picked automatically based on what you type:',
+    about_filter_exe:'Ends with <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.exe</code> — exact process name match: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">chrome.exe</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">osu!.exe</code>',
+    about_filter_lnk:'Ends with <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.lnk</code> — matches by shortcut stem in exe name or window title',
+    about_filter_title_mode:'Anything else — substring in the window title: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">youtube</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.docx</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">report</code>',
+    about_filter_library:'The <b>From library</b> button opens 80+ presets across 10 categories — browsers, messengers, games, Office, file formats, and more.',
+    about_tips_title:'Tips',
+    about_tip1:'Assign <b>Switch mode</b> to a key — then each mode becomes a full separate layout',
+    about_tip2:'Use <b>Block list</b> in the filter to keep bindings off in games or documents where accidental keypresses matter',
+    about_tip3:'The <b>APP</b> action type opens any file — bind a key to open your daily report, a playlist, or a project folder',
+    about_tip4:'Use <b>Capture window (3s)</b> in the filter — switch to any app within 3 seconds and its title is captured automatically',
     about_step1:'Go to <b>Keyboard</b> — select the second keyboard from the list and click Save',
     about_step2:'Go to <b>Bindings</b> — click any key, choose an action, click Save',
     about_step3:'Click <b>Save &amp; Apply</b> at the bottom of the sidebar',
@@ -933,8 +1157,8 @@ const STRINGS = {
     listener_status_device: d => `Device: ${d}`,
     listener_status_mode: (m,v) => `Mode: ${m}  |  VID/PID: ${v}`,
     hint_select_start:'Select a keyboard and click ▶ Start',
-    pg_settings_title:'Theme & Appearance',
-    pg_settings_sub:'Choose a theme or customize your colors',
+    pg_settings_title:'Settings',
+    pg_settings_sub:'Theme, appearance, transparency, and app filter',
     lbl_theme:'Theme', theme_dark:'Dark', theme_light:'Light', theme_custom:'Custom',
     lbl_colors:'Colors', lbl_language:'Language',
     color_bg:'Window bg', color_s1:'Sidebar', color_s2:'Cards', color_s3:'Hover',
@@ -966,6 +1190,21 @@ const STRINGS = {
     filter_hint_allow:'Bindings work ONLY when one of these apps is in focus',
     filter_hint_deny:'Bindings are BLOCKED when one of these apps is in focus',
     btn_add_filter_app:'Add app',
+    btn_from_list:'From list',
+    btn_capture_window:'Capture window (3s)',
+    btn_from_library:'From library',
+    btn_add_manual:'+ Add',
+    filter_manual_placeholder:'osu!.exe  or  report  or  Microsoft Word',
+    filter_hint_exe:'exact process name',
+    filter_hint_lnk:'shortcut → matches by name',
+    filter_hint_title:'window title substring',
+    filter_no_apps:'No apps added',
+    filter_type_exe:'<span style="color:var(--cyan);font-weight:700">EXE</span> — exact process name: <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">osu!.exe</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">WINWORD.EXE</code>',
+    filter_type_title:'<span style="color:var(--purple);font-weight:700">TITLE</span> — window title substring: <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">report</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">YouTube</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">Microsoft Word</code>',
+    filter_type_run:'Running apps are marked <span style="color:#4ade80;font-weight:700">● RUN</span> — their name is guaranteed correct.',
+    flib_search_placeholder:'Search: chrome, .pdf, discord…',
+    flib_nothing:'Nothing found',
+    capture_countdown:'Switch to target window…',
     proc_modal_title:'Choose running app',
     proc_searching:'Loading process list…', proc_none:'No processes found',
     tpl_full_name:'Full (100%)', tpl_full_sub:'104 keys with numpad',
@@ -980,15 +1219,34 @@ const STRINGS = {
   },
   ru: {
     loading:'Загрузка...',
-    nav_keyboard:'Клавиатура', nav_binds:'Биндинги', nav_launch:'Запуск', nav_theme:'Тема', nav_about:'О программе',
-    about_version:'Версия 1.0.0', about_tagline:'Макро-клавиатура для Windows с фильтром по приложениям',
+    nav_keyboard:'Клавиатура', nav_binds:'Биндинги', nav_launch:'Запуск', nav_theme:'Настройки', nav_about:'О программе',
+    about_version:'Версия 1.0.5', about_tagline:'Макро-клавиатура для Windows с фильтром по приложениям',
     about_features_title:'Возможности', about_howto_title:'Быстрый старт',
     about_f1_title:'Вторая клавиатура', about_f1_body:'Использует отдельную USB-клавиатуру как макро-пад — основная клавиатура работает как обычно',
     about_f2_title:'Режимы', about_f2_body:'Переключайся между профилями на лету — одна клавиша меняет набор биндингов',
     about_f3_title:'Типы действий', about_f3_body:'Открыть URL, запустить программу, воспроизвести звук в Soundpad, сменить режим — всё с одной клавиши',
     about_f4_title:'Подавление клавиш', about_f4_body:'Перехваченные клавиши не достигают других программ — ESC на макро-паде не закроет ничего',
-    about_f5_title:'Фильтр приложений', about_f5_body:'Включай или блокируй биндинги в зависимости от активного окна',
+    about_f5_title:'Фильтр приложений', about_f5_body:'Включай или блокируй биндинги в зависимости от активного окна — по exe, заголовку или расширению файла',
     about_f6_title:'Системный трей', about_f6_body:'Закрывается в трей, а не завершается — слушатель продолжает работать в фоне',
+    about_f7_title:'Прозрачность', about_f7_body:'Настраивай прозрачность и размытие окна, сайдбара и контента независимо на вкладке Тема',
+    about_f8_title:'Темы оформления', about_f8_body:'Встроенные тёмная и светлая темы, плюс полностью кастомная палитра с пикером для каждого цвета',
+    about_actions_title:'Типы биндингов',
+    act_url_badge:'URL', act_url_desc:'Открывает сайт в браузере по умолчанию — вставь любую https:// ссылку',
+    act_app_badge:'APP', act_app_desc:'Запускает любой файл: .exe, .lnk ярлык, .docx, .pdf, .mp3 — всё что умеет открывать Windows',
+    act_sound_badge:'SOUND', act_sound_desc:'Воспроизводит звук по его номеру слота в Soundpad — Soundpad должен быть запущен',
+    act_stop_badge:'STOP', act_stop_desc:'Немедленно останавливает текущий звук в Soundpad',
+    act_mode_badge:'MODE', act_mode_desc:'Переключает на выбранный режим — используй одну клавишу чтобы мгновенно сменить весь набор биндингов',
+    about_filter_title:'Как работает фильтр',
+    about_filter_intro:'Три режима сопоставления — нужный выбирается автоматически в зависимости от того, что ты вводишь:',
+    about_filter_exe:'Оканчивается на <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.exe</code> — точное совпадение с именем процесса: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">chrome.exe</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">osu!.exe</code>',
+    about_filter_lnk:'Оканчивается на <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.lnk</code> — сопоставляет по имени ярлыка в имени процесса или заголовке окна',
+    about_filter_title_mode:'Всё остальное — подстрока в заголовке окна: <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">youtube</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">.docx</code>, <code style="font-size:11px;background:var(--s1);padding:1px 5px;border-radius:3px">отчёт</code>',
+    about_filter_library:'Кнопка <b>Из библиотеки</b> открывает 80+ пресетов по 10 категориям — браузеры, мессенджеры, игры, Office, форматы файлов и многое другое.',
+    about_tips_title:'Советы',
+    about_tip1:'Назначь <b>Смена режима</b> на клавишу — тогда каждый режим станет отдельной полноценной раскладкой',
+    about_tip2:'Используй <b>Чёрный список</b> в фильтре чтобы биндинги не срабатывали в играх или документах где случайное нажатие критично',
+    about_tip3:'Тип действия <b>APP</b> открывает любой файл — забинди клавишу на ежедневный отчёт, плейлист или папку проекта',
+    about_tip4:'Используй <b>Захватить окно (3с)</b> в фильтре — переключись на нужное приложение за 3 секунды и его заголовок будет захвачен автоматически',
     about_step1:'Открой <b>Клавиатура</b> — выбери вторую клавиатуру из списка и нажми Сохранить',
     about_step2:'Открой <b>Биндинги</b> — кликни клавишу, выбери действие, нажми Сохранить',
     about_step3:'Нажми <b>Сохранить и применить</b> внизу сайдбара',
@@ -1038,8 +1296,8 @@ const STRINGS = {
     listener_status_device: d => `Устройство: ${d}`,
     listener_status_mode: (m,v) => `Режим: ${m}  |  VID/PID: ${v}`,
     hint_select_start:'Выбери клавиатуру и нажми ▶ Запустить',
-    pg_settings_title:'Тема и внешний вид',
-    pg_settings_sub:'Выбери тему или настрой свои цвета',
+    pg_settings_title:'Настройки',
+    pg_settings_sub:'Тема, оформление, прозрачность и фильтр приложений',
     lbl_theme:'Тема', theme_dark:'Тёмная', theme_light:'Светлая', theme_custom:'Своя',
     lbl_colors:'Цвета', lbl_language:'Язык',
     color_bg:'Фон окна', color_s1:'Боковая панель', color_s2:'Карточки', color_s3:'Hover',
@@ -1071,6 +1329,21 @@ const STRINGS = {
     filter_hint_allow:'Биндинги работают ТОЛЬКО когда в фокусе одно из этих приложений',
     filter_hint_deny:'Биндинги ЗАБЛОКИРОВАНЫ когда в фокусе одно из этих приложений',
     btn_add_filter_app:'Добавить приложение',
+    btn_from_list:'Из списка',
+    btn_capture_window:'Захватить окно (3с)',
+    btn_from_library:'Из библиотеки',
+    btn_add_manual:'+ Добавить',
+    filter_manual_placeholder:'osu!.exe  или  отчёт  или  Microsoft Word',
+    filter_hint_exe:'точное имя процесса',
+    filter_hint_lnk:'ярлык → ищет по имени',
+    filter_hint_title:'подстрока в заголовке окна',
+    filter_no_apps:'Нет приложений',
+    filter_type_exe:'<span style="color:var(--cyan);font-weight:700">EXE</span> — точное имя процесса: <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">osu!.exe</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">WINWORD.EXE</code>',
+    filter_type_title:'<span style="color:var(--purple);font-weight:700">TITLE</span> — подстрока заголовка окна: <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">отчёт</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">YouTube</code>, <code style="font-size:10px;background:var(--s1);padding:1px 4px;border-radius:3px">Microsoft Word</code>',
+    filter_type_run:'Запущенные помечены <span style="color:#4ade80;font-weight:700">● RUN</span> — у них имя гарантировано верное.',
+    flib_search_placeholder:'Поиск: chrome, .pdf, discord…',
+    flib_nothing:'Ничего не найдено',
+    capture_countdown:'Переключись на нужное окно…',
     proc_modal_title:'Выбрать запущенное приложение',
     proc_searching:'Загружаем список процессов…', proc_none:'Процессы не найдены',
     tpl_full_name:'Полная (100%)', tpl_full_sub:'104 кл. с нампадом',
@@ -1099,6 +1372,18 @@ function applyLang() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === _lang);
   });
+  // Dynamic filter hint block
+  const fth = document.getElementById('filter-type-hint');
+  if (fth) fth.innerHTML =
+    `<div>${t('filter_type_exe')}</div>` +
+    `<div>${t('filter_type_title')}</div>` +
+    `<div style="margin-top:4px;color:var(--muted2)">${t('filter_type_run')}</div>`;
+  // Placeholder for manual filter input
+  const fmi = document.getElementById('filter-manual-input');
+  if (fmi) fmi.placeholder = t('filter_manual_placeholder');
+  // Placeholder for library search
+  const fsi = document.getElementById('flib-search-inp');
+  if (fsi) fsi.placeholder = t('flib_search_placeholder');
 }
 
 function changeLang(lang) {
@@ -1290,6 +1575,8 @@ async function init() {
         }
       }
     }
+    // Apply theme from config.json (reliable, unlike localStorage for file://)
+    _applyThemeFromConfig(config.theme || 'dark', config.custom_theme || {});
     document.getElementById('loading').style.display = 'none';
     renderTemplateCards();
     renderModeTabs();
@@ -1854,7 +2141,7 @@ function selectKey(code) {
   document.getElementById('edt-type').value  = bind?.type  || '';
   document.getElementById('edt-value').value = bind?.value || '';
   document.getElementById('edt-label').value = bind?.label || '';
-  document.getElementById('edt-color').value = bind?.color || '#7c8aff';
+  _setEdtColor(bind?.color || '#7c8aff');
 
   onTypeChange();
 
@@ -1955,7 +2242,7 @@ function clearBind() {
   document.getElementById('edt-type').value  = '';
   document.getElementById('edt-value').value = '';
   document.getElementById('edt-label').value = '';
-  document.getElementById('edt-color').value = '#7c8aff';
+  _setEdtColor('#7c8aff');
   onTypeChange();
   showToast(t('toast_bind_cleared'));
 }
@@ -1985,7 +2272,7 @@ async function testBind() {
 function openAddMode() {
   showModal(t('modal_new_mode'),
     `<div class="field"><label>${t('lbl_mode_name')}</label><input id="m-name" type="text" placeholder="My mode" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
-     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><input id="m-color" type="color" value="#7c8aff" style="height:34px;border-radius:7px;border:1px solid var(--border);background:var(--s2);cursor:pointer;width:60px"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><div style="display:flex;gap:8px;align-items:center"><input id="m-color" type="hidden" value="#7c8aff"><button class="color-swatch" id="m-color-swatch" data-hex="#7c8aff" style="background:#7c8aff;width:44px;height:34px;border-radius:7px" onclick="_cpOpenForId('m-color','m-color-swatch')" type="button"></button><span id="m-color-val" style="font-size:12px;color:var(--muted);font-family:monospace">#7c8aff</span></div></div>
      <div class="field" style="margin-top:10px"><label>${t('lbl_mode_icon')}</label>${buildIconPicker('zap')}</div>`,
     [{label:t('btn_cancel'), cls:'btn'}, {label:t('btn_create'), cls:'btn primary', action: createMode}]
   );
@@ -2014,7 +2301,7 @@ function openModeEdit(id, ev) {
   if (!mode) return;
   showModal(t('modal_edit_mode'),
     `<div class="field"><label>${t('lbl_mode_name')}</label><input id="em-name" type="text" value="${escQ(mode.name)}" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
-     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><input id="em-color" type="color" value="${mode.color}" style="height:34px;border-radius:7px;border:1px solid var(--border);background:var(--s2);cursor:pointer;width:60px"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><div style="display:flex;gap:8px;align-items:center"><input id="em-color" type="hidden" value="${escQ(mode.color)}"><button class="color-swatch" id="em-color-swatch" data-hex="${escQ(mode.color)}" style="background:${escQ(mode.color)};width:44px;height:34px;border-radius:7px" onclick="_cpOpenForId('em-color','em-color-swatch')" type="button"></button><span id="em-color-val" style="font-size:12px;color:var(--muted);font-family:monospace">${escQ(mode.color)}</span></div></div>
      <div class="field" style="margin-top:10px"><label>${t('lbl_mode_icon')}</label>${buildIconPicker(mode.icon)}</div>`,
     [
       {label:t('btn_delete'), cls:'btn danger', action: () => deleteMode(id)},
@@ -2028,7 +2315,7 @@ function saveMode(id) {
   const mode = config.modes.find(m => m.id === id);
   if (!mode) return;
   mode.name  = document.getElementById('em-name').value.trim() || mode.name;
-  mode.color = document.getElementById('em-color').value;
+  mode.color = document.getElementById('em-color').value || mode.color;
   mode.icon  = _pickerIcon || mode.icon || 'zap';
   closeModal();
   markDirty();
@@ -2298,6 +2585,31 @@ const COLOR_LABEL_KEYS = {
   '--text':'color_text','--muted':'color_muted'
 };
 
+// ── Theme persistence (saved into config via save_config) ────
+let _themeSaveTimer = null;
+function _scheduleThemeSave() {
+  clearTimeout(_themeSaveTimer);
+  _themeSaveTimer = setTimeout(() => {
+    if (window.pywebview && config) window.pywebview.api.save_config(config);
+  }, 500);
+}
+
+function _applyThemeFromConfig(name, customColors) {
+  // Sync localStorage so initSettingsPage / applyCustomTheme work correctly
+  localStorage.setItem('bb-theme', name || 'dark');
+  if (customColors && Object.keys(customColors).length)
+    localStorage.setItem('bb-custom-theme', JSON.stringify(customColors));
+  const root = document.documentElement;
+  root.setAttribute('data-theme', name || 'dark');
+  if (name === 'custom') {
+    const vals = Object.assign({}, DARK_DEFAULTS, customColors || {});
+    Object.entries(vals).forEach(([k,v]) => root.style.setProperty(k,v));
+  } else {
+    Object.keys(DARK_DEFAULTS).forEach(p => root.style.removeProperty(p));
+  }
+}
+// ────────────────────────────────────────────────────────────
+
 function selectTheme(name) {
   const root = document.documentElement;
   root.setAttribute('data-theme', name);
@@ -2313,6 +2625,13 @@ function selectTheme(name) {
     buildCustomEditor();
     applyCustomTheme();
   }
+  // Persist theme in config.json via save_config (reliable — same path as binds)
+  if (config) {
+    config.theme = name;
+    config.custom_theme = (name === 'custom')
+      ? JSON.parse(localStorage.getItem('bb-custom-theme') || '{}') : {};
+    if (window.pywebview) window.pywebview.api.save_config(config);
+  }
 }
 
 function applyCustomTheme() {
@@ -2326,10 +2645,11 @@ function applyCustomTheme() {
 function syncColorPickers(vals) {
   Object.keys(DARK_DEFAULTS).forEach(k => {
     const key = k.slice(2);
-    const inp = document.getElementById('cp-' + key);
+    const sw  = document.getElementById('cs-' + key);
     const lbl = document.getElementById('cv-' + key);
-    if (inp) inp.value = hexExpand(vals[k]);
-    if (lbl) lbl.textContent = vals[k];
+    const hex = hexExpand(vals[k]);
+    if (sw)  { sw.style.background = hex; sw.dataset.hex = hex; }
+    if (lbl) lbl.textContent = hex;
   });
 }
 
@@ -2340,6 +2660,12 @@ function updateCustomColor(prop, value) {
   document.documentElement.style.setProperty(prop, value);
   const lbl = document.getElementById('cv-' + prop.slice(2));
   if (lbl) lbl.textContent = value;
+  // Persist into config.json (debounced — fires rapidly during color drag)
+  if (config) {
+    config.theme = 'custom';
+    config.custom_theme = stored;
+    _scheduleThemeSave();
+  }
 }
 
 function hexExpand(hex) {
@@ -2359,7 +2685,7 @@ function buildCustomEditor() {
     row.className = 'color-row';
     const stored = JSON.parse(localStorage.getItem('bb-custom-theme') || '{}');
     const val = hexExpand(stored[prop] || DARK_DEFAULTS[prop]);
-    row.innerHTML = `<label>${t(labelKey)}</label><input type="color" id="cp-${key}" value="${val}" oninput="updateCustomColor('${prop}',this.value)"><span class="color-val" id="cv-${key}">${val}</span>`;
+    row.innerHTML = `<label>${t(labelKey)}</label><button class="color-swatch" id="cs-${key}" data-hex="${val}" style="background:${val}" onclick="_cpOpenForSwatch('${prop}','${key}')" type="button"></button><span class="color-val" id="cv-${key}">${val}</span>`;
     container.appendChild(row);
   });
 }
@@ -2368,20 +2694,28 @@ function buildCustomEditor() {
 //  TRANSPARENCY SETTINGS (Personal)
 // ═══════════════════════════════════════════════════════
 const TRANSP_DEFAULTS = {
-  'window':       255,   // 0–255 → window-level alpha (255 = fully opaque)
-  'sidebar-op':   100,   // 0–100 → sidebar opacity (CSS)
-  'sidebar-blur': 0,     // 0–64  → blur behind sidebar (px)
-  'main-op':      100,   // 0–100 → main panel opacity (CSS)
-  'main-blur':    0,     // 0–64  → blur behind main panel (px)
+  'window':       215,   // 0–255 → window-level alpha (255 = 100% opaque)
+  'sidebar-op':   78,    // 0–100 → sidebar opacity (CSS)
+  'sidebar-blur': 32,    // 0–64  → blur behind sidebar (px)
+  'main-op':      62,    // 0–100 → main panel opacity (CSS)
+  'main-blur':    28,    // 0–64  → blur behind main panel (px)
 };
 
 function _loadTransp() {
+  // Prefer config.json (reliable) over localStorage (unreliable for file://)
+  if (config && config.transparency && Object.keys(config.transparency).length)
+    return Object.assign({}, TRANSP_DEFAULTS, config.transparency);
   return Object.assign({}, TRANSP_DEFAULTS,
     JSON.parse(localStorage.getItem('bb-transparency') || '{}'));
 }
 
 function _saveTransp(vals) {
   localStorage.setItem('bb-transparency', JSON.stringify(vals));
+  // Also persist to config.json via save_config (same mechanism as binds)
+  if (config) {
+    config.transparency = vals;
+    _scheduleThemeSave();
+  }
 }
 
 function _transpLabel(key, val) {
@@ -2488,9 +2822,27 @@ async function openProcPicker(target, onSelect) {
   const list = document.getElementById('proc-list');
   list.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">${t('proc_searching')}</div>`;
   try {
-    // Filter mode: show ALL installed apps (so user can pick apps that aren't running).
-    // Bind mode: same installed apps list. Running-processes mode no longer used.
-    _allProcs = await window.pywebview.api.list_installed_apps();
+    if (_procPickerTarget === 'filter') {
+      // Filter mode: merge running processes (guaranteed correct exe name) +
+      // installed apps (broader coverage). Running ones get priority + badge.
+      const [procs, apps] = await Promise.all([
+        window.pywebview.api.list_processes(),
+        window.pywebview.api.list_installed_apps(),
+      ]);
+      // Tag running processes so renderProcs can badge them
+      const runningExes = new Set(procs.map(p => p.name.toLowerCase()));
+      const taggedProcs = procs.map(p => ({...p, ftype:'proc'}));
+      // Keep installed apps that are NOT already covered by a running process
+      const installedOnly = apps.filter(a => {
+        const exe = a.exe || '';
+        if (exe.startsWith('shell:') || exe.startsWith('steam://')) return true;
+        const base = exe.replace(/\\/g,'/').split('/').pop().toLowerCase();
+        return !runningExes.has(base);
+      });
+      _allProcs = [...taggedProcs, ...installedOnly];
+    } else {
+      _allProcs = await window.pywebview.api.list_installed_apps();
+    }
   } catch(e) { _allProcs = []; }
   renderProcs(_allProcs);
 }
@@ -2514,8 +2866,9 @@ function renderProcs(list) {
     return;
   }
   el.innerHTML = list.map((p, i) => {
-    const isSteam = p.ftype === 'steam';
-    const isUwp   = p.ftype === 'uwp';
+    const isSteam   = p.ftype === 'steam';
+    const isUwp     = p.ftype === 'uwp';
+    const isRunning = p.ftype === 'proc';
     const ico = p.icon
       ? `<img src="${p.icon}" style="width:20px;height:20px;border-radius:3px;flex-shrink:0">`
       : isSteam
@@ -2527,8 +2880,12 @@ function renderProcs(list) {
       ? `<span style="font-size:9px;font-weight:700;color:#1b9cd8;background:rgba(27,156,216,.15);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">STEAM</span>`
       : isUwp
         ? `<span style="font-size:9px;font-weight:700;color:#9b59b6;background:rgba(155,89,182,.15);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">STORE</span>`
-        : '';
-    const sub = isSteam ? `App ID: ${escHtml(p.exe)}` : isUwp ? 'Microsoft Store' : escHtml(p.exe||'');
+        : isRunning
+          ? `<span style="font-size:9px;font-weight:700;color:#4ade80;background:rgba(74,222,128,.12);border-radius:3px;padding:1px 4px;margin-left:5px;flex-shrink:0">● RUN</span>`
+          : '';
+    const sub = isSteam ? `App ID: ${escHtml(p.exe)}` : isUwp ? 'Microsoft Store'
+      : isRunning ? escHtml(p.name)   // running: show just exe name as hint
+      : escHtml(p.exe||'');
     return `<div class="proc-item" onclick="selectProc(${i})">
        ${ico}
        <div class="proc-info" style="min-width:0">
@@ -2607,15 +2964,28 @@ function renderFilterApps(apps) {
   const el = document.getElementById('filter-app-list');
   if (!el) return;
   if (!apps.length) {
-    el.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:6px 0">No apps added yet</div>`;
+    el.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:6px 0">${t('filter_no_apps')}</div>`;
     return;
   }
   el.innerHTML = apps.map((a, i) => {
-    // Show file icon for .exe entries, monitor icon for others
-    const ico = a.endsWith('.exe') ? icon('terminal',13) : icon('monitor',13);
-    return `<div class="filter-app-item">
+    let badge, ico, hint;
+    if (a.endsWith('.exe')) {
+      badge = `<span style="font-size:9px;font-weight:700;color:var(--cyan);background:var(--cyan-d);border-radius:3px;padding:1px 5px;flex-shrink:0">EXE</span>`;
+      ico   = icon('terminal', 13);
+      hint  = t('filter_hint_exe');
+    } else if (a.endsWith('.lnk')) {
+      badge = `<span style="font-size:9px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.12);border-radius:3px;padding:1px 5px;flex-shrink:0">LNK</span>`;
+      ico   = icon('link', 13);
+      hint  = t('filter_hint_lnk');
+    } else {
+      badge = `<span style="font-size:9px;font-weight:700;color:var(--purple);background:var(--pur-d);border-radius:3px;padding:1px 5px;flex-shrink:0">TITLE</span>`;
+      ico   = icon('edit', 13);
+      hint  = t('filter_hint_title');
+    }
+    return `<div class="filter-app-item" title="${escHtml(hint)}">
        <span class="proc-ico">${ico}</span>
-       <span class="filter-app-name" style="font-family:monospace;font-size:12px">${escHtml(a)}</span>
+       ${badge}
+       <span class="filter-app-name" style="font-family:monospace;font-size:12px;flex:1">${escHtml(a)}</span>
        <button class="btn-sm" style="padding:4px 8px;font-size:11px" onclick="removeFilterApp(${i})">${icon('trash',13)}</button>
      </div>`;
   }).join('');
@@ -2624,17 +2994,19 @@ function renderFilterApps(apps) {
 function addFilterApp() {
   openProcPicker('filter', p => {
     if (!config.app_filter) config.app_filter = {mode:'disabled', apps:[]};
-    // For installed apps we need the exe FILENAME (e.g. "osu!.exe"), because the
-    // filter matches against the foreground window's process exe name, not the
-    // display name. Extract basename from the exe path; fall back to display name
-    // for UWP / Steam entries that don't have a real path.
+    // The filter checks the foreground window's exe filename (e.g. "osu!.exe").
+    // Running processes (ftype:'proc') already have p.name = the exact exe name.
+    // Installed apps need exe basename extraction; UWP/Steam fall back to display name.
     let filterName;
-    const exe = p.exe || '';
-    if (exe && !exe.startsWith('shell:') && !exe.startsWith('steam://')) {
-      // real path → take just the filename
-      filterName = exe.replace(/\\/g, '/').split('/').pop().toLowerCase();
+    if (p.ftype === 'proc') {
+      filterName = p.name.toLowerCase();            // "osu!.exe" — guaranteed correct
     } else {
-      filterName = p.name.toLowerCase();
+      const exe = p.exe || '';
+      if (exe && !exe.startsWith('shell:') && !exe.startsWith('steam://')) {
+        filterName = exe.replace(/\\/g, '/').split('/').pop().toLowerCase();
+      } else {
+        filterName = p.name.toLowerCase();
+      }
     }
     if (!config.app_filter.apps.includes(filterName)) {
       config.app_filter.apps.push(filterName);
@@ -2644,11 +3016,409 @@ function addFilterApp() {
   });
 }
 
+function captureFilterWindow() {
+  // Give user 3 seconds to switch to the target window, then read its title/exe
+  const btn = document.getElementById('btn-capture-window');
+  const lbl = document.getElementById('capture-btn-txt');
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  let sec = 3;
+  lbl.textContent = `${t('capture_countdown')} ${sec}s`;
+  const iv = setInterval(() => {
+    sec--;
+    if (sec > 0) {
+      lbl.textContent = `${t('capture_countdown')} ${sec}s`;
+    } else {
+      clearInterval(iv);
+      if (window.pywebview?.api) {
+        window.pywebview.api.get_active_window_info().then(info => {
+          const inp = document.getElementById('filter-manual-input');
+          if (inp) {
+            inp.value = info.title || info.exe || '';
+            inp.focus();
+            inp.select();
+          }
+          lbl.textContent = `${info.exe} — ${info.title || '?'}`;
+          setTimeout(() => { lbl.textContent = t('btn_capture_window'); btn.disabled = false; }, 3000);
+        }).catch(() => { lbl.textContent = t('btn_capture_window'); btn.disabled = false; });
+      } else {
+        lbl.textContent = t('btn_capture_window'); btn.disabled = false;
+      }
+    }
+  }, 1000);
+}
+
+function addFilterManual() {
+  const inp = document.getElementById('filter-manual-input');
+  if (!inp) return;
+  let name = inp.value.trim().toLowerCase();
+  if (!name) return;
+  // Ensure it ends with .exe if user didn't type extension
+  if (!name.includes('.') ) name += '.exe';
+  if (!config.app_filter) config.app_filter = {mode:'disabled', apps:[]};
+  if (!config.app_filter.apps.includes(name)) {
+    config.app_filter.apps.push(name);
+    renderFilterApps(config.app_filter.apps);
+    markDirty();
+  }
+  inp.value = '';
+}
+
 function removeFilterApp(idx) {
   if (!config.app_filter?.apps) return;
   config.app_filter.apps.splice(idx, 1);
   renderFilterApps(config.app_filter.apps);
   markDirty();
+}
+
+// ═══════════════════════════════════════════════════════
+//  CUSTOM COLOR PICKER
+// ═══════════════════════════════════════════════════════
+let _cpH=0,_cpS=1,_cpV=1,_cpCb=null,_cpCanDrag=false,_cpHueDrag=false;
+
+function _hex2rgb(hex){
+  hex=hex.replace('#','');
+  if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+  return{r:parseInt(hex.slice(0,2),16)||0,g:parseInt(hex.slice(2,4),16)||0,b:parseInt(hex.slice(4,6),16)||0};
+}
+function _rgb2hex(r,g,b){
+  return'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function _rgb2hsv(r,g,b){
+  r/=255;g/=255;b/=255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+  let h=0,s=mx===0?0:d/mx,v=mx;
+  if(d>0){if(mx===r)h=((g-b)/d+(g<b?6:0))/6;else if(mx===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6;}
+  return{h:h*360,s,v};
+}
+function _hsv2rgb(h,s,v){
+  h/=360;const i=Math.floor(h*6),f=h*6-i;
+  const p=v*(1-s),q=v*(1-f*s),t=v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){case 0:r=v;g=t;b=p;break;case 1:r=q;g=v;b=p;break;case 2:r=p;g=v;b=t;break;case 3:r=p;g=q;b=v;break;case 4:r=t;g=p;b=v;break;case 5:r=v;g=p;b=q;break;}
+  return{r:Math.round(r*255),g:Math.round(g*255),b:Math.round(b*255)};
+}
+
+function openColorPicker(hex,cb){
+  _cpCb=cb;
+  const rgb=_hex2rgb(hex||'#7c8aff');
+  const hsv=_rgb2hsv(rgb.r,rgb.g,rgb.b);
+  _cpH=hsv.h;_cpS=hsv.s;_cpV=hsv.v;
+  document.getElementById('cp-modal').classList.add('open');
+  requestAnimationFrame(()=>{_cpDraw();_cpSyncUI();});
+}
+function _cpCancel(){document.getElementById('cp-modal').classList.remove('open');_cpCb=null;}
+function _cpConfirm(){
+  const rgb=_hsv2rgb(_cpH,_cpS,_cpV);
+  const hex=_rgb2hex(rgb.r,rgb.g,rgb.b);
+  if(_cpCb)_cpCb(hex);
+  document.getElementById('cp-modal').classList.remove('open');_cpCb=null;
+}
+
+function _cpDraw(){
+  const wrap=document.getElementById('cp-canvas-wrap');
+  const canvas=document.getElementById('cp-canvas');
+  const w=wrap.clientWidth||252,h=wrap.clientHeight||168;
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const hRgb=_hsv2rgb(_cpH,1,1);
+  const gH=ctx.createLinearGradient(0,0,w,0);
+  gH.addColorStop(0,'#fff');
+  gH.addColorStop(1,`rgb(${hRgb.r},${hRgb.g},${hRgb.b})`);
+  ctx.fillStyle=gH;ctx.fillRect(0,0,w,h);
+  const gV=ctx.createLinearGradient(0,0,0,h);
+  gV.addColorStop(0,'rgba(0,0,0,0)');gV.addColorStop(1,'#000');
+  ctx.fillStyle=gV;ctx.fillRect(0,0,w,h);
+  const cur=document.getElementById('cp-cursor');
+  cur.style.left=(_cpS*w)+'px';cur.style.top=((1-_cpV)*h)+'px';
+}
+function _cpSyncUI(){
+  const rgb=_hsv2rgb(_cpH,_cpS,_cpV);
+  const hex=_rgb2hex(rgb.r,rgb.g,rgb.b);
+  document.getElementById('cp-preview').style.background=hex;
+  document.getElementById('cp-hex').value=hex;
+  document.getElementById('cp-r').value=rgb.r;
+  document.getElementById('cp-g').value=rgb.g;
+  document.getElementById('cp-b').value=rgb.b;
+  const hw=document.getElementById('cp-hue-wrap');
+  document.getElementById('cp-hue-thumb').style.left=Math.round(_cpH/360*hw.clientWidth)+'px';
+}
+
+function _cpCanvasDown(e){_cpCanDrag=true;_cpCanvasMove(e);}
+function _cpCanvasMove(e){
+  if(!_cpCanDrag)return;
+  const c=document.getElementById('cp-canvas');const r=c.getBoundingClientRect();
+  _cpS=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  _cpV=1-Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+  _cpDraw();_cpSyncUI();
+}
+function _cpHueDown(e){_cpHueDrag=true;_cpHueMove(e);}
+function _cpHueMove(e){
+  if(!_cpHueDrag)return;
+  const w=document.getElementById('cp-hue-wrap');const r=w.getBoundingClientRect();
+  _cpH=Math.max(0,Math.min(360,((e.clientX-r.left)/r.width)*360));
+  _cpDraw();_cpSyncUI();
+}
+document.addEventListener('mouseup',()=>{_cpCanDrag=false;_cpHueDrag=false;});
+document.addEventListener('mousemove',e=>{_cpCanvasMove(e);_cpHueMove(e);});
+
+function _cpHexInput(inp){
+  let v=inp.value.trim();if(!v.startsWith('#'))v='#'+v;
+  if(/^#[0-9a-fA-F]{6}$/.test(v)){
+    const rgb=_hex2rgb(v);const hsv=_rgb2hsv(rgb.r,rgb.g,rgb.b);
+    _cpH=hsv.h;_cpS=hsv.s;_cpV=hsv.v;_cpDraw();_cpSyncUI();inp.value=v;
+  }
+}
+function _cpRgbInput(){
+  const r=Math.max(0,Math.min(255,parseInt(document.getElementById('cp-r').value)||0));
+  const g=Math.max(0,Math.min(255,parseInt(document.getElementById('cp-g').value)||0));
+  const b=Math.max(0,Math.min(255,parseInt(document.getElementById('cp-b').value)||0));
+  const hsv=_rgb2hsv(r,g,b);_cpH=hsv.h;_cpS=hsv.s;_cpV=hsv.v;_cpDraw();_cpSyncUI();
+}
+
+// Open picker for a hidden-input + swatch pair
+function _cpOpenForId(hidId, swatchId){
+  const hidden=document.getElementById(hidId);
+  const swatch=document.getElementById(swatchId);
+  const valId=swatchId.replace('-swatch','-val');
+  openColorPicker(hidden.value||'#7c8aff',hex=>{
+    hidden.value=hex;
+    swatch.style.background=hex;swatch.dataset.hex=hex;
+    const valEl=document.getElementById(valId);if(valEl)valEl.textContent=hex;
+  });
+}
+
+// Open picker for custom theme color swatch
+function _cpOpenForSwatch(prop, key){
+  const sw=document.getElementById('cs-'+key);
+  openColorPicker(sw?.dataset.hex||'#7c8aff',hex=>{
+    sw.style.background=hex;sw.dataset.hex=hex;
+    const lbl=document.getElementById('cv-'+key);if(lbl)lbl.textContent=hex;
+    updateCustomColor(prop,hex);
+  });
+}
+
+// Helper for edt-color
+function _setEdtColor(hex){
+  document.getElementById('edt-color').value=hex;
+  const sw=document.getElementById('edt-color-swatch');
+  if(sw){sw.style.background=hex;sw.dataset.hex=hex;}
+}
+
+// ═══════════════════════════════════════════════════════
+//  FEATURE 6 — Filter preset library
+// ═══════════════════════════════════════════════════════
+const FILTER_LIBRARY = [
+  {
+    cat: '🌐 Браузеры',
+    items: [
+      { name: 'Google Chrome',    val: 'chrome.exe',          type: 'exe' },
+      { name: 'Mozilla Firefox',  val: 'firefox.exe',         type: 'exe' },
+      { name: 'Microsoft Edge',   val: 'msedge.exe',          type: 'exe' },
+      { name: 'Opera',            val: 'opera.exe',           type: 'exe' },
+      { name: 'Brave',            val: 'brave.exe',           type: 'exe' },
+      { name: 'Yandex Browser',   val: 'browser.exe',         type: 'exe' },
+      { name: 'Vivaldi',          val: 'vivaldi.exe',         type: 'exe' },
+      { name: 'Tor Browser',      val: 'firefox.exe',         type: 'exe' },
+    ]
+  },
+  {
+    cat: '📄 Microsoft Office',
+    items: [
+      { name: 'Word',             val: 'winword.exe',         type: 'exe' },
+      { name: 'Excel',            val: 'excel.exe',           type: 'exe' },
+      { name: 'PowerPoint',       val: 'powerpnt.exe',        type: 'exe' },
+      { name: 'Outlook',          val: 'outlook.exe',         type: 'exe' },
+      { name: 'OneNote',          val: 'onenote.exe',         type: 'exe' },
+      { name: 'Access',           val: 'msaccess.exe',        type: 'exe' },
+      { name: 'Teams',            val: 'teams.exe',           type: 'exe' },
+    ]
+  },
+  {
+    cat: '📋 LibreOffice / OpenOffice',
+    items: [
+      { name: 'LibreOffice Writer',  val: 'swriter.exe',      type: 'exe' },
+      { name: 'LibreOffice Calc',    val: 'scalc.exe',        type: 'exe' },
+      { name: 'LibreOffice Impress', val: 'simpress.exe',     type: 'exe' },
+      { name: 'LibreOffice Base',    val: 'sbase.exe',        type: 'exe' },
+      { name: 'LibreOffice Draw',    val: 'sdraw.exe',        type: 'exe' },
+    ]
+  },
+  {
+    cat: '💬 Мессенджеры',
+    items: [
+      { name: 'Discord',          val: 'discord.exe',         type: 'exe' },
+      { name: 'Telegram',         val: 'telegram.exe',        type: 'exe' },
+      { name: 'WhatsApp',         val: 'whatsapp.exe',        type: 'exe' },
+      { name: 'Slack',            val: 'slack.exe',           type: 'exe' },
+      { name: 'Skype',            val: 'skype.exe',           type: 'exe' },
+      { name: 'Viber',            val: 'viber.exe',           type: 'exe' },
+      { name: 'Signal',           val: 'signal.exe',          type: 'exe' },
+      { name: 'VK Мессенджер',    val: 'vk.exe',              type: 'exe' },
+      { name: 'Zoom',             val: 'zoom.exe',            type: 'exe' },
+    ]
+  },
+  {
+    cat: '🎮 Игры и платформы',
+    items: [
+      { name: 'osu!',             val: 'osu!.exe',            type: 'exe' },
+      { name: 'Steam',            val: 'steam.exe',           type: 'exe' },
+      { name: 'Epic Games',       val: 'epicgameslauncher.exe', type: 'exe' },
+      { name: 'Battle.net',       val: 'battle.net.exe',      type: 'exe' },
+      { name: 'Minecraft (Java)', val: 'javaw.exe',           type: 'exe' },
+      { name: 'League of Legends', val: 'leagueoflegends.exe', type: 'exe' },
+      { name: 'Valorant',         val: 'valorant.exe',        type: 'exe' },
+      { name: 'CS2 / CS:GO',      val: 'cs2.exe',             type: 'exe' },
+      { name: 'Roblox',           val: 'robloxplayerbeta.exe', type: 'exe' },
+      { name: 'GOG Galaxy',       val: 'gogalaxy.exe',        type: 'exe' },
+    ]
+  },
+  {
+    cat: '🎵 Медиа и стриминг',
+    items: [
+      { name: 'Spotify',          val: 'spotify.exe',         type: 'exe' },
+      { name: 'VLC',              val: 'vlc.exe',             type: 'exe' },
+      { name: 'YouTube (браузер)', val: 'youtube',            type: 'title' },
+      { name: 'Twitch (браузер)', val: 'twitch.tv',           type: 'title' },
+      { name: 'Netflix (браузер)', val: 'netflix',            type: 'title' },
+      { name: 'Яндекс Музыка',    val: 'яндекс.музыка',      type: 'title' },
+      { name: 'AIMP',             val: 'aimp.exe',            type: 'exe' },
+      { name: 'foobar2000',       val: 'foobar2000.exe',      type: 'exe' },
+      { name: 'OBS Studio',       val: 'obs64.exe',           type: 'exe' },
+    ]
+  },
+  {
+    cat: '💻 Разработка',
+    items: [
+      { name: 'VS Code',          val: 'code.exe',            type: 'exe' },
+      { name: 'Visual Studio',    val: 'devenv.exe',          type: 'exe' },
+      { name: 'PyCharm',          val: 'pycharm64.exe',       type: 'exe' },
+      { name: 'IntelliJ IDEA',    val: 'idea64.exe',          type: 'exe' },
+      { name: 'WebStorm',         val: 'webstorm64.exe',      type: 'exe' },
+      { name: 'Android Studio',   val: 'studio64.exe',        type: 'exe' },
+      { name: 'Notepad++',        val: 'notepad++.exe',       type: 'exe' },
+      { name: 'Sublime Text',     val: 'sublime_text.exe',    type: 'exe' },
+      { name: 'Git Bash',         val: 'git-bash.exe',        type: 'exe' },
+      { name: 'Windows Terminal', val: 'windowsterminal.exe', type: 'exe' },
+      { name: 'PowerShell',       val: 'powershell.exe',      type: 'exe' },
+      { name: 'CMD',              val: 'cmd.exe',             type: 'exe' },
+      { name: 'Docker Desktop',   val: 'docker desktop.exe',  type: 'exe' },
+      { name: 'Postman',          val: 'postman.exe',         type: 'exe' },
+      { name: 'Figma',            val: 'figma.exe',           type: 'exe' },
+    ]
+  },
+  {
+    cat: '🗂 Файловые форматы (заголовок окна)',
+    items: [
+      { name: 'PDF-документ',     val: '.pdf',                type: 'title' },
+      { name: 'Word (.docx)',     val: '.docx',               type: 'title' },
+      { name: 'Excel (.xlsx)',    val: '.xlsx',               type: 'title' },
+      { name: 'PowerPoint (.pptx)', val: '.pptx',            type: 'title' },
+      { name: 'Текстовый файл',   val: '.txt',                type: 'title' },
+      { name: 'Таблица (.csv)',   val: '.csv',                type: 'title' },
+      { name: 'Изображение (.png)', val: '.png',              type: 'title' },
+      { name: 'Изображение (.jpg)', val: '.jpg',              type: 'title' },
+      { name: 'Архив (.zip)',     val: '.zip',                type: 'title' },
+      { name: 'Скрипт (.py)',     val: '.py',                 type: 'title' },
+    ]
+  },
+  {
+    cat: '🖥 Системные / Windows',
+    items: [
+      { name: 'Проводник',        val: 'explorer.exe',        type: 'exe' },
+      { name: 'Диспетчер задач',  val: 'taskmgr.exe',         type: 'exe' },
+      { name: 'Панель управления', val: 'control.exe',        type: 'exe' },
+      { name: 'Параметры Windows', val: 'параметры',          type: 'title' },
+      { name: 'Блокнот',          val: 'notepad.exe',         type: 'exe' },
+      { name: 'Paint',            val: 'mspaint.exe',         type: 'exe' },
+      { name: 'Калькулятор',      val: 'calculator.exe',      type: 'exe' },
+      { name: 'Regedit',          val: 'regedit.exe',         type: 'exe' },
+      { name: 'Event Viewer',     val: 'eventvwr.exe',        type: 'exe' },
+      { name: 'Task Scheduler',   val: 'taskschd.msc',        type: 'title' },
+    ]
+  },
+  {
+    cat: '🔒 Антивирус / Безопасность',
+    items: [
+      { name: 'Kaspersky',        val: 'avp.exe',             type: 'exe' },
+      { name: 'Защитник Windows', val: 'securitycenter',      type: 'title' },
+      { name: 'ESET',             val: 'egui.exe',            type: 'exe' },
+      { name: 'Avast',            val: 'avastui.exe',         type: 'exe' },
+      { name: 'Malwarebytes',     val: 'mbam.exe',            type: 'exe' },
+    ]
+  },
+  {
+    cat: '📦 Менеджеры загрузок / архивы',
+    items: [
+      { name: 'uTorrent',         val: 'utorrent.exe',        type: 'exe' },
+      { name: 'qBittorrent',      val: 'qbittorrent.exe',     type: 'exe' },
+      { name: 'WinRAR',           val: 'winrar.exe',          type: 'exe' },
+      { name: '7-Zip',            val: '7zfm.exe',            type: 'exe' },
+      { name: 'IDM',              val: 'idman.exe',           type: 'exe' },
+    ]
+  },
+];
+
+function openFilterLibrary() {
+  const modal = document.getElementById('filter-lib-modal');
+  if (!modal) return;
+  const inp = document.getElementById('flib-search-inp');
+  if (inp) inp.value = '';
+  modal.classList.add('open');
+  renderLibrary('');
+  if (inp) setTimeout(() => inp.focus(), 80);
+}
+
+function closeFilterLibrary() {
+  const modal = document.getElementById('filter-lib-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+function renderLibrary(query) {
+  const body = document.getElementById('flib-body');
+  if (!body) return;
+  const q = (query || '').toLowerCase().trim();
+  const currentApps = (config.app_filter?.apps || []).map(a => a.toLowerCase());
+
+  let html = '';
+  for (const cat of FILTER_LIBRARY) {
+    const filtered = q
+      ? cat.items.filter(it => it.name.toLowerCase().includes(q) || it.val.toLowerCase().includes(q))
+      : cat.items;
+    if (!filtered.length) continue;
+
+    html += `<div class="flib-cat">${cat.cat}</div><div class="flib-grid">`;
+    for (const item of filtered) {
+      const isAdded = currentApps.includes(item.val.toLowerCase());
+      const badgeCls = item.type === 'exe' ? 'flib-badge-exe' : 'flib-badge-title';
+      const badgeTxt = item.type === 'exe' ? 'EXE' : 'TITLE';
+      const cls = isAdded ? 'flib-item added' : 'flib-item';
+      const click = isAdded ? '' : `onclick="addLibraryItem('${item.val.replace(/'/g,"\\'")}')"`;
+      html += `<div class="${cls}" ${click} title="${item.val}">
+        <span class="flib-badge ${badgeCls}">${badgeTxt}</span>
+        <span>${item.name}</span>
+        ${isAdded ? '<span style="font-size:10px;margin-left:2px">✓</span>' : ''}
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  if (!html) html = `<div style="color:var(--muted);padding:24px;text-align:center">${t('flib_nothing')}</div>`;
+  body.innerHTML = html;
+}
+
+function addLibraryItem(val) {
+  if (!config.app_filter) config.app_filter = { mode: 'disabled', apps: [] };
+  if (!Array.isArray(config.app_filter.apps)) config.app_filter.apps = [];
+  const low = val.toLowerCase();
+  if (!config.app_filter.apps.some(a => a.toLowerCase() === low)) {
+    config.app_filter.apps.push(low);
+    renderFilterApps(config.app_filter.apps);
+    markDirty();
+  }
+  // Re-render library so item shows as added
+  const q = document.getElementById('flib-search-inp')?.value || '';
+  renderLibrary(q);
 }
 
 // ═══════════════════════════════════════════════════════

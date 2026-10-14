@@ -213,26 +213,40 @@ def _get_icon_b64(path, sz=20):
         return None
 
 # ── App filter ────────────────────────────────────────────────
-def _get_foreground_exe():
-    """Return lowercase exe name (no path) of the foreground window's process."""
+def _get_foreground_info():
+    """Return (exe_lower, title_lower) of the foreground window.
+    Used by the app filter to match against exe name, window title, or both.
+    """
     try:
         hwnd = user32.GetForegroundWindow()
         if not hwnd:
-            return ''
+            return '', ''
+        # EXE filename
         pid = wt.DWORD(0)
         user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
-        if not pid.value:
-            return ''
-        hproc = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid.value)
-        if not hproc:
-            return ''
-        buf = ctypes.create_unicode_buffer(260)
-        sz  = wt.DWORD(260)
-        kernel32.QueryFullProcessImageNameW(hproc, 0, buf, ctypes.byref(sz))
-        kernel32.CloseHandle(hproc)
-        return buf.value.split('\\')[-1].lower()
+        exe = ''
+        if pid.value:
+            hproc = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid.value)
+            if hproc:
+                buf = ctypes.create_unicode_buffer(260)
+                sz  = wt.DWORD(260)
+                kernel32.QueryFullProcessImageNameW(hproc, 0, buf, ctypes.byref(sz))
+                kernel32.CloseHandle(hproc)
+                exe = buf.value.split('\\')[-1].lower()
+        # Window title (for document/website/app-title matching)
+        tlen = user32.GetWindowTextLengthW(hwnd)
+        title = ''
+        if tlen > 0:
+            tbuf = ctypes.create_unicode_buffer(tlen + 1)
+            user32.GetWindowTextW(hwnd, tbuf, tlen + 1)
+            title = tbuf.value.lower()
+        return exe, title
     except Exception:
-        return ''
+        return '', ''
+
+def _get_foreground_exe():
+    """Backward-compat wrapper — returns only the exe name."""
+    return _get_foreground_info()[0]
 
 # ── Mode switch overlay — persistent window, PostMessageW direct call ────────
 # NOTE: Win32 COLORREF is 0x00BBGGRR (blue in the high byte), not 0x00RRGGBB.
@@ -585,13 +599,31 @@ class KeyboardListener:
         btype = bind.get('type', '')
         v     = bind.get('value', '')
 
-        # App filter: check foreground exe before executing
+        # App filter: check foreground exe/window-title before executing
         af = self._config.get('app_filter', {})
         af_mode = af.get('mode', 'disabled')
         if af_mode in ('allow', 'deny'):
-            fg = _get_foreground_exe()
-            apps = [a.lower() for a in af.get('apps', [])]
-            in_list = fg in apps
+            fg_exe, fg_title = _get_foreground_info()
+            in_list = False
+            for pat in af.get('apps', []):
+                p = pat.lower().strip()
+                if not p:
+                    continue
+                if p.endswith('.exe'):
+                    # Exact exe filename match  (e.g. "osu!.exe", "WINWORD.EXE")
+                    in_list = in_list or (fg_exe == p)
+                elif p.endswith('.lnk'):
+                    # Shortcut: match by stem in exe name or window title
+                    # (e.g. "osu!.lnk" → looks for "osu!" anywhere)
+                    stem = p[:-4]
+                    in_list = in_list or (stem in fg_exe) or (stem in fg_title)
+                else:
+                    # Keyword / title substring — matches document names, website
+                    # titles, app display names, anything visible in the title bar
+                    # (e.g. "отчёт", "Microsoft Word", "YouTube", "osu!")
+                    in_list = in_list or (p in fg_exe) or (p in fg_title)
+                if in_list:
+                    break
             if af_mode == 'allow' and not in_list:
                 return True, None   # not in allow-list → skip
             if af_mode == 'deny'  and in_list:
@@ -656,6 +688,138 @@ class KeyboardListener:
         KeyboardListener._dbg_log = (KeyboardListener._dbg_log + [entry])[-20:]
 
 _listener = KeyboardListener()
+
+# ── Tray popup menu ───────────────────────────────────────────
+POPUP_W, POPUP_H = 200, 158
+
+POPUP_HTML = r"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:#131315;color:#ececec;
+  display:flex;flex-direction:column;
+  border:1px solid #2c2c30;border-radius:10px;overflow:hidden;
+  user-select:none;cursor:default;
+}
+.hdr{
+  padding:9px 12px 8px;display:flex;align-items:center;gap:7px;
+  border-bottom:1px solid #1e1e21;flex-shrink:0;
+}
+.logo{font-size:12px;font-weight:800;letter-spacing:.06em}
+.logo b{color:#7c8aff}.logo span{color:#ececec}
+.dot{
+  width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0;
+  background:#2c2c30;transition:background .25s,box-shadow .25s;
+}
+.dot.on{background:#4ade80;box-shadow:0 0 7px rgba(74,222,128,.55)}
+.items{padding:4px;flex:1}
+.row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;border-radius:6px;font-size:12px;
+  cursor:pointer;transition:background .12s;
+}
+.row:hover{background:#1b1b1e}.row:active{background:#242428}
+svg.ic{width:13px;height:13px;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.row.toggle,.row.toggle .ic{color:#4ade80}
+.row.toggle.active,.row.toggle.active .ic{color:#f66a6a}
+.row.open .ic{color:#7c8aff}.row.open{color:#ececec}
+.row.exit,.row.exit .ic{color:#f66a6a}
+.sep{height:1px;background:#2c2c30;margin:3px 5px}
+.ver{padding:4px 12px 7px;color:#3a3a3f;font-size:9px;flex-shrink:0;letter-spacing:.02em}
+</style></head>
+<body>
+<div class="hdr">
+  <div class="logo"><b>BIND</b><span>BOARD</span></div>
+  <div id="dot" class="dot"></div>
+</div>
+<div class="items">
+  <div class="row toggle" id="row-toggle" onclick="doToggle()">
+    <svg class="ic" viewBox="0 0 24 24" id="svg-toggle">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+    <span id="txt-toggle">Включить бинды</span>
+  </div>
+  <div class="row open" onclick="doOpen()">
+    <svg class="ic" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span>Открыть BindBoard</span>
+  </div>
+  <div class="sep"></div>
+  <div class="row exit" onclick="doExit()">
+    <svg class="ic" viewBox="0 0 24 24">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+    <span>Выйти</span>
+  </div>
+</div>
+<div class="ver">v1.0.5</div>
+<script>
+function updateUI(running){
+  document.getElementById('dot').className='dot'+(running?' on':'');
+  document.getElementById('txt-toggle').textContent=running?'Выключить бинды':'Включить бинды';
+  document.getElementById('row-toggle').className='row toggle'+(running?' active':'');
+  document.getElementById('svg-toggle').innerHTML=running
+    ?'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+    :'<polygon points="5 3 19 12 5 21 5 3"/>';
+}
+async function doToggle(){if(window.pywebview)await pywebview.api.toggle();}
+function doOpen(){if(window.pywebview)pywebview.api.open_main();}
+function doExit(){if(window.pywebview)pywebview.api.quit();}
+window.addEventListener('pywebviewready',async function(){
+  try{var r=await pywebview.api.status();updateUI(r);}catch(e){}
+});
+window.addEventListener('blur',function(){
+  setTimeout(function(){if(!document.hasFocus()&&window.pywebview)pywebview.api.close();},200);
+});
+</script>
+</body></html>"""
+
+
+class PopupAPI:
+    def close(self):
+        try: _popup_win.hide()
+        except Exception: pass
+
+    def toggle(self):
+        try:
+            if _listener._running:
+                _listener.stop()
+            else:
+                cfg     = api.load_config()
+                vid_pid  = _listener._vid_pid  or cfg.get('selected_keyboard', '')
+                dev_name = _listener._dev_name or cfg.get('selected_keyboard_name', '')
+                if vid_pid:
+                    _listener.configure(cfg, vid_pid, dev_name)
+                    _listener.start()
+        except Exception: pass
+        try: _popup_win.hide()
+        except Exception: pass
+
+    def open_main(self):
+        try: _window.show()
+        except Exception: pass
+        try: _popup_win.hide()
+        except Exception: pass
+
+    def quit(self):
+        try: _window.destroy()
+        except Exception: pass
+        os._exit(0)
+
+    def status(self):
+        try: return bool(_listener._running)
+        except Exception: return False
+
+_popup_api = PopupAPI()
 
 # ── Keyboard Verifier ─────────────────────────────────────────
 class KeyboardVerifier:
@@ -836,6 +1000,8 @@ DEFAULT_CONFIG = {
     "selected_keyboard_name": "",
     "overlay_enabled": False,
     "app_filter": {"mode": "disabled", "apps": []},
+    "theme": "dark",
+    "custom_theme": {},
     "modes": [
         {
             "id": "mode_main",
@@ -939,6 +1105,26 @@ class API:
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    def save_theme(self, name, custom_colors):
+        """Save theme name and custom color overrides to config.json."""
+        try:
+            try:
+                with open(CONFIG, 'r', encoding='utf-8') as f:
+                    cfg = json.load(f)
+            except Exception:
+                cfg = dict(DEFAULT_CONFIG)
+            cfg['theme'] = name or 'dark'
+            cfg['custom_theme'] = custom_colors or {}
+            tmp = CONFIG + '.tmp'
+            with open(tmp, 'w', encoding='utf-8') as f:
+                json.dump(cfg, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, CONFIG)
+            if _listener._running:
+                _listener._config = cfg
+            return {"ok": True}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── Keyboard detection ────────────────────────────────────
     def detect_keyboards(self):
         try:
@@ -1008,6 +1194,12 @@ class API:
         """Hot-reload config into the running listener without stopping it."""
         _listener._config = cfg
         return {'ok': True}
+
+    # ── Active window info (for filter "capture" button) ──────
+    def get_active_window_info(self):
+        """Return {exe, title} of the current foreground window."""
+        exe, title = _get_foreground_info()
+        return {'exe': exe, 'title': title}
 
     # ── Personal: live window transparency ─────────────────────
     def set_transparency(self, alpha):
@@ -1275,86 +1467,110 @@ _window = webview.create_window(
     text_select=False,
 )
 
-# ── Feature 3: minimize to tray instead of closing ────────────
-_tray_icon  = None
-_tray_failed = False  # if pystray/PIL never come up, closing must actually close
+# Tray popup window — hidden, frameless, on_top; shown on tray click
+_scr_w = ctypes.windll.user32.GetSystemMetrics(0)
+_scr_h = ctypes.windll.user32.GetSystemMetrics(1)
+_popup_win = webview.create_window(
+    '',
+    html=POPUP_HTML,
+    width=POPUP_W, height=POPUP_H,
+    x=_scr_w - POPUP_W - 12,
+    y=_scr_h - POPUP_H - 54,
+    frameless=True,
+    hidden=True,
+    on_top=True,
+    js_api=_popup_api,
+    min_size=(POPUP_W, POPUP_H),
+    text_select=False,
+    background_color='#131315',
+)
 
-def _tray_lang():
-    """Return 'ru' if Windows UI language is Russian, else 'en'."""
+# ── Feature 3: minimize to tray instead of closing (Win32 native) ────
+_tray_icon   = None   # kept for _on_closing compat
+_tray_failed = False
+
+def _show_tray_popup():
+    """Reposition popup near system tray and show it."""
     try:
-        import locale
-        lang = locale.getdefaultlocale()[0] or ''
-        if lang.lower().startswith('ru'):
-            return 'ru'
+        sw = ctypes.windll.user32.GetSystemMetrics(0)
+        sh = ctypes.windll.user32.GetSystemMetrics(1)
+        x  = sw - POPUP_W - 12
+        y  = sh - POPUP_H - 54
+        hwnd = _popup_win.native_handle
+        # SWP_NOSIZE=0x0001, SWP_NOZORDER=0x0004
+        ctypes.windll.user32.SetWindowPos(hwnd, None, x, y, 0, 0, 0x0001 | 0x0004)
     except Exception:
         pass
+    _popup_win.show()
     try:
-        import winreg
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                             r'Control Panel\International')
-        val, _ = winreg.QueryValueEx(key, 'LocaleName')
-        winreg.CloseKey(key)
-        if str(val).lower().startswith('ru'):
-            return 'ru'
+        running = bool(_listener._running)
+        _popup_win.evaluate_js(f'updateUI({str(running).lower()})')
     except Exception:
         pass
-    return 'en'
 
-_TRAY_STRINGS = {
-    'en': {
-        'open':   'Open BindBoard',
-        'toggle': 'Pause / Resume listener',
-        'exit':   'Exit',
-    },
-    'ru': {
-        'open':   'Открыть BindBoard',
-        'toggle': 'Пауза / Продолжить',
-        'exit':   'Выход',
-    },
-}
+def _setup_popup_style():
+    """Remove taskbar button and add Win11 rounded corners to popup."""
+    try:
+        hwnd = _popup_win.native_handle
+        GWL_EXSTYLE    = -20
+        WS_EX_TOOLWINDOW = 0x00000080
+        WS_EX_APPWINDOW  = 0x00040000
+        style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+        ctypes.windll.user32.SetWindowLongW(
+            hwnd, GWL_EXSTYLE, (style | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW
+        )
+        # DWMWA_WINDOW_CORNER_PREFERENCE=33, DWMWCP_ROUND=2
+        try:
+            pref = ctypes.c_int(2)
+            ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                hwnd, 33, ctypes.byref(pref), ctypes.sizeof(pref)
+            )
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+_popup_win.events.loaded += _setup_popup_style
 
 def _start_tray():
     global _tray_icon, _tray_failed
     try:
         from PIL import Image
         import pystray
+        import pystray._win32 as _pyw32
+
+        # Patch _on_notify at class level BEFORE icon creation so right-click
+        # shows our custom popup instead of the native Windows context menu.
+        _orig_on_notify = _pyw32.Icon._on_notify
+        def _patched_on_notify(self_icon, wparam, lparam):
+            if lparam == 0x0205:  # WM_RBUTTONUP
+                threading.Thread(target=_show_tray_popup, daemon=True).start()
+                return
+            return _orig_on_notify(self_icon, wparam, lparam)
+        _pyw32.Icon._on_notify = _patched_on_notify
 
         ico_path = os.path.join(BASE, 'bindboard.ico')
         if not os.path.exists(ico_path) and getattr(sys, 'frozen', False):
             ico_path = os.path.join(sys._MEIPASS, 'bindboard.ico')
         img = Image.open(ico_path).resize((64, 64))
 
-        S = _TRAY_STRINGS[_tray_lang()]
-
         def on_open(icon, item):
-            _window.show()
-
-        def on_toggle(icon, item):
-            if _listener._running:
-                _listener.stop()
-            elif _listener._vid_pid:
-                cfg = api.load_config()
-                _listener.configure(cfg, _listener._vid_pid, _listener._dev_name)
-                _listener.start()
+            _show_tray_popup()
 
         def on_exit(icon, item):
             icon.stop()
             _listener.stop()
             _window.destroy()
-            os._exit(0)  # force-kill process and all WebView2 children
+            os._exit(0)
 
         menu = pystray.Menu(
-            pystray.MenuItem(S['open'],   on_open, default=True),
-            pystray.MenuItem(S['toggle'], on_toggle),
+            pystray.MenuItem('Open BindBoard', on_open, default=True),
             pystray.Menu.SEPARATOR,
-            pystray.MenuItem(S['exit'],   on_exit),
+            pystray.MenuItem('Exit', on_exit),
         )
         _tray_icon = pystray.Icon('BindBoard', img, 'BindBoard', menu)
         _tray_icon.run()
     except Exception:
-        # pystray/PIL unavailable (missing dep, no tray area, icon file missing, ...).
-        # Without this flag _on_closing() would keep hiding the window forever with
-        # no tray to bring it back from and no way to quit except Task Manager.
         _tray_failed = True
 
 threading.Thread(target=_start_tray, daemon=True).start()
@@ -1368,4 +1584,29 @@ def _on_closing():
 
 _window.events.closing += _on_closing
 
-webview.start(debug=False, gui='edgechromium')
+# ── Startup transparency (personal build) ──────────────────────
+def _apply_transparency():
+    """Apply saved transparency settings to the native window on load."""
+    try:
+        cfg_path = os.path.join(WORK, 'config.json')
+        if not os.path.exists(cfg_path):
+            return
+        with open(cfg_path, 'r', encoding='utf-8') as f:
+            cfg = json.load(f)
+        transp = cfg.get('transparency', {})
+        alpha = int(transp.get('window', 215))
+        hwnd = _window.native_handle
+        GWL_EXSTYLE   = -20
+        WS_EX_LAYERED = 0x00080000
+        LWA_ALPHA     = 0x2
+        style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+        ctypes.windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED)
+        ctypes.windll.user32.SetLayeredWindowAttributes(hwnd, 0, alpha, LWA_ALPHA)
+    except Exception:
+        pass
+
+_window.events.loaded += _apply_transparency
+
+
+webview.start(debug=False, gui='edgechromium',
+              storage_path=os.path.join(WORK, 'webview-data'))
