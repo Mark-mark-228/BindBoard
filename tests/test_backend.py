@@ -254,7 +254,7 @@ class ListenerLogicTests(unittest.TestCase):
         p = mock.patch.object(app, 'execute_action', side_effect=lambda b: (self.executed.append(b) or (True, None)))
         p.start()
         self.addCleanup(p.stop)
-        p2 = mock.patch.object(app, '_device_connected', return_value=True)
+        p2 = mock.patch.object(app, 'resolve_device', return_value=(True, ''))
         p2.start()
         self.addCleanup(p2.stop)
 
@@ -262,7 +262,7 @@ class ListenerLogicTests(unittest.TestCase):
         return app.KeyEvent(1, vid, vk, scan, e0, up, time.perf_counter())
 
     def test_start_requires_device(self):
-        with mock.patch.object(app, '_device_connected', return_value=False):
+        with mock.patch.object(app, 'resolve_device', return_value=(False, '')):
             self.assertEqual(self.lst.start()['error'], 'device_not_found')
         self.assertTrue(self.lst.start()['ok'])
         self.assertTrue(self.lst.status['running'])
@@ -349,6 +349,17 @@ class ListenerLogicTests(unittest.TestCase):
         self.lst.set_config(cfg)
         self.assertEqual(self.lst.status['mode'], 'a')
 
+    def test_only_the_chosen_identical_keyboard_fires(self):
+        dell_a, dell_b = 'USB\\VID_413C&PID_2101\\5&1&0&1', 'USB\\VID_413C&PID_2101\\5&1&0&2'
+        with mock.patch.object(app, 'resolve_device', return_value=(True, dell_b)):
+            self.lst.configure(sample_config(), TEST_VIDPID, 'Dell #2', dell_b)
+            self.lst.start()
+        self.lst._on_event(app.KeyEvent(1, TEST_VIDPID, VK_F23, 0, False, False, 0, dell_a))
+        self.assertEqual(self.executed, [], 'the other keyboard of the same model is ignored')
+        self.lst._on_event(app.KeyEvent(2, TEST_VIDPID, VK_F23, 0, False, False, 0, dell_b))
+        self.assertEqual(len(self.executed), 1)
+        self.assertEqual(self.lst.status['instance'], dell_b.upper())
+
     def test_scanner_watchdog_resumes_binds(self):
         sc = app.KeyScanner(mock.Mock(subscribe=mock.Mock(return_value=True)))
         before = app._capture_count[0]
@@ -364,10 +375,112 @@ class ListenerLogicTests(unittest.TestCase):
         self.lst.start()
         changes = []
         self.lst.on_change = lambda: changes.append(self.lst.status['connected'])
-        with mock.patch.object(app, '_device_connected', return_value=False):
+        with mock.patch.object(app, 'resolve_device', return_value=(False, '')):
             self.lst._on_event(app.DeviceEvent('removed', 1, TEST_VIDPID))
         self.lst._on_event(app.DeviceEvent('arrived', 2, TEST_VIDPID))
         self.assertEqual(changes, [False, True])
+
+
+# ── keyboard detection / device identity ─────────────────────
+def fake_kb(path, vid_pid, phys, keys):
+    return {'handle': hash(path) & 0xFFFF, 'path': path, 'vid_pid': vid_pid, 'phys': phys, 'keys': keys}
+
+
+class DeviceIdentityTests(unittest.TestCase):
+    DELL = 'VID_413C&PID_2101'
+
+    def test_vid_pid_from_usb_and_bluetooth_paths(self):
+        f = app._vid_pid_of_name
+        self.assertEqual(f(r'\\?\HID#VID_413C&PID_2101#7&2c9a&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}'), self.DELL)
+        self.assertEqual(f(r'\\?\HID#{00001124-0000-1000-8000-00805f9b34fb}_VID&000205ac_PID&024f&Col01#9&1&0&0000#{x}'),
+                         'VID_05AC&PID_024F')
+        self.assertEqual(f(r'\\?\HID#vhidev&Col01#1&2d59&0&0000#{x}'), '')
+
+    def test_instance_id_of_path(self):
+        self.assertEqual(app._instance_id_of_path(r'\\?\HID#VID_5566&PID_0008&MI_01#8&2d707bea&0&0000#{884b96c3-56ef}'),
+                         r'HID\VID_5566&PID_0008&MI_01\8&2d707bea&0&0000')
+
+    def test_plain_keyboards_reporting_264_keys_are_listed(self):
+        # issue #2: two identical Dell keyboards, one interface each, 264 keys reported
+        devs = [fake_kb(r'\\?\HID#VID_413C&PID_2101#7&aa&0&0000#{g}', self.DELL, 'USB\\VID_413C&PID_2101\\5&1&0&2', 264),
+                fake_kb(r'\\?\HID#VID_413C&PID_2101#7&bb&0&0000#{g}', self.DELL, 'USB\\VID_413C&PID_2101\\5&1&0&1', 264),
+                fake_kb(r'\\?\HID#VID_5566&PID_0008&MI_00&Col01#8&9&0&0000#{g}', 'VID_5566&PID_0008', 'USB\\VID_5566&PID_0008\\X', 125),
+                fake_kb(r'\\?\HID#VID_5566&PID_0008&MI_01#8&2&0&0000#{g}', 'VID_5566&PID_0008', 'USB\\VID_5566&PID_0008\\X', 264),
+                fake_kb(r'\\?\HID#vhidev&Col01#1&2&0&0000#{g}', '', '', 264),
+                fake_kb(r'\\?\Microsoft Keyboard RID\0', '', '', 0)]
+        names = {'7&aa': ('Dell Smart Card Reader Keyboard', 'Dell'), '7&bb': ('Dell Smart Card Reader Keyboard', 'Dell')}
+
+        def hid_strings(path):
+            for k, v in names.items():
+                if k in path:
+                    return v
+            return ('ZXWStdKeyboard', 'ZXWMicroChip') if 'MI_00' in path else ('ZXWConflictfree', 'ZXWMicroChip')
+        with mock.patch.object(app, '_hid_strings', side_effect=hid_strings):
+            kbs = app.list_keyboards(devs, mice=[])
+        self.assertEqual(len(kbs), 3, 'one entry per physical keyboard, virtual devices hidden')
+        dells = [k for k in kbs if k['vid_pid'] == self.DELL]
+        self.assertEqual([k['dup_index'] for k in sorted(dells, key=lambda k: k['instance'])], [1, 2])
+        self.assertTrue(all(k['name'] == 'Dell Smart Card Reader Keyboard' and k['manufacturer'] == 'Dell' for k in dells))
+        self.assertEqual({k['size_label'] for k in dells}, {'?'})
+        zxw = [k for k in kbs if k['vid_pid'] == 'VID_5566&PID_0008'][0]
+        self.assertEqual((zxw['name'], zxw['key_count'], zxw['dup_index']), ('ZXWStdKeyboard', 125, 0))
+
+    def test_gaming_mouse_is_marked_and_listed_last(self):
+        nova = 'USB\\VID_3554&PID_F57C\\6&2F&0&13'
+        zxw = 'USB\\VID_5566&PID_0008\\X'
+        devs = [fake_kb(r'\\?\HID#VID_3554&PID_F57C&MI_00#8&1&0&0000#{g}', 'VID_3554&PID_F57C', nova, 264),
+                fake_kb(r'\\?\HID#VID_5566&PID_0008&MI_00&Col01#8&9&0&0000#{g}', 'VID_5566&PID_0008', zxw, 125)]
+        mice = [fake_kb(r'\\?\HID#VID_3554&PID_F57C&MI_02#8&2&0&0000#{g}', 'VID_3554&PID_F57C', nova, 0),
+                # a keyboard's "mouse keys" collection on the keyboard's own interface is not a mouse
+                fake_kb(r'\\?\HID#VID_5566&PID_0008&MI_00&Col03#8&9&0&0002#{g}', 'VID_5566&PID_0008', zxw, 0)]
+        with mock.patch.object(app, '_hid_strings', return_value=('X', 'Y')):
+            kbs = app.list_keyboards(devs, mice)
+        self.assertEqual([(k['vid_pid'], k['kind']) for k in kbs],
+                         [('VID_5566&PID_0008', 'keyboard'), ('VID_3554&PID_F57C', 'mouse')])
+
+    def test_resolve_device(self):
+        a, b = 'USB\\DELL\\PORT1', 'USB\\DELL\\PORT2'
+        two = [fake_kb('p1', self.DELL, a, 264), fake_kb('p2', self.DELL, b, 264)]
+        one = [fake_kb('p1', self.DELL, a, 264)]
+        self.assertEqual(app.resolve_device(self.DELL, '', two), (True, ''))          # old config: whole model
+        self.assertEqual(app.resolve_device(self.DELL, b, two), (True, b.upper()))   # exact device
+        self.assertEqual(app.resolve_device(self.DELL, 'usb\\dell\\port9', one), (True, ''))  # moved port, unique
+        self.assertEqual(app.resolve_device(self.DELL, 'USB\\DELL\\PORT9', two), (False, 'USB\\DELL\\PORT9'))
+        self.assertEqual(app.resolve_device('VID_0000&PID_0000', '', two), (False, ''))
+
+    def test_scanner_and_verifier_respect_the_device(self):
+        a, b = 'USB\\DELL\\PORT1', 'USB\\DELL\\PORT2'
+        hub = mock.Mock(subscribe=mock.Mock(return_value=True))
+        with mock.patch.object(app, 'resolve_device', return_value=(True, b)):
+            sc = app.KeyScanner(hub)
+            sc.start(self.DELL, b)
+            ver = app.KeyboardVerifier(hub)
+            ver.start(self.DELL, b)
+        try:
+            sc._on_event(app.KeyEvent(1, self.DELL, VK_F23, 0, False, False, 0, a))
+            ver._on_event(app.KeyEvent(1, self.DELL, VK_F23, 0, False, False, 0, a))
+            self.assertEqual(sc.keys(), [])
+            self.assertFalse(ver.result['detected'])
+            sc._on_event(app.KeyEvent(2, self.DELL, VK_F24, 0, False, False, 0, b))
+            ver._on_event(app.KeyEvent(2, self.DELL, VK_F24, 0, False, False, 0, b))
+            self.assertEqual(sc.keys(), [VK_F24])
+            self.assertTrue(ver.result['detected'])
+        finally:
+            sc.stop()
+            ver.stop()
+
+    def test_real_keyboards_share_one_physical_id(self):
+        kbs = [k for k in app._enum_raw_keyboards() if k['vid_pid']]
+        if not kbs:
+            self.skipTest('no USB keyboards connected')
+        for k in kbs:
+            self.assertTrue(k['phys'], f"no physical device for {k['path']}")
+            self.assertNotIn('&MI_', k['phys'])
+        by_model = {}
+        for k in kbs:
+            by_model.setdefault(k['vid_pid'], set()).add(k['phys'])
+        listed = app.list_keyboards()
+        self.assertEqual(len(listed), sum(len(v) for v in by_model.values()))
 
 
 # ── actions ──────────────────────────────────────────────────
@@ -586,7 +699,8 @@ class OverlayTests(unittest.TestCase):
 # ── API surface ──────────────────────────────────────────────
 class ApiTests(unittest.TestCase):
     def test_every_js_call_exists(self):
-        html = open(os.path.join(ROOT, 'app.html'), encoding='utf-8-sig').read()
+        with open(os.path.join(ROOT, 'app.html'), encoding='utf-8-sig') as f:
+            html = f.read()
         calls = set(re.findall(r'pywebview\??\.api\??\.([A-Za-z_]\w*)', html))
         missing = sorted(c for c in calls if not callable(getattr(app.API, c, None)))
         self.assertEqual(missing, [])
@@ -677,7 +791,7 @@ class RawInputTests(unittest.TestCase):
     def test_listener_end_to_end_and_verifier_does_not_steal_input(self):
         executed = []
         lst = app.KeyboardListener(app._hub, app.ActionRunner())
-        with mock.patch.object(app, '_device_connected', return_value=True), \
+        with mock.patch.object(app, 'resolve_device', return_value=(True, '')), \
                 mock.patch.object(app, 'execute_action',
                                   side_effect=lambda b: executed.append(threading.current_thread().name) or (True, None)):
             lst.configure(sample_config(), TEST_VIDPID)

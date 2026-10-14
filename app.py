@@ -42,7 +42,7 @@ from datetime import datetime
 
 import webview
 
-APP_VERSION = '1.0.6'
+APP_VERSION = '1.0.7'
 
 # pywebview's WinForms backend calls SetProcessDPIAware() itself, but only once
 # webview.start() creates its window — our overlay window may be created first.
@@ -249,6 +249,15 @@ CreateDIBSection = _fn(_gdi32, 'CreateDIBSection', wt.HBITMAP, wt.HDC, ctypes.PO
                        wt.UINT, ctypes.POINTER(wt.LPVOID), wt.HANDLE, wt.DWORD)
 GdiFlush = _fn(_gdi32, 'GdiFlush', wt.BOOL)
 
+CreateFileW = _fn(_kernel32, 'CreateFileW', wt.HANDLE, wt.LPCWSTR, wt.DWORD, wt.DWORD, wt.LPVOID,
+                  wt.DWORD, wt.DWORD, wt.HANDLE)
+_cfgmgr32 = ctypes.WinDLL('cfgmgr32')
+CM_Locate_DevNodeW = _fn(_cfgmgr32, 'CM_Locate_DevNodeW', wt.DWORD, ctypes.POINTER(wt.DWORD), wt.LPCWSTR, wt.ULONG)
+CM_Get_Parent = _fn(_cfgmgr32, 'CM_Get_Parent', wt.DWORD, ctypes.POINTER(wt.DWORD), wt.DWORD, wt.ULONG)
+CM_Get_Device_IDW = _fn(_cfgmgr32, 'CM_Get_Device_IDW', wt.DWORD, wt.DWORD, wt.LPWSTR, wt.ULONG, wt.ULONG)
+_hid = ctypes.WinDLL('hid')
+HidD_GetProductString = _fn(_hid, 'HidD_GetProductString', wt.BOOLEAN, wt.HANDLE, wt.LPVOID, wt.ULONG)
+HidD_GetManufacturerString = _fn(_hid, 'HidD_GetManufacturerString', wt.BOOLEAN, wt.HANDLE, wt.LPVOID, wt.ULONG)
 SHGetFileInfoW = _fn(_shell32, 'SHGetFileInfoW', ctypes.c_size_t, wt.LPCWSTR, wt.DWORD,
                      ctypes.POINTER(SHFILEINFOW), wt.UINT, wt.UINT)
 ImageList_GetIcon = _fn(ctypes.WinDLL('comctl32'), 'ImageList_GetIcon', wt.HICON, wt.HANDLE,
@@ -493,13 +502,86 @@ def _device_name(hdev):
     return buf.value
 
 
+_VIDPID_BT_RE = re.compile(r'VID&[0-9A-F]{4}([0-9A-F]{4})_PID&([0-9A-F]{4})')
+
+
 def _vid_pid_of_name(name):
-    m = _VIDPID_RE.search(name.upper())
-    return m.group(1) if m else ''
+    """'VID_xxxx&PID_yyyy' from a device path (USB form, or the '_VID&0002xxxx_PID&yyyy' form
+    Bluetooth keyboards use), else ''."""
+    up = name.upper()
+    m = _VIDPID_RE.search(up)
+    if m:
+        return m.group(1)
+    m = _VIDPID_BT_RE.search(up)
+    return f'VID_{m.group(1)}&PID_{m.group(2)}' if m else ''
 
 
-def _enum_raw_keyboards():
-    """One pass over connected keyboards → [{'handle', 'path', 'vid_pid', 'keys'}]."""
+def _instance_id_of_path(path):
+    """'\\\\?\\HID#VID_x&PID_y&MI_00#8&abc&0&0000#{guid}' → 'HID\\VID_x&PID_y&MI_00\\8&abc&0&0000'."""
+    p = path[4:] if path.startswith('\\\\?\\') else path
+    if '#{' in p:
+        p = p[:p.rindex('#{')]
+    return p.replace('#', '\\')
+
+
+_phys_cache = {}
+
+
+def _physical_id(path):
+    """Device-manager ID of the physical device behind a raw-input interface: walk up from the
+    HID node past interface (&MI_) nodes. One keyboard's interfaces share it, and two identical
+    keyboards get different ones — so it tells two keyboards of the same model apart."""
+    if path in _phys_cache:
+        return _phys_cache[path]
+    phys = ''
+    try:
+        node = wt.DWORD()
+        if CM_Locate_DevNodeW(ctypes.byref(node), _instance_id_of_path(path), 0) == 0:
+            buf = ctypes.create_unicode_buffer(512)
+            for _ in range(8):
+                if CM_Get_Device_IDW(node.value, buf, 512, 0) != 0:
+                    break
+                dev_id = buf.value.upper()
+                if not dev_id.startswith('HID\\') and '&MI_' not in dev_id:
+                    phys = dev_id
+                    break
+                parent = wt.DWORD()
+                if CM_Get_Parent(ctypes.byref(parent), node.value, 0) != 0:
+                    break
+                node = parent
+    except Exception:
+        log.exception('physical device lookup failed for %s', path)
+    _phys_cache[path] = phys
+    return phys
+
+
+_hid_names = {}
+
+
+def _hid_strings(path):
+    """(product, manufacturer) as the device reports them, e.g. ('Dell Smart Card Reader Keyboard',
+    'Dell'). Opening with no access rights is allowed even for keyboards Windows owns."""
+    if path in _hid_names:
+        return _hid_names[path]
+    product = manufacturer = ''
+    h = CreateFileW(path, 0, 0x3, None, 3, 0, None)  # FILE_SHARE_READ|WRITE, OPEN_EXISTING
+    if h and h != ctypes.c_void_p(-1).value:
+        try:
+            buf = ctypes.create_unicode_buffer(256)
+            if HidD_GetProductString(h, buf, ctypes.sizeof(buf)):
+                product = buf.value.strip()
+            buf = ctypes.create_unicode_buffer(256)
+            if HidD_GetManufacturerString(h, buf, ctypes.sizeof(buf)):
+                manufacturer = buf.value.strip()
+        finally:
+            CloseHandle(h)
+    _hid_names[path] = (product, manufacturer)
+    return product, manufacturer
+
+
+def _enum_raw_keyboards(dev_type=RIM_TYPEKEYBOARD):
+    """One pass over connected keyboards (or mice with dev_type=0) →
+    [{'handle', 'path', 'vid_pid', 'phys', 'keys'}]."""
     num = wt.UINT(0)
     size = ctypes.sizeof(RAWINPUTDEVICELIST)
     if GetRawInputDeviceList(None, ctypes.byref(num), size) == _UINT_ERR or not num.value:
@@ -511,22 +593,101 @@ def _enum_raw_keyboards():
         return []
     out = []
     for d in devs[:got]:
-        if d.dwType != RIM_TYPEKEYBOARD:
+        if d.dwType != dev_type:
             continue
         path = _device_name(d.hDevice)
+        if dev_type != RIM_TYPEKEYBOARD:
+            vid_pid = _vid_pid_of_name(path)
+            out.append({'handle': d.hDevice or 0, 'path': path, 'vid_pid': vid_pid,
+                        'phys': _physical_id(path) if vid_pid else '', 'keys': 0})
+            continue
         info = RID_DEVICE_INFO()
         info.cbSize = ctypes.sizeof(RID_DEVICE_INFO)
         isz = wt.UINT(ctypes.sizeof(RID_DEVICE_INFO))
         keys = 0
         if GetRawInputDeviceInfoW(d.hDevice, RIDI_DEVICEINFO, ctypes.byref(info), ctypes.byref(isz)) != _UINT_ERR:
             keys = info.keyboard.dwNumberOfKeysTotal
-        out.append({'handle': d.hDevice or 0, 'path': path, 'vid_pid': _vid_pid_of_name(path), 'keys': keys})
+        vid_pid = _vid_pid_of_name(path)
+        out.append({'handle': d.hDevice or 0, 'path': path, 'vid_pid': vid_pid,
+                    'phys': _physical_id(path) if vid_pid else '', 'keys': keys})
     return out
 
 
-def _device_connected(vid_pid):
+def resolve_device(vid_pid, instance='', keyboards=None):
+    """Which keyboard events to accept for a saved selection → (connected, phys_filter).
+    phys_filter '' accepts every keyboard with this VID_PID (old configs, or a keyboard that
+    moved to another USB port while it is the only one of its model)."""
     vid_pid = (vid_pid or '').upper()
-    return bool(vid_pid) and any(k['vid_pid'] == vid_pid for k in _enum_raw_keyboards())
+    instance = (instance or '').upper()
+    kbs = [k for k in (keyboards if keyboards is not None else _enum_raw_keyboards()) if k['vid_pid'] == vid_pid]
+    if not vid_pid or not kbs:
+        return False, instance
+    if not instance:
+        return True, ''
+    physes = {k['phys'] for k in kbs}
+    if instance in physes:
+        return True, instance
+    if len(physes) == 1:
+        return True, ''
+    return False, instance   # several identical keyboards, none on the remembered port
+
+
+def _device_connected(vid_pid, instance=''):
+    return resolve_device(vid_pid, instance)[0]
+
+
+_MI_RE = re.compile(r'&MI_([0-9A-F]{2})')
+
+
+def _interfaces(paths):
+    return {m.group(1) for p in paths for m in [_MI_RE.search(p.upper())] if m}
+
+
+def list_keyboards(devices=None, mice=None):
+    """Connected keyboards, one entry per physical device, named the way the device names itself.
+    Every device with a VID/PID is listed: the old rule (show only 1–263 reported keys) hid plain
+    keyboards, which report 264 keys on their only interface. Several keyboards of one model get
+    dup_index 1, 2, … so they can be told apart and selected separately.
+    kind='mouse' marks gaming mice that also present a keyboard interface (for side buttons):
+    their pointer sits on a USB interface of its own, while a keyboard's "mouse keys" collection
+    shares the keyboard's interface. They stay selectable but are listed last."""
+    devices = _enum_raw_keyboards() if devices is None else devices
+    mice = _enum_raw_keyboards(0) if mice is None else mice
+    mouse_ifaces = collections.defaultdict(set)
+    for m in mice:
+        if m.get('phys'):
+            mouse_ifaces[m['phys']] |= _interfaces([m['path']])
+    groups = collections.OrderedDict()
+    for d in devices:
+        vp = d['vid_pid']
+        if not vp or 'VHIDEV' in d['path'].upper():
+            continue
+        groups.setdefault(d.get('phys') or vp, []).append(d)
+    out = []
+    for devs in groups.values():
+        devs = sorted(devs, key=lambda d: d['path'].upper())
+        vp = devs[0]['vid_pid']
+        product = manufacturer = ''
+        for d in devs:
+            p, m = _hid_strings(d['path'])
+            product, manufacturer = product or p, manufacturer or m
+        counts = [d['keys'] for d in devs if 0 < d['keys'] < 264]
+        kc = min(counts) if counts else 0
+        phys = devs[0].get('phys') or ''
+        pointer_only = mouse_ifaces.get(phys, set()) - _interfaces(d['path'] for d in devs)
+        out.append({'name': product or _get_friendly_name(vp) or 'HID Keyboard Device',
+                    'manufacturer': manufacturer, 'vid_pid': vp, 'instance': phys,
+                    'instance_id': devs[0]['path'], 'key_count': kc, 'size_label': _estimate_size(kc),
+                    'dup_index': 0, 'kind': 'mouse' if pointer_only else 'keyboard'})
+    out.sort(key=lambda kb: kb['kind'] == 'mouse')  # stable: keyboards first, enumeration order kept
+    by_model = collections.defaultdict(list)
+    for kb in out:
+        by_model[kb['vid_pid']].append(kb)
+    for same in by_model.values():
+        if len(same) > 1:
+            for i, kb in enumerate(sorted(same, key=lambda k: k['instance']), 1):
+                kb['dup_index'] = i
+    return out
 
 
 def _estimate_size(key_count):
@@ -574,14 +735,18 @@ def _get_friendly_name(vid_pid):
 
 
 class KeyEvent:
-    __slots__ = ('hdev', 'vid_pid', 'vk', 'scan', 'e0', 'up', 't')
+    __slots__ = ('hdev', 'vid_pid', 'vk', 'scan', 'e0', 'up', 't', 'phys')
 
-    def __init__(self, hdev, vid_pid, vk, scan, e0, up, t):
+    def __init__(self, hdev, vid_pid, vk, scan, e0, up, t, phys=''):
         self.hdev, self.vid_pid, self.vk, self.scan, self.e0, self.up, self.t = hdev, vid_pid, vk, scan, e0, up, t
+        self.phys = phys
 
     @property
     def key(self):
         return normalize_vk(self.vk, self.scan, self.e0)
+
+    def matches(self, vid_pid, phys_filter=''):
+        return self.vid_pid == vid_pid and (not phys_filter or self.phys == phys_filter)
 
 
 class DeviceEvent:
@@ -606,7 +771,7 @@ class RawInputHub:
         self._thread = None
         self._hwnd = None
         self._ready = threading.Event()
-        self._names = {}          # hDevice → VID_PID ('' when the device has none)
+        self._names = {}          # hDevice → (VID_PID, physical device id); '' when unknown
         self._buf = RAWINPUT()
         self._wndproc = WNDPROC(self._wnd_proc)
         # Tests only: treat SendInput-injected keys (hDevice NULL) as coming from this VID_PID.
@@ -635,14 +800,20 @@ class RawInputHub:
         self._ready.wait(3)
         return self.alive()
 
-    def vid_pid_of(self, hdev):
+    def device_of(self, hdev):
+        """(VID_PID, physical device id) of a raw-input handle, cached per handle."""
         if not hdev:
-            return self.injected_as
-        vp = self._names.get(hdev)
-        if vp is None:
-            vp = _vid_pid_of_name(_device_name(hdev))
-            self._names[hdev] = vp
-        return vp
+            return self.injected_as, ''
+        dev = self._names.get(hdev)
+        if dev is None:
+            path = _device_name(hdev)
+            vp = _vid_pid_of_name(path)
+            dev = (vp, _physical_id(path) if vp else '')
+            self._names[hdev] = dev
+        return dev
+
+    def vid_pid_of(self, hdev):
+        return self.device_of(hdev)[0]
 
     def _run(self):
         try:
@@ -686,16 +857,17 @@ class RawInputHub:
                 if got != _UINT_ERR and got and ri.header.dwType == RIM_TYPEKEYBOARD and self._subs:
                     kb = ri.keyboard
                     hdev = ri.header.hDevice or 0
-                    self._dispatch(KeyEvent(hdev, self.vid_pid_of(hdev), kb.VKey, kb.MakeCode,
+                    vid_pid, phys = self.device_of(hdev)
+                    self._dispatch(KeyEvent(hdev, vid_pid, kb.VKey, kb.MakeCode,
                                             bool(kb.Flags & RI_KEY_E0), bool(kb.Flags & RI_KEY_BREAK),
-                                            time.perf_counter()))
+                                            time.perf_counter(), phys))
             except Exception:
                 log.exception('WM_INPUT handling failed')
             return DefWindowProcW(hwnd, msg, wparam, lparam)  # lets Windows free the input
         if msg == WM_INPUT_DEVICE_CHANGE:
             hdev = ctypes.c_void_p(lparam).value or 0
             if wparam == GIDC_REMOVAL:
-                vp = self._names.pop(hdev, '')
+                vp = (self._names.pop(hdev, None) or ('', ''))[0]
                 self._dispatch(DeviceEvent('removed', hdev, vp))
             else:
                 self._names.pop(hdev, None)
@@ -1006,6 +1178,8 @@ class KeyboardListener:
         self._runner = runner
         self._running = False
         self._vid_pid = ''
+        self._instance = ''       # physical device id when several keyboards share the VID_PID
+        self._phys_filter = ''
         self._dev_name = ''
         self._config = {}
         self._modes = {}
@@ -1030,15 +1204,17 @@ class KeyboardListener:
         if self._mode not in self._modes:
             self._mode = self._mode_order[0] if self._mode_order else ''
 
-    def configure(self, config, vid_pid, dev_name=''):
+    def configure(self, config, vid_pid, dev_name='', instance=''):
         self._vid_pid = (vid_pid or '').upper()
+        self._instance = (instance or '').upper()
         self._dev_name = dev_name or ''
         self._mode = ''
         self.set_config(config)
 
     # control
     def start(self):
-        if not self._vid_pid or not _device_connected(self._vid_pid):
+        connected, self._phys_filter = resolve_device(self._vid_pid, self._instance)
+        if not connected:
             return {'ok': False, 'error': 'device_not_found'}
         self._pressed = set()
         self._connected = True
@@ -1063,6 +1239,7 @@ class KeyboardListener:
             'mode': self._mode,
             'device': self._dev_name or self._vid_pid,
             'vid_pid': self._vid_pid,
+            'instance': self._instance,
             'connected': self._connected,
         }
 
@@ -1083,13 +1260,13 @@ class KeyboardListener:
             return
         if isinstance(ev, DeviceEvent):
             if ev.vid_pid == self._vid_pid or not ev.vid_pid:
-                connected = _device_connected(self._vid_pid)
+                connected, self._phys_filter = resolve_device(self._vid_pid, self._instance)
                 if connected != self._connected:
                     self._connected = connected
                     self._pressed = set()
                     self._changed()
             return
-        if ev.vid_pid != self._vid_pid:
+        if not ev.matches(self._vid_pid, self._phys_filter):
             if not ev.up and ev.vid_pid:
                 last = self._log[-1] if self._log else None
                 if last and last.get('error') == 'wrong_device' and last.get('device') == ev.vid_pid:
@@ -1168,9 +1345,11 @@ class KeyboardVerifier:
         self._detected = False
         self._start = 0.0
         self._vid_pid = ''
+        self._phys = ''
         self._timer = None
 
-    def start(self, vid_pid=''):
+    def start(self, vid_pid='', instance=''):
+        phys = resolve_device(vid_pid, instance)[1] if vid_pid else ''
         with self._lock:
             if self._busy:
                 return
@@ -1178,6 +1357,7 @@ class KeyboardVerifier:
             self._detected = False
             self._start = time.time()
             self._vid_pid = (vid_pid or '').upper()
+            self._phys = phys
             _capture(+1)
         self._hub.subscribe(self._on_event)
         self._timer = threading.Timer(12.0, self.stop)
@@ -1195,7 +1375,7 @@ class KeyboardVerifier:
             self._timer.cancel()
 
     def _on_event(self, ev):
-        if isinstance(ev, KeyEvent) and not ev.up and (not self._vid_pid or ev.vid_pid == self._vid_pid):
+        if isinstance(ev, KeyEvent) and not ev.up and (not self._vid_pid or ev.matches(self._vid_pid, self._phys)):
             self._detected = True
 
     @property
@@ -1216,14 +1396,17 @@ class KeyScanner:
         self._lock = threading.Lock()
         self._keys = []
         self._vid_pid = ''
+        self._phys = ''
         self._active = False
         self._last_poll = 0.0
         self._token = 0
 
-    def start(self, vid_pid=''):
+    def start(self, vid_pid='', instance=''):
+        phys = resolve_device(vid_pid, instance)[1] if vid_pid else ''
         with self._lock:
             self._keys = []
             self._vid_pid = (vid_pid or '').upper()
+            self._phys = phys
             self._last_poll = time.time()
             self._token += 1
             token = self._token
@@ -1268,7 +1451,7 @@ class KeyScanner:
     def _on_event(self, ev):
         if not isinstance(ev, KeyEvent) or ev.up:
             return
-        if self._vid_pid and ev.vid_pid != self._vid_pid:
+        if self._vid_pid and not ev.matches(self._vid_pid, self._phys):
             return
         k = ev.key
         if k is None:
@@ -1288,6 +1471,7 @@ _scanner = KeyScanner(_hub)
 DEFAULT_CONFIG = {
     "selected_keyboard": "",
     "selected_keyboard_name": "",
+    "selected_keyboard_instance": "",
     "overlay_enabled": False,
     "app_filter": {"mode": "disabled", "apps": []},
     "theme": "dark",
@@ -1740,27 +1924,13 @@ class API:
     # keyboards
     def detect_keyboards(self):
         try:
-            devices = _enum_raw_keyboards()
+            return list_keyboards()
         except Exception as e:  # noqa: BLE001
+            log.exception('keyboard detection failed')
             return [{'error': str(e)}]
-        groups = collections.OrderedDict()
-        for d in devices:
-            vp = d['vid_pid']
-            if not vp or 'VHIDEV' in d['path'].upper():
-                continue
-            groups.setdefault(vp, []).append(d)
-        out = []
-        for vp, devs in groups.items():
-            real = [d['keys'] for d in devs if 0 < d['keys'] < 264]
-            if not real:
-                continue  # HID sub-collections that are not real keyboards (mice, media keys…)
-            kc = min(real)
-            out.append({'name': _get_friendly_name(vp) or 'HID Keyboard Device', 'vid_pid': vp,
-                        'instance_id': devs[0]['path'], 'key_count': kc, 'size_label': _estimate_size(kc)})
-        return out
 
-    def start_verify(self, vid_pid=''):
-        _verifier.start(vid_pid)
+    def start_verify(self, vid_pid='', instance=''):
+        _verifier.start(vid_pid, instance)
         return {'ok': True}
 
     def poll_verify(self):
@@ -1771,8 +1941,8 @@ class API:
         return {'ok': True}
 
     # manual key scan
-    def start_detection(self, vid_pid=''):
-        return {'ok': bool(_scanner.start(vid_pid))}
+    def start_detection(self, vid_pid='', instance=''):
+        return {'ok': bool(_scanner.start(vid_pid, instance))}
 
     def get_detected_keys(self):
         return _scanner.keys()
@@ -1781,8 +1951,8 @@ class API:
         return _scanner.stop()
 
     # listener
-    def start_listener(self, vid_pid, dev_name=''):
-        _listener.configure(load_config(), vid_pid, dev_name)
+    def start_listener(self, vid_pid, dev_name='', instance=''):
+        _listener.configure(load_config(), vid_pid, dev_name, instance)
         return _listener.start()
 
     def stop_listener(self):
@@ -2035,8 +2205,9 @@ class PopupAPI:
                 cfg = load_config()
                 vid_pid = _listener._vid_pid or cfg.get('selected_keyboard', '')
                 dev_name = _listener._dev_name or cfg.get('selected_keyboard_name', '')
+                instance = _listener._instance if _listener._vid_pid else cfg.get('selected_keyboard_instance', '')
                 if vid_pid:
-                    _listener.configure(cfg, vid_pid, dev_name)
+                    _listener.configure(cfg, vid_pid, dev_name, instance)
                     _listener.start()
         except Exception:
             log.exception('tray toggle failed')

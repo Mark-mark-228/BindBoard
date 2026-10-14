@@ -1047,6 +1047,7 @@ const ICONS = {
   search:  { c:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/>' },
   'book-open': { c:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7Z"/>' },
   box:     { c:'<path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/>' },
+  mouse:   { c:'<rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/>' },
 };
 
 function icon(name, size, cls) {
@@ -1238,6 +1239,13 @@ const STRINGS = {
     log_other_kb: (d, n) => `other keyboard ${d}${n > 1 ? ' ×' + n : ''}`, log_filtered:'skipped by app filter', log_capture:'paused while scanning',
     listener_disconnected:'Keyboard disconnected — reconnect it',
     toast_scan_failed:'Could not start scanning',
+    kb_dup_hint:'several of this model connected — press a key to check which is which',
+    kb_badge_mouse:'MOUSE', kb_mouse_hint:'A mouse with keyboard buttons (side or macro keys). You can still use it as the bind device.',
+    scan_result_title:'Scanned keys',
+    scan_result_body: (n, m) => `Found ${n} keys, ${m} of them are not in the current layout. Add them to the layout, or replace the layout with the scanned keys only?`,
+    btn_scan_add: m => `Add ${m} to layout`, btn_scan_replace:'Replace layout',
+    toast_scan_added: n => `Added ${n} keys to the layout`,
+    lbl_extra_keys:'Added keys', btn_clear_extra:'Remove',
   },
   ru: {
     loading:'Загрузка...',
@@ -1386,6 +1394,13 @@ const STRINGS = {
     log_other_kb: (d, n) => `другая клавиатура ${d}${n > 1 ? ' ×' + n : ''}`, log_filtered:'пропущено фильтром', log_capture:'пауза на время сканирования',
     listener_disconnected:'Клавиатура отключена — подключи её снова',
     toast_scan_failed:'Не удалось начать сканирование',
+    kb_dup_hint:'подключено несколько таких — нажми клавишу, чтобы понять, какая где',
+    kb_badge_mouse:'МЫШЬ', kb_mouse_hint:'Мышь с клавиатурными кнопками (боковые или макро-кнопки). Её тоже можно выбрать для биндов.',
+    scan_result_title:'Отсканированные клавиши',
+    scan_result_body: (n, m) => `Найдено клавиш: ${n}, из них ${m} нет в текущей раскладке. Добавить их к раскладке или заменить раскладку только отсканированными?`,
+    btn_scan_add: m => `Добавить ${m}`, btn_scan_replace:'Заменить раскладку',
+    toast_scan_added: n => `Добавлено клавиш: ${n}`,
+    lbl_extra_keys:'Добавленные клавиши', btn_clear_extra:'Убрать',
   }
 };
 
@@ -1694,21 +1709,40 @@ async function detectKeyboards() {
   }
 
   el.innerHTML = _detectedKbs.map((kb, i) => {
-    const isActive   = config.selected_keyboard === kb.vid_pid;
-    const displayName = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
-    return `<div class="kb-item ${isActive?'selected':''}" id="kb-item-${i}">
-      <div class="kb-ico">${icon('keyboard',20)}</div>
+    const isActive   = isSelectedKb(kb);
+    const displayName = kbDisplayName(kb);
+    const sub = [kb.manufacturer, kb.vid_pid, kb.dup_index ? t('kb_dup_hint') : ''].filter(Boolean).map(escHtml).join(' · ');
+    const isMouse = kb.kind === 'mouse';
+    return `<div class="kb-item ${isActive?'selected':''}" id="kb-item-${i}" style="${isMouse && !isActive ? 'opacity:.6' : ''}" title="${isMouse ? escHtml(t('kb_mouse_hint')) : ''}">
+      <div class="kb-ico">${icon(isMouse ? 'mouse' : 'keyboard',20)}</div>
       <div class="kb-info">
         <div class="kb-name" id="kb-name-${i}">${escHtml(displayName)}</div>
-        <div class="kb-id">${kb.vid_pid}</div>
+        <div class="kb-id">${sub}</div>
       </div>
       ${isActive ? `<div class="kb-badge">${t('kb_badge_active')}</div>` : ''}
+      ${isMouse ? `<div class="kb-badge" style="color:var(--muted);border-color:var(--border);background:transparent">${t('kb_badge_mouse')}</div>` : ''}
       <button class="kb-rename-btn" onclick="startRenameKb(${i})" title="${t('kb_rename_title')}">${icon('edit',14)}</button>
       <button class="btn-select ${isActive?'active':''}" onclick="applyDetectedKb(${i})">
         ${isActive ? t('kb_btn_selected') : t('kb_btn_use')}
       </button>
     </div>`;
   }).join('');
+}
+
+// Names: a rename saved for this exact device, then one saved for the model, then what the
+// device reports (with #1/#2 when several keyboards of one model are connected)
+function kbNameKey(kb) { return kb.instance || kb.vid_pid; }
+function kbDisplayName(kb) {
+  const names = config.keyboard_names || {};
+  return names[kbNameKey(kb)] || names[kb.vid_pid] || (kb.name + (kb.dup_index ? ' #' + kb.dup_index : ''));
+}
+// Mirrors resolve_device() in app.py: an exact device when one is remembered, otherwise the model
+function isSelectedKb(kb) {
+  if (config.selected_keyboard !== kb.vid_pid) return false;
+  const inst = config.selected_keyboard_instance || '';
+  if (!inst || kb.instance === inst) return true;
+  const sameModel = _detectedKbs.filter(k => k.vid_pid === kb.vid_pid);
+  return !sameModel.some(k => k.instance === inst) && sameModel.length === 1;
 }
 
 // Maps _estimate_size() return values → template ids
@@ -1720,7 +1754,8 @@ function applyDetectedKb(idx) {
   const kb = _detectedKbs[idx];
   if (!kb) return;
   config.selected_keyboard = kb.vid_pid;
-  const displayName = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
+  config.selected_keyboard_instance = kb.instance || '';
+  const displayName = kbDisplayName(kb);
   config.selected_keyboard_name = displayName;
 
   // Suggest a template only on first setup: the size guess comes from the key count the
@@ -1735,15 +1770,16 @@ function applyDetectedKb(idx) {
 
   detectKeyboards();
   renderKeyboard();
-  startKbVerify(kb.vid_pid, displayName);
+  startKbVerify(kb.vid_pid, displayName, kb.instance || '');
 }
 
 // ── Верификация клавиатуры ──────────────────────────────────
 let _verifyTimer = null;
 
-async function startKbVerify(vidPid, kbName) {
-  // Bug #3: pass vid_pid so the Python verifier uses per-device Raw Input filter
-  await window.pywebview.api.start_verify(vidPid || '');
+async function startKbVerify(vidPid, kbName, instance) {
+  // Only the chosen physical keyboard counts — with two identical keyboards this is how the
+  // user finds out which list entry is which
+  await window.pywebview.api.start_verify(vidPid || '', instance || '');
   showVerifyOverlay(kbName);
   _verifyTimer = setInterval(pollVerify, 200);
 }
@@ -1800,7 +1836,7 @@ let _lastDetected = [];
 
 async function startScan() {
   let r = null;
-  try { r = await window.pywebview.api.start_detection(config?.selected_keyboard || ''); } catch (e) {}
+  try { r = await window.pywebview.api.start_detection(config?.selected_keyboard || '', config?.selected_keyboard_instance || ''); } catch (e) {}
   if (!r || !r.ok) { showToast(t('toast_scan_failed'), 'err'); return; }
   _lastDetected = [];
   document.getElementById('scan-idle').style.display = 'none';
@@ -1833,22 +1869,55 @@ async function stopScan() {
   scanInterval = null;
   let keys = [];
   try { keys = await window.pywebview.api.stop_detection() || []; } catch (e) {}
-  if (keys.length) {
-    // A manual scan replaces the template layout with exactly the scanned keys
-    config.detected_keys = keys;
-    config.key_rows = null;
-    config.key_numpad = null;
-    config.key_template = '';
-    _tplPick = null;
-    _renderSizeBtns();
-    _updateActiveLabel();
-    markDirty();
-  }
   document.getElementById('scan-active').style.display = 'none';
   document.getElementById('scan-idle').style.display = 'block';
+  if (!keys.length) return;
+  const hasLayout = (config.key_rows || []).length || config.key_numpad;
+  if (!hasLayout) { replaceLayoutWithScan(keys); return; }
+  const inLayout = new Set(layoutCodes());
+  const fresh = keys.filter(c => !inLayout.has(c));
+  const buttons = [{label: t('btn_cancel'), cls: 'btn'},
+                   {label: t('btn_scan_replace'), cls: 'btn', action: () => { closeModal(); replaceLayoutWithScan(keys); }}];
+  if (fresh.length) buttons.push({label: t('btn_scan_add')(fresh.length), cls: 'btn primary', action: () => { closeModal(); addScannedKeys(fresh); }});
+  showModal(t('scan_result_title'),
+    `<div style="font-size:13px;color:var(--muted);line-height:1.6">${escHtml(t('scan_result_body')(keys.length, fresh.length))}</div>`,
+    buttons);
+}
+
+// Key codes the current layout already shows (template rows, numpad, added keys)
+function layoutCodes() {
+  const rows = (config.key_rows || []).flat().map(k => k[0]).filter(c => c > 0);
+  const pad = Object.values(config.key_numpad || {}).map(k => k[0]);
+  return [...rows, ...pad, ...(config.extra_keys || [])];
+}
+
+function replaceLayoutWithScan(keys) {
+  config.detected_keys = keys;
+  config.key_rows = null;
+  config.key_numpad = null;
+  config.key_template = '';
+  config.extra_keys = [];
+  _tplPick = null;
+  _renderSizeBtns();
+  _updateActiveLabel();
+  markDirty();
   document.getElementById('scan-detected-count').textContent = t('scan_saved_count')(keys.length);
   renderKeyboard();
   showToast(t('scan_done_toast')(keys.length));
+}
+
+// Keeps the template and adds the scanned keys it lacks (e.g. arrows and extra keys next to a numpad)
+function addScannedKeys(fresh) {
+  config.extra_keys = [...new Set([...(config.extra_keys || []), ...fresh])];
+  markDirty();
+  document.getElementById('scan-detected-count').textContent = t('toast_scan_added')(fresh.length);
+  renderKeyboard();
+  showToast(t('toast_scan_added')(fresh.length));
+}
+
+function clearExtraKeys() {
+  config.extra_keys = [];
+  markDirty();
 }
 
 function cancelScan() {
@@ -2083,12 +2152,25 @@ function renderKeyboard() {
     </div>`;
   }
 
+  function extraKeysHtml() {
+    const shown = new Set([...(rows || []).flat().map(k => k[0]), ...Object.values(config?.key_numpad || {}).map(k => k[0])]);
+    const extra = (config?.extra_keys || []).filter(c => !shown.has(c));
+    if (!extra.length) return '';
+    return `<div class="numpad-wrap">
+      <div style="display:flex;align-items:center;gap:10px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 2px">
+        <span style="opacity:.55">${escHtml(t('lbl_extra_keys'))}</span>
+        <button class="btn-sm" style="padding:2px 8px;font-size:10px" onclick="clearExtraKeys()">${escHtml(t('btn_clear_extra'))}</button>
+      </div>
+      <div class="detected-keys-grid">${extra.map(c => keyHtml(c, KEY_NAMES[c] || String(c))).join('')}</div>
+    </div>`;
+  }
+
   if (rows) {
     // Template/driver mode: render in proper rows
     // Each key is [vk, label] or [vk, label, flex]
     el.innerHTML = rows.map(row =>
       `<div class="kb-row">${row.map(k => keyHtml(k[0], k[1], k[2])).join('')}</div>`
-    ).join('') + numpadHtml(config?.key_numpad);
+    ).join('') + numpadHtml(config?.key_numpad) + extraKeysHtml();
   } else {
     // Scan mode: flat wrap grid
     el.innerHTML = `<div class="detected-keys-grid">${
@@ -2458,7 +2540,8 @@ async function startListener() {
   await saveNow();   // the listener reads the saved config
   let r;
   try {
-    r = await window.pywebview.api.start_listener(config.selected_keyboard, config.selected_keyboard_name || '');
+    r = await window.pywebview.api.start_listener(config.selected_keyboard, config.selected_keyboard_name || '',
+                                                  config.selected_keyboard_instance || '');
   } catch (e) { r = {ok: false, error: String(e)}; }
   if (r.ok) {
     showToast(t('toast_listener_started'), 'ok');
@@ -2608,7 +2691,7 @@ function startRenameKb(idx) {
   if (!kb) return;
   const nameEl = document.getElementById(`kb-name-${idx}`);
   if (!nameEl) return;
-  const current = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
+  const current = kbDisplayName(kb);
   const input = document.createElement('input');
   input.className = 'kb-rename-input';
   input.value = current;
@@ -2619,8 +2702,8 @@ function startRenameKb(idx) {
   function commit() {
     const val = input.value.trim() || kb.name;
     if (!config.keyboard_names) config.keyboard_names = {};
-    config.keyboard_names[kb.vid_pid] = val;
-    if (config.selected_keyboard === kb.vid_pid) config.selected_keyboard_name = val;
+    config.keyboard_names[kbNameKey(kb)] = val;
+    if (isSelectedKb(kb)) config.selected_keyboard_name = val;
     markDirty();
     detectKeyboards();
   }

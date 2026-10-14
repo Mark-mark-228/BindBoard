@@ -24,6 +24,8 @@ Built on Windows Raw Input API — no drivers, no third-party software required.
 ## Features
 
 - 🎹 **Per-device key interception** — keys from the second keyboard trigger actions; your main keyboard is untouched
+- 🔌 **Any USB or Bluetooth keyboard** — devices are listed by their real names, and two keyboards of the same model can be selected separately
+- ➕ **Custom layouts** — scan extra keys (arrows, macro keys, F13–F24…) and add them to any template
 - 🗂 **Modes** — create multiple binding profiles and switch between them with a single key press
 - 🖥 **Mode overlay** — a brief on-screen hint appears whenever you switch modes
 - 🚀 **Action types** — open a URL, launch a program or shortcut, start a Steam game, play a sound via Soundpad, or switch mode
