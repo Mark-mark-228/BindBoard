@@ -30,6 +30,7 @@ Built on Windows Raw Input API — no drivers, no third-party software required.
 - 🔍 **App & game picker** — browse installed programs and Steam games by name, no manual path or ID entry needed
 - 🌐 **English & Russian UI** — language is detected automatically from your system locale
 - 🔔 **System tray** — closing the window minimizes to tray; the listener keeps running in the background
+- 🪶 **Light on resources** — no keyboard hook: other keyboards' keys pass through Windows untouched, and the app idles at ~0% CPU in the tray
 
 ---
 
@@ -78,14 +79,34 @@ Modes let you have multiple sets of bindings on the same physical keys — for e
 
 ---
 
+## Command-line options
+
+| Option | What it does |
+|---|---|
+| `--minimized` | Start hidden in the tray (useful for a startup shortcut) |
+| `--selftest` | Load the UI hidden, check the JS ↔ Python bridge, write `selftest.json` to the config folder and exit (code 0 = OK) |
+
+Settings live in `%USERPROFILE%\BindBoard\` (`config.json`, `backups\`, `bindboard.log`). Set `BINDBOARD_HOME` to use another folder.
+
+---
+
 ## Building the EXE
 
 ```powershell
-pip install -r requirements.txt
-pyinstaller BindBoard.spec --noconfirm
+.uild.ps1
 ```
 
-The output folder will be at `dist\BindBoard\`.
+`build.ps1` installs the requirements, builds with `BindBoard.spec`, runs the new EXE with `--selftest`, then packs the installer (or a ZIP). The build is at `dist\BindBoard\`.
+
+---
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The suite covers config saving/backups, the app filter, key normalisation, the listener and modes, actions, the Soundpad pipe client, icons, and real Raw Input via `SendInput` (set `BINDBOARD_SKIP_INPUT_TESTS=1` to skip the tests that inject F23/F24 presses and a Shift tap). `tests/check_frontend.mjs` statically checks `app.html` (needs Node.js).
 
 ---
 
@@ -95,6 +116,7 @@ The output folder will be at `dist\BindBoard\`.
 BindBoard/
 ├── app.py           — backend: Raw Input, bindings engine, tray, API
 ├── app.html         — frontend: single-page app (HTML / CSS / JS)
+├── tests/           — unittest suite + frontend static checks
 ├── bindboard.ico    — app icon
 ├── BindBoard.spec   — PyInstaller build config
 ├── requirements.txt — Python dependencies

@@ -19,7 +19,9 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    # Pillow imports numpy lazily; nothing in BindBoard needs it (or these) at runtime -
+    # without the excludes they add ~27 MB to the build when installed in the environment.
+    excludes=['numpy', 'yaml', 'charset_normalizer', 'tkinter', '_tkinter'],
     noarchive=False,
     optimize=0,
 )

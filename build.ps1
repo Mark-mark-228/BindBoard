@@ -1,37 +1,40 @@
-# build.ps1 — собирает BindBoard-Setup.exe
-# Запускать из папки C:\BindBoard\
+﻿# build.ps1 — собирает BindBoard: EXE (по BindBoard.spec) → самопроверка → установщик/ZIP
+# Запускать из папки проекта (C:\BindBoard\)
 Set-Location $PSScriptRoot
 
 $ErrorActionPreference = 'Stop'
 
 # ── 1. Зависимости Python ────────────────────────────────────────
 Write-Host ""
-Write-Host "=== [1/3] Устанавливаем зависимости ===" -ForegroundColor Cyan
-pip install pywebview pyinstaller --quiet
+Write-Host "=== [1/4] Устанавливаем зависимости ===" -ForegroundColor Cyan
+pip install -r requirements.txt --quiet
 if ($LASTEXITCODE -ne 0) { Write-Host "pip завершился с ошибкой" -ForegroundColor Red; exit 1 }
 
-# ── 2. Собираем EXE через PyInstaller ───────────────────────────
+# ── 2. Собираем EXE через PyInstaller (настройки — в BindBoard.spec) ──
 Write-Host ""
-Write-Host "=== [2/3] Собираем BindBoard.exe ===" -ForegroundColor Cyan
-pyinstaller `
-    --name "BindBoard" `
-    --windowed `
-    --onedir `
-    --icon "bindboard.ico" `
-    --add-data "app.html;." `
-    --add-data "fonts;fonts" `
-    --add-data "assets;assets" `
-    --hidden-import "webview.platforms.winforms" `
-    --hidden-import "clr" `
-    --collect-all "webview" `
-    --noconfirm `
-    app.py
-
+Write-Host "=== [2/4] Собираем BindBoard.exe ===" -ForegroundColor Cyan
+pyinstaller BindBoard.spec --noconfirm
 if ($LASTEXITCODE -ne 0) { Write-Host "PyInstaller завершился с ошибкой" -ForegroundColor Red; exit 1 }
 
-# ── 3. Ищем Inno Setup Compiler ─────────────────────────────────
+# ── 3. Самопроверка собранного EXE (во временной папке, реальный конфиг не трогаем) ──
 Write-Host ""
-Write-Host "=== [3/3] Собираем установщик ===" -ForegroundColor Cyan
+Write-Host "=== [3/4] Проверяем сборку (--selftest) ===" -ForegroundColor Cyan
+$testHome = Join-Path $env:TEMP ("bindboard-selftest-" + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $testHome | Out-Null
+$env:BINDBOARD_HOME = $testHome
+$proc = Start-Process -FilePath "dist\BindBoard\BindBoard.exe" -ArgumentList '--selftest' -PassThru -Wait
+Remove-Item Env:\BINDBOARD_HOME
+if ($proc.ExitCode -ne 0) {
+    Write-Host "  Самопроверка не прошла (код $($proc.ExitCode)):" -ForegroundColor Red
+    Get-Content (Join-Path $testHome 'selftest.json') -ErrorAction SilentlyContinue
+    exit 1
+}
+Remove-Item -Recurse -Force $testHome
+Write-Host "  OK" -ForegroundColor Green
+
+# ── 4. Ищем Inno Setup Compiler ─────────────────────────────────
+Write-Host ""
+Write-Host "=== [4/4] Собираем установщик ===" -ForegroundColor Cyan
 
 $isccPaths = @(
     "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",

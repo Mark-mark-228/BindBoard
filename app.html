@@ -213,8 +213,8 @@ body{font-feature-settings:'ss01' on,'cv05' on;letter-spacing:-0.006em}
 .numpad-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:48px;gap:4px;width:100%;max-width:230px}
 .numpad-grid .key{height:auto;min-height:0}
 .detected-keys-grid{display:flex;flex-wrap:wrap;gap:5px;width:100%}
-.detected-keys-grid .key{flex:0 0 auto;width:52px}
-.detected-keys-grid .key.key-wide{width:120px}
+.detected-keys-grid .key{flex:0 0 64px!important;width:64px}
+.detected-keys-grid .key.key-wide{flex-basis:120px!important;width:120px}
 /* ── Layout picker slider ── */
 .tpl-picker{margin-bottom:20px}
 .tpl-slider-wrap{padding:0 4px;margin-bottom:16px;position:relative}
@@ -470,7 +470,7 @@ input[type=range].tpl-slider::-moz-range-thumb{
 
     <!-- MANUAL SCAN (fallback for non-standard keyboards) -->
     <details>
-      <summary style="font-size:12px;color:var(--muted);cursor:pointer;padding:6px 0;user-select:none" data-i18n="summary_manual">▸ Scan keys manually (for non-standard keyboards)</summary>
+      <summary style="font-size:12px;color:var(--muted);cursor:pointer;padding:6px 0;user-select:none" data-i18n="summary_manual">Scan keys manually (for non-standard keyboards)</summary>
       <div style="padding-top:14px">
         <div id="scan-box" style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:18px">
           <div id="scan-idle">
@@ -554,12 +554,13 @@ input[type=range].tpl-slider::-moz-range-thumb{
               <div class="field-row">
                 <input id="edt-value" type="text" placeholder="https://..." oninput="onValInput()">
                 <button class="btn-sm" id="edt-browse" onclick="browseFile()" style="display:none"><span data-icon="folder" data-icon-size="13"></span></button>
-                <button class="btn-sm" id="edt-pick-proc" onclick="openProcPicker()" style="display:none" title="Choose from installed apps"><span data-icon="monitor" data-icon-size="13"></span> Apps</button>
+                <button class="btn-sm" id="edt-pick-proc" onclick="openProcPicker()" style="display:none" title="Choose from installed apps"><span data-icon="monitor" data-icon-size="13"></span> <span data-i18n="btn_apps">Apps</span></button>
               </div>
             </div>
             <div id="edt-mode-wrap" class="field" style="display:none">
               <label data-i18n="lbl_switch_to">Switch to mode</label>
               <select id="edt-target"></select>
+              <div id="edt-mode-warn" style="display:none;font-size:11px;line-height:1.5;color:var(--red);margin-top:4px"></div>
             </div>
             <div class="field">
               <label data-i18n="lbl_label">Label (short)</label>
@@ -615,37 +616,37 @@ input[type=range].tpl-slider::-moz-range-thumb{
     </div>
 
     <!-- ── TRANSPARENCY ── -->
-    <div class="settings-section-label" style="margin-top:4px">Прозрачность</div>
+    <div class="settings-section-label" style="margin-top:4px" data-i18n="tr_title">Transparency</div>
     <div class="transp-section" id="transp-section">
       <div class="transp-row">
-        <span class="transp-label">Окно (всё)</span>
+        <span class="transp-label" data-i18n="tr_window">Окно (всё)</span>
         <input type="range" class="transp-slider" id="tr-window" min="10" max="255" step="1" value="215" oninput="onTranspSlider('window', this.value)">
         <span class="transp-val" id="tr-window-val">84%</span>
-        <button class="transp-reset" onclick="resetTransp('window')" title="Сбросить">↺</button>
+        <button class="transp-reset" data-i18n-title="tr_reset" onclick="resetTransp('window')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
-        <span class="transp-label">Сайдбар — непрозрачность</span>
+        <span class="transp-label" data-i18n="tr_sidebar_op">Сайдбар — непрозрачность</span>
         <input type="range" class="transp-slider" id="tr-sidebar-op" min="0" max="100" step="1" value="78" oninput="onTranspSlider('sidebar-op', this.value)">
         <span class="transp-val" id="tr-sidebar-op-val">78%</span>
-        <button class="transp-reset" onclick="resetTransp('sidebar-op')" title="Сбросить">↺</button>
+        <button class="transp-reset" data-i18n-title="tr_reset" onclick="resetTransp('sidebar-op')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
-        <span class="transp-label">Сайдбар — размытие</span>
+        <span class="transp-label" data-i18n="tr_sidebar_blur">Сайдбар — размытие</span>
         <input type="range" class="transp-slider" id="tr-sidebar-blur" min="0" max="64" step="1" value="32" oninput="onTranspSlider('sidebar-blur', this.value)">
         <span class="transp-val" id="tr-sidebar-blur-val">32px</span>
-        <button class="transp-reset" onclick="resetTransp('sidebar-blur')" title="Сбросить">↺</button>
+        <button class="transp-reset" data-i18n-title="tr_reset" onclick="resetTransp('sidebar-blur')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
-        <span class="transp-label">Панель — непрозрачность</span>
+        <span class="transp-label" data-i18n="tr_main_op">Панель — непрозрачность</span>
         <input type="range" class="transp-slider" id="tr-main-op" min="0" max="100" step="1" value="62" oninput="onTranspSlider('main-op', this.value)">
         <span class="transp-val" id="tr-main-op-val">62%</span>
-        <button class="transp-reset" onclick="resetTransp('main-op')" title="Сбросить">↺</button>
+        <button class="transp-reset" data-i18n-title="tr_reset" onclick="resetTransp('main-op')" title="Сбросить">↺</button>
       </div>
       <div class="transp-row">
-        <span class="transp-label">Панель — размытие</span>
+        <span class="transp-label" data-i18n="tr_main_blur">Панель — размытие</span>
         <input type="range" class="transp-slider" id="tr-main-blur" min="0" max="64" step="1" value="28" oninput="onTranspSlider('main-blur', this.value)">
         <span class="transp-val" id="tr-main-blur-val">28px</span>
-        <button class="transp-reset" onclick="resetTransp('main-blur')" title="Сбросить">↺</button>
+        <button class="transp-reset" data-i18n-title="tr_reset" onclick="resetTransp('main-blur')" title="Сбросить">↺</button>
       </div>
     </div>
 
@@ -776,8 +777,8 @@ input[type=range].tpl-slider::-moz-range-thumb{
         <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
           <span style="color:var(--cyan);flex-shrink:0;margin-top:1px" data-icon="shield" data-icon-size="16"></span>
           <div>
-            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f4_title">Key suppression</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f4_body">Intercepted keys don't reach other apps — press ESC on the macro pad without closing anything</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px" data-i18n="about_f4_title">Per-device binds</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5" data-i18n="about_f4_body">Only the selected keyboard triggers binds — the same keys on your main keyboard keep working as usual</div>
           </div>
         </div>
         <div style="padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;gap:12px;align-items:flex-start">
@@ -992,13 +993,18 @@ input[type=range].tpl-slider::-moz-range-thumb{
     <div class="flib-search">
       <span data-icon="search" data-icon-size="15" style="color:var(--muted);flex-shrink:0"></span>
       <input id="flib-search-inp" type="text" oninput="renderLibrary(this.value)">
-      <button class="btn" onclick="closeFilterLibrary()" style="padding:5px 12px;font-size:12px;flex-shrink:0">✕ Закрыть</button>
+      <button class="btn" onclick="closeFilterLibrary()" style="padding:5px 12px;font-size:12px;flex-shrink:0" data-i18n="btn_close_x">✕ Close</button>
     </div>
     <div class="flib-body" id="flib-body"></div>
   </div>
 </div>
 
 <script>
+// Collect page errors (read by `BindBoard.exe --selftest`)
+window.__bbErrors = [];
+window.addEventListener('error', e => window.__bbErrors.push('error: ' + (e.message || e)));
+window.addEventListener('unhandledrejection', e => window.__bbErrors.push('rejection: ' + (e.reason && (e.reason.message || e.reason))));
+
 // ═══════════════════════════════════════════════════════
 //  ICONS — minimal stroke-based SVG set, replaces emoji glyphs
 // ═══════════════════════════════════════════════════════
@@ -1034,6 +1040,13 @@ const ICONS = {
   trash:   { c:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>' },
   layers:  { c:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
   lightbulb: { c:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>' },
+  info:    { c:'<circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><line x1="12" y1="7.6" x2="12" y2="7.6"/>' },
+  eye:     { c:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>' },
+  filter:  { c:'<polygon points="3 4 21 4 14 12.5 14 19 10 21 10 12.5 3 4"/>' },
+  shield:  { c:'<path d="M12 3l8 3v6c0 4.6-3.4 8.4-8 9-4.6-.6-8-4.4-8-9V6l8-3Z"/>' },
+  search:  { c:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/>' },
+  'book-open': { c:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7Z"/>' },
+  box:     { c:'<path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/>' },
 };
 
 function icon(name, size, cls) {
@@ -1081,12 +1094,12 @@ const STRINGS = {
   en: {
     loading:'Loading...',
     nav_keyboard:'Keyboard', nav_binds:'Bindings', nav_launch:'Launch', nav_theme:'Settings', nav_about:'About',
-    about_version:'Version 1.0.5', about_tagline:'Per-app macro keyboard for Windows',
+    about_version:'Version {v}', about_tagline:'Per-app macro keyboard for Windows',
     about_features_title:'What it does', about_howto_title:'Quick start',
     about_f1_title:'Second keyboard', about_f1_body:'Uses a separate USB keyboard as a dedicated macro pad — your main keyboard works as normal',
     about_f2_title:'Modes', about_f2_body:'Switch between profiles on the fly — one key to go from music controls to game macros',
     about_f3_title:'Action types', about_f3_body:'Open URLs, launch programs, play Soundpad sounds, switch modes — all from a key press',
-    about_f4_title:'Key suppression', about_f4_body:"Intercepted keys don't reach other apps — press ESC on the macro pad without closing anything",
+    about_f4_title:'Per-device binds', about_f4_body:'Only the selected keyboard triggers binds — the same keys on your main keyboard keep working as usual',
     about_f5_title:'App filter', about_f5_body:'Allow or block bindings based on the active window — by exe, title, or file extension',
     about_f6_title:'System tray', about_f6_body:'Closes to tray, not to exit — listener keeps running in the background',
     about_f7_title:'Transparency', about_f7_body:'Tune window, sidebar, and content opacity and blur independently in the Theme tab',
@@ -1116,7 +1129,7 @@ const STRINGS = {
     pg_keyboard_title:'Keyboard',
     pg_keyboard_sub:'Scan all keys you need — the app will remember their codes',
     lbl_connected_kbs:'Connected keyboards', btn_refresh:'Refresh',
-    summary_manual:'▸ Scan keys manually (for non-standard keyboards)',
+    summary_manual:'Scan keys manually (for non-standard keyboards)',
     lbl_layout_template:'Layout template', lbl_or_scan:'Or scan manually',
     tpl_slider_hint:'Drag the slider or click a size to preview the layout',
     tpl_apply_btn:'Apply layout',
@@ -1205,7 +1218,7 @@ const STRINGS = {
     flib_search_placeholder:'Search: chrome, .pdf, discord…',
     flib_nothing:'Nothing found',
     capture_countdown:'Switch to target window…',
-    proc_modal_title:'Choose running app',
+    proc_modal_title:'Choose an app',
     proc_searching:'Loading process list…', proc_none:'No processes found',
     tpl_full_name:'Full (100%)', tpl_full_sub:'104 keys with numpad',
     tpl_tkl_name:'TKL (80%)', tpl_tkl_sub:'87 keys, no numpad',
@@ -1216,16 +1229,25 @@ const STRINGS = {
     tpl_numpad_name:'Numpad', tpl_numpad_sub:'17 keys', lbl_numpad_section:'Numpad',
     key_code_label: (code, mode) => `code ${code} · mode: ${mode}`,
     renderKeyboard_empty:'Select a template on the <b style="color:var(--text)">Keyboard</b> tab',
+    tr_title:'Transparency', tr_window:'Window (all)', tr_sidebar_op:'Sidebar — opacity', tr_sidebar_blur:'Sidebar — blur',
+    tr_main_op:'Panel — opacity', tr_main_blur:'Panel — blur', tr_reset:'Reset',
+    kb_detecting:'Detecting keyboards…', btn_apps:'Apps', proc_search_ph:'Search by name or path…', btn_close_x:'✕ Close',
+    key_code_title: c => `Code ${c}`, mode_default_name:'Mode',
+    opt_next_mode:'↻ Next mode (cycle)',
+    warn_missing_mode:'The mode this key pointed to no longer exists — the key now cycles to the next mode. Pick a mode and press Save.',
+    log_other_kb: (d, n) => `other keyboard ${d}${n > 1 ? ' ×' + n : ''}`, log_filtered:'skipped by app filter', log_capture:'paused while scanning',
+    listener_disconnected:'Keyboard disconnected — reconnect it',
+    toast_scan_failed:'Could not start scanning',
   },
   ru: {
     loading:'Загрузка...',
     nav_keyboard:'Клавиатура', nav_binds:'Биндинги', nav_launch:'Запуск', nav_theme:'Настройки', nav_about:'О программе',
-    about_version:'Версия 1.0.5', about_tagline:'Макро-клавиатура для Windows с фильтром по приложениям',
+    about_version:'Версия {v}', about_tagline:'Макро-клавиатура для Windows с фильтром по приложениям',
     about_features_title:'Возможности', about_howto_title:'Быстрый старт',
     about_f1_title:'Вторая клавиатура', about_f1_body:'Использует отдельную USB-клавиатуру как макро-пад — основная клавиатура работает как обычно',
     about_f2_title:'Режимы', about_f2_body:'Переключайся между профилями на лету — одна клавиша меняет набор биндингов',
     about_f3_title:'Типы действий', about_f3_body:'Открыть URL, запустить программу, воспроизвести звук в Soundpad, сменить режим — всё с одной клавиши',
-    about_f4_title:'Подавление клавиш', about_f4_body:'Перехваченные клавиши не достигают других программ — ESC на макро-паде не закроет ничего',
+    about_f4_title:'Привязка к устройству', about_f4_body:'Бинды срабатывают только с выбранной клавиатуры — те же клавиши на основной работают как обычно',
     about_f5_title:'Фильтр приложений', about_f5_body:'Включай или блокируй биндинги в зависимости от активного окна — по exe, заголовку или расширению файла',
     about_f6_title:'Системный трей', about_f6_body:'Закрывается в трей, а не завершается — слушатель продолжает работать в фоне',
     about_f7_title:'Прозрачность', about_f7_body:'Настраивай прозрачность и размытие окна, сайдбара и контента независимо на вкладке Тема',
@@ -1255,7 +1277,7 @@ const STRINGS = {
     pg_keyboard_title:'Клавиатура',
     pg_keyboard_sub:'Просканируй все нужные кнопки — приложение запомнит их коды',
     lbl_connected_kbs:'Подключённые клавиатуры', btn_refresh:'Обновить',
-    summary_manual:'▸ Просканировать клавиши вручную (для нестандартных клавиатур)',
+    summary_manual:'Просканировать клавиши вручную (для нестандартных клавиатур)',
     lbl_layout_template:'Шаблон раскладки', lbl_or_scan:'Или просканировать',
     tpl_slider_hint:'Двигай слайдер или нажми на размер — увидишь раскладку',
     tpl_apply_btn:'Применить раскладку',
@@ -1344,7 +1366,7 @@ const STRINGS = {
     flib_search_placeholder:'Поиск: chrome, .pdf, discord…',
     flib_nothing:'Ничего не найдено',
     capture_countdown:'Переключись на нужное окно…',
-    proc_modal_title:'Выбрать запущенное приложение',
+    proc_modal_title:'Выбрать приложение',
     proc_searching:'Загружаем список процессов…', proc_none:'Процессы не найдены',
     tpl_full_name:'Полная (100%)', tpl_full_sub:'104 кл. с нампадом',
     tpl_tkl_name:'TKL (80%)', tpl_tkl_sub:'87 кл., без нампада',
@@ -1355,16 +1377,33 @@ const STRINGS = {
     tpl_numpad_name:'Нампад', tpl_numpad_sub:'17 кл.', lbl_numpad_section:'Нампад',
     key_code_label: (code, mode) => `код ${code} · режим: ${mode}`,
     renderKeyboard_empty:'Выбери шаблон на вкладке <b style="color:var(--text)">Клавиатура</b>',
+    tr_title:'Прозрачность', tr_window:'Окно (всё)', tr_sidebar_op:'Сайдбар — непрозрачность', tr_sidebar_blur:'Сайдбар — размытие',
+    tr_main_op:'Панель — непрозрачность', tr_main_blur:'Панель — размытие', tr_reset:'Сбросить',
+    kb_detecting:'Определяем клавиатуры…', btn_apps:'Приложения', proc_search_ph:'Поиск по имени или пути…', btn_close_x:'✕ Закрыть',
+    key_code_title: c => `Код ${c}`, mode_default_name:'Режим',
+    opt_next_mode:'↻ Следующий режим (по кругу)',
+    warn_missing_mode:'Режим, на который вела эта клавиша, удалён — сейчас она переключает на следующий. Выбери режим и нажми «Сохранить».',
+    log_other_kb: (d, n) => `другая клавиатура ${d}${n > 1 ? ' ×' + n : ''}`, log_filtered:'пропущено фильтром', log_capture:'пауза на время сканирования',
+    listener_disconnected:'Клавиатура отключена — подключи её снова',
+    toast_scan_failed:'Не удалось начать сканирование',
   }
 };
 
 function t(key) { return STRINGS[_lang]?.[key] ?? STRINGS.en[key] ?? key; }
+let _appVersion = '';
 
 function applyLang() {
+  document.documentElement.lang = _lang;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const v = t(el.getAttribute('data-i18n'));
-    if (typeof v === 'string') el.innerHTML = v;
+    if (typeof v === 'string') el.innerHTML = v.replace('{v}', _appVersion);
   });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const v = t(el.getAttribute('data-i18n-title'));
+    if (typeof v === 'string') el.title = v;
+  });
+  const ps = document.getElementById('proc-search');
+  if (ps) ps.placeholder = t('proc_search_ph');
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const v = t(el.getAttribute('data-i18n-html'));
     if (typeof v === 'string') el.innerHTML = v;
@@ -1389,6 +1428,8 @@ function applyLang() {
 function changeLang(lang) {
   _lang = lang;
   localStorage.setItem('bb-lang', lang);
+  if (config && config.lang !== lang) { config.lang = lang; markDirty(); }  // localStorage alone is wiped between runs
+  _lastStatusKey = null;
   applyLang();
   // Rebuild any cached dynamic content
   const grid = document.getElementById('custom-color-grid');
@@ -1509,7 +1550,10 @@ const KEY_NAMES = {
   118:'F7',119:'F8',120:'F9',121:'F10',122:'F11',123:'F12',
   144:'Num',145:'Scr',
   186:';',187:'=',188:',',189:'-',190:'.',191:'/',192:'~',
-  219:'[',220:'\\',221:']',222:'"'
+  219:'[',220:'\\',221:']',222:'"',
+  160:'LShift',161:'RShift',162:'LCtrl',163:'RCtrl',164:'LAlt',165:'RAlt',
+  124:'F13',125:'F14',126:'F15',127:'F16',128:'F17',129:'F18',130:'F19',131:'F20',132:'F21',133:'F22',134:'F23',135:'F24',
+  12:'Clear',44:'Print',226:'\\'
 };
 
 const TYPE_LABELS = {
@@ -1535,7 +1579,15 @@ window.addEventListener('load', () => {
 async function init() {
   try {
     config = await window.pywebview.api.load_config();
+    if (!Array.isArray(config.modes) || !config.modes.length)
+      config.modes = [{id:'mode_main', name:'Main', color:'#7c8aff', icon:'zap', binds:{}}];
     currentModeId = config.modes[0]?.id || null;
+    if (config.lang && STRINGS[config.lang] && config.lang !== _lang) {
+      _lang = config.lang;
+      localStorage.setItem('bb-lang', _lang);
+    }
+    try { _appVersion = (await window.pywebview.api.app_info()).version || ''; } catch (e) {}
+    applyLang();
     // Restore key layout from saved template if keys are missing (handles renames too),
     // or if a known template's numpad shape isn't present yet (configs saved before the
     // numpad became a real hardware-shaped grid). Bindings are keyed by VK code, not by
@@ -1585,9 +1637,8 @@ async function init() {
     navigate('keyboard');
     // Apply window-level transparency via Python API
     initTransparency();
-    // Global sidebar status poll — runs on every page
-    updateListenerPill();
-    setInterval(updateListenerPill, 250);
+    // Listener status is pushed by Python on change; a slow poll is only a safety net
+    startStatusSync();
   } catch(e) {
     document.getElementById('loading').innerHTML = '<div style="color:#f66a6a">Ошибка загрузки: ' + e + '</div>';
   }
@@ -1612,21 +1663,7 @@ function navigate(page) {
 
   if (page === 'launch')    refreshListenerStatus();
   if (page === 'settings')  initSettingsPage();
-  if (page === 'binds') {
-    updateListenerPill();
-    startPillPoll();
-  } else {
-    stopPillPoll();
-  }
-}
-
-let _pillInterval = null;
-function startPillPoll() {
-  stopPillPoll();
-  _pillInterval = setInterval(updateListenerPill, 800);
-}
-function stopPillPoll() {
-  if (_pillInterval) { clearInterval(_pillInterval); _pillInterval = null; }
+  if (page === 'binds')     updateListenerPill();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1636,7 +1673,7 @@ let _detectedKbs = [];
 
 async function detectKeyboards() {
   const el = document.getElementById('kb-detected');
-  el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0">Определяем клавиатуры...</div>';
+  el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:8px 0">${t('kb_detecting')}</div>`;
   let list;
   try {
     list = await window.pywebview.api.detect_keyboards();
@@ -1686,13 +1723,12 @@ function applyDetectedKb(idx) {
   const displayName = (config.keyboard_names && config.keyboard_names[kb.vid_pid]) || kb.name;
   config.selected_keyboard_name = displayName;
 
-  // Auto-apply template when size is known; skip if '?' or already configured
+  // Suggest a template only on first setup: the size guess comes from the key count the
+  // keyboard reports, which is often generic (a 65% board reads as 100%), so it must never
+  // overwrite a layout the user already picked.
   const tplId = SIZE_TO_TEMPLATE[kb.size_label];
-  if (tplId) {
+  if (tplId && !config.key_template && !(config.key_rows || []).length) {
     applyTemplate(tplId);  // sets key_template, key_rows, detected_keys + markDirty
-  } else if (!config.key_template) {
-    config.key_template = '';
-    markDirty();
   } else {
     markDirty();
   }
@@ -1763,7 +1799,9 @@ function closeVerifyOverlay() {
 let _lastDetected = [];
 
 async function startScan() {
-  await window.pywebview.api.start_detection();
+  let r = null;
+  try { r = await window.pywebview.api.start_detection(config?.selected_keyboard || ''); } catch (e) {}
+  if (!r || !r.ok) { showToast(t('toast_scan_failed'), 'err'); return; }
   _lastDetected = [];
   document.getElementById('scan-idle').style.display = 'none';
   document.getElementById('scan-active').style.display = 'block';
@@ -1773,8 +1811,9 @@ async function startScan() {
 }
 
 async function pollScan() {
-  const keys = await window.pywebview.api.get_detected_keys();
-  if (keys.length === _lastDetected.length) return;
+  let keys;
+  try { keys = await window.pywebview.api.get_detected_keys(); } catch (e) { return; }
+  if (!Array.isArray(keys) || keys.length === _lastDetected.length) return;
   const newKeys = keys.slice(_lastDetected.length);
   _lastDetected = keys;
   const grid = document.getElementById('scan-grid');
@@ -1783,7 +1822,7 @@ async function pollScan() {
     const div = document.createElement('div');
     div.className = 'key bound scan-key-appear';
     div.style.cssText = 'width:52px;height:42px;flex:0 0 auto';
-    div.innerHTML = `<span class="key-name" style="font-size:11px">${name}</span><span class="key-bind">${code}</span>`;
+    div.innerHTML = `<span class="key-name" style="font-size:11px">${escHtml(name)}</span><span class="key-bind">${code}</span>`;
     grid.appendChild(div);
   });
   document.getElementById('scan-count').textContent = t('scan_keys_count')(keys.length);
@@ -1792,9 +1831,19 @@ async function pollScan() {
 async function stopScan() {
   clearInterval(scanInterval);
   scanInterval = null;
-  const keys = await window.pywebview.api.stop_detection();
-  config.detected_keys = keys;
-  markDirty();
+  let keys = [];
+  try { keys = await window.pywebview.api.stop_detection() || []; } catch (e) {}
+  if (keys.length) {
+    // A manual scan replaces the template layout with exactly the scanned keys
+    config.detected_keys = keys;
+    config.key_rows = null;
+    config.key_numpad = null;
+    config.key_template = '';
+    _tplPick = null;
+    _renderSizeBtns();
+    _updateActiveLabel();
+    markDirty();
+  }
   document.getElementById('scan-active').style.display = 'none';
   document.getElementById('scan-idle').style.display = 'block';
   document.getElementById('scan-detected-count').textContent = t('scan_saved_count')(keys.length);
@@ -1811,74 +1860,16 @@ function cancelScan() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  KEYBOARDS PAGE
-// ═══════════════════════════════════════════════════════
-async function loadKeyboards() {
-  const el = document.getElementById('kb-list');
-  el.innerHTML = '<div style="color:var(--muted);font-size:13px">Получаем список...</div>';
-  try {
-    const list = await window.pywebview.api.get_keyboards();
-    if (!list || list.length === 0) {
-      el.innerHTML = '<div class="note-box">Клавиатуры не найдены</div>';
-      return;
-    }
-    el.innerHTML = list.map((kb, i) => {
-      const name = kb.FriendlyName || 'Клавиатура';
-      const id   = kb.InstanceId  || '';
-      const sel  = config?.selected_keyboard === name;
-      return `<div class="kb-item ${sel?'selected':''}" id="kbi-${i}">
-        <div class="kb-ico">${icon('keyboard',20)}</div>
-        <div class="kb-info">
-          <div class="kb-name">${name}</div>
-          <div class="kb-id">${id.substring(0,60)}</div>
-        </div>
-        ${sel ? '<div class="kb-badge">ВЫБРАНА</div>' : ''}
-        <button class="btn-select ${sel?'active':''}" onclick="selectKeyboard('${escQ(name)}', '${i}')">
-          ${sel ? 'Выбрана ✓' : 'Выбрать'}
-        </button>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    el.innerHTML = '<div class="note-box" style="color:var(--red)">Ошибка: ' + e + '</div>';
-  }
-}
-
-function selectKeyboard(name, idx) {
-  config.selected_keyboard = name;
-  markDirty();
-  document.querySelectorAll('.kb-item').forEach((el,i) => {
-    el.classList.toggle('selected', String(i) === String(idx));
-  });
-  document.querySelectorAll('.btn-select').forEach((btn,i) => {
-    const isMe = String(i) === String(idx);
-    btn.className = `btn-select ${isMe?'active':''}`;
-    btn.textContent = isMe ? 'Выбрана ✓' : 'Выбрать';
-  });
-  // update badge
-  document.querySelectorAll('.kb-item').forEach((el,i) => {
-    const badge = el.querySelector('.kb-badge');
-    if (badge) el.removeChild(badge);
-    if (String(i) === String(idx)) {
-      const b = document.createElement('div');
-      b.className = 'kb-badge';
-      b.textContent = 'ВЫБРАНА';
-      el.insertBefore(b, el.querySelector('.btn-select'));
-    }
-  });
-  showToast('Клавиатура выбрана');
-}
-
-// ═══════════════════════════════════════════════════════
 //  MODE TABS
 // ═══════════════════════════════════════════════════════
 function renderModeTabs() {
   const el = document.getElementById('mode-tabs');
-  let html = config.modes.map(m =>
-    `<div class="mode-tab ${m.id===currentModeId?'active':''}" onclick="selectMode('${escQ(m.id)}')" style="${m.id===currentModeId?`border-color:${m.color};color:${m.color};background:${m.color}18`:''}"
+  let html = config.modes.map(m => { const mc = safeColor(m.color); return (
+    `<div class="mode-tab ${m.id===currentModeId?'active':''}" onclick="selectMode('${escQ(m.id)}')" style="${m.id===currentModeId?`border-color:${mc};color:${mc};background:${mc}18`:''}"
       title="${escHtml(m.name)}">
       ${resolveModeIcon(m.icon, 14)} ${escHtml(m.name)}
       <span class="tab-gear" onclick="openModeEdit('${escQ(m.id)}', event)">${icon('gear',12)}</span>
-    </div>`
+    </div>`); }
   ).join('');
   html += `<div class="mode-tab tab-add" onclick="openAddMode()">${t('btn_add_mode')}</div>`;
   el.innerHTML = html;
@@ -2047,8 +2038,8 @@ function renderKeyboard() {
     const bind = binds[cStr];
     const isSel = selectedKey === cStr;
     const flex  = flexOverride || KEY_FLEX[code] || 1;
-    const bindLabel = bind ? (bind.label || shortType(bind)) : '';
-    const col = bind?.color || '#7c8aff';
+    const bindLabel = bindLabelHtml(bind);
+    const col = safeColor(bind?.color);
     let cls = 'key';
     if (code === 27) cls += ' key-esc';
     if (bind) cls += ' bound';
@@ -2056,9 +2047,10 @@ function renderKeyboard() {
     const boundStyle = bind && !isSel ? `border-color:${col};background:${col}18;` : '';
     const nameStyle = `font-size:10px;${bind && !isSel ? `color:${col};` : ''}`;
     const bindStyle = bind && !isSel ? `color:${col}cc;` : '';
-    return `<div class="${cls}" data-code="${cStr}" onclick="selectKey('${cStr}')" style="flex:${flex};min-width:0;${boundStyle}">
-      <span class="key-name" style="${nameStyle}">${label}</span>
-      ${bindLabel ? `<span class="key-bind" style="${bindStyle}">${escHtml(bindLabel)}</span>` : ''}
+    const warn = modeTargetMissing(bind) ? ` title="${escHtml(t('warn_missing_mode'))}"` : '';
+    return `<div class="${cls}" data-code="${cStr}" onclick="selectKey('${cStr}')" style="flex:${flex};min-width:0;${boundStyle}"${warn}>
+      <span class="key-name" style="${nameStyle}">${escHtml(label)}</span>
+      ${bindLabel ? `<span class="key-bind" style="${bindStyle}">${bindLabel}</span>` : ''}
     </div>`;
   }
 
@@ -2066,13 +2058,13 @@ function renderKeyboard() {
     const cStr = String(code);
     const bind = binds[cStr];
     const isSel = selectedKey === cStr;
-    const bindLabel = bind ? (bind.label || shortType(bind)) : '';
+    const bindLabel = bindLabelHtml(bind);
     let cls = 'key';
     if (bind) cls += ' bound';
     if (isSel) cls += ' selected';
     return `<div class="${cls}" data-code="${cStr}" onclick="selectKey('${cStr}')" style="grid-area:${gridArea}">
       <span class="key-name" style="font-size:10px">${escHtml(label)}</span>
-      ${bindLabel ? `<span class="key-bind">${escHtml(bindLabel)}</span>` : ''}
+      ${bindLabel ? `<span class="key-bind">${bindLabel}</span>` : ''}
     </div>`;
   }
 
@@ -2105,16 +2097,37 @@ function renderKeyboard() {
   }
 }
 
+// Returns HTML: an icon or escaped text for the small caption under a bound key
 function shortType(b) {
   if (!b) return '';
-  if (b.type === 'url') return icon('globe',12);
-  if (b.type === 'lnk') return icon('link',12);
-  if (b.type === 'exe') return icon('terminal',12);
-  if (b.type === 'sound') return `#${b.value}`;
-  if (b.type === 'stop_sound') return icon('square',12);
-  if (b.type === 'mode_switch') return icon('shuffle',12);
-  if (b.type === 'steam') return '▶';
+  const v = String(b.value || '');
+  switch (b.type) {
+    case 'url':  return icon('globe',12);
+    case 'lnk':  return icon('link',12);
+    case 'exe':  return icon('terminal',12);
+    case 'uwp':  return icon('box',12);
+    case 'steam': return icon('play',12);
+    case 'app':
+      if (/^steam:/i.test(v)) return icon('play',12);
+      if (/^shell:appsfolder/i.test(v)) return icon('box',12);
+      if (/^https?:/i.test(v)) return icon('globe',12);
+      return /\.lnk$/i.test(v) ? icon('link',12) : icon('terminal',12);
+    case 'sound': return '#' + escHtml(v.replace(/^#/, ''));
+    case 'stop_sound': return icon('square',12);
+    case 'mode_switch': return icon('shuffle',12);
+  }
   return '?';
+}
+function bindLabelHtml(b) {
+  if (!b) return '';
+  const base = b.label ? escHtml(b.label) : shortType(b);
+  return modeTargetMissing(b) ? base + ' ⚠' : base;
+}
+function keyTitle(code) {
+  const c = String(code);
+  const def = (config?.key_rows || []).flat().find(k => String(k[0]) === c)
+           || Object.values(config?.key_numpad || {}).find(k => String(k[0]) === c);
+  return def ? def[1] : (KEY_NAMES[c] || t('key_code_title')(c));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2126,8 +2139,6 @@ function selectKey(code) {
 
   const mode = config.modes.find(m => m.id === currentModeId);
   const bind = mode?.binds?.[code];
-  const allKeys = (config?.key_rows || []).flat();
-  const keyDef = allKeys.find(k => String(k[0]) === code);
 
   document.getElementById('editor-empty').style.display = 'none';
   const body = document.getElementById('editor-body');
@@ -2135,7 +2146,7 @@ function selectKey(code) {
   body.style.flexDirection = 'column';
   body.style.gap = '12px';
 
-  document.getElementById('edt-key-title').textContent = keyDef ? keyDef[1] : `Код ${code}`;
+  document.getElementById('edt-key-title').textContent = keyTitle(code);
   document.getElementById('edt-key-code').textContent = t('key_code_label')(code, mode?.name || '—');
 
   document.getElementById('edt-type').value  = bind?.type  || '';
@@ -2146,8 +2157,7 @@ function selectKey(code) {
   onTypeChange();
 
   if (bind?.type === 'mode_switch') {
-    populateModeTarget();
-    document.getElementById('edt-target').value = bind?.target || '';
+    populateModeTarget(bind);
   }
 }
 
@@ -2184,7 +2194,8 @@ function onTypeChange() {
     valLabel.textContent = t('lbl_steam_id'); valInput.placeholder = '1091500';
   } else if (atype === 'mode_switch') {
     modeWrap.style.display = 'flex';
-    populateModeTarget();
+    const mode = config.modes.find(m => m.id === currentModeId);
+    populateModeTarget(mode?.binds?.[selectedKey]);
   }
 }
 
@@ -2201,12 +2212,17 @@ function onValInput() {
   }
 }
 
-function populateModeTarget() {
+function populateModeTarget(bind) {
   const sel = document.getElementById('edt-target');
   sel.innerHTML = config.modes
     .filter(m => m.id !== currentModeId)
-    .map(m => `<option value="${escQ(m.id)}">${escHtml(m.name)}</option>`)
-    .join('');
+    .map(m => `<option value="${escHtml(m.id)}">${escHtml(m.name)}</option>`)
+    .join('') + `<option value="__next__">${escHtml(t('opt_next_mode'))}</option>`;
+  const missing = modeTargetMissing(bind);
+  if (bind && bind.target && !missing) sel.value = bind.target;
+  else if (missing) sel.value = '__next__';
+  const warn = document.getElementById('edt-mode-warn');
+  if (warn) { warn.textContent = missing ? t('warn_missing_mode') : ''; warn.style.display = missing ? 'block' : 'none'; }
 }
 
 function saveBind() {
@@ -2219,16 +2235,16 @@ function saveBind() {
   const mode = config.modes.find(m => m.id === currentModeId);
   if (!mode.binds) mode.binds = {};
 
-  const color = document.getElementById('edt-color').value;
+  const color = safeColor(document.getElementById('edt-color').value);
   if (!atype) { delete mode.binds[selectedKey]; }
   else {
     const b = {type: atype, value: v, label: l, color};
-    if (atype === 'mode_switch') { b.target = tgt; b.label = l || '→'; }
+    if (atype === 'mode_switch') { b.target = tgt || '__next__'; b.label = l || '→'; }
     mode.binds[selectedKey] = b;
   }
-  markDirty();
   renderKeyboard();
-  pushConfigToListener();
+  if (atype === 'mode_switch') populateModeTarget(mode.binds[selectedKey]);
+  saveNow();   // one immediate save: the running listener picks the bind up at once
   showToast(t('toast_bind_saved'));
 }
 
@@ -2236,9 +2252,8 @@ function clearBind() {
   if (!selectedKey || !currentModeId) return;
   const mode = config.modes.find(m => m.id === currentModeId);
   if (mode?.binds) delete mode.binds[selectedKey];
-  markDirty();
   renderKeyboard();
-  pushConfigToListener();
+  saveNow();
   document.getElementById('edt-type').value  = '';
   document.getElementById('edt-value').value = '';
   document.getElementById('edt-label').value = '';
@@ -2280,8 +2295,8 @@ function openAddMode() {
 }
 
 function createMode() {
-  const name  = document.getElementById('m-name').value.trim() || 'Режим';
-  const color = document.getElementById('m-color').value || '#7c8aff';
+  const name  = document.getElementById('m-name').value.trim() || t('mode_default_name');
+  const color = safeColor(document.getElementById('m-color').value);
   const icon  = _pickerIcon || 'zap';
   const safeName = name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
   const id = (safeName || 'mode') + '_' + Date.now();
@@ -2300,8 +2315,8 @@ function openModeEdit(id, ev) {
   const mode = config.modes.find(m => m.id === id);
   if (!mode) return;
   showModal(t('modal_edit_mode'),
-    `<div class="field"><label>${t('lbl_mode_name')}</label><input id="em-name" type="text" value="${escQ(mode.name)}" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
-     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><div style="display:flex;gap:8px;align-items:center"><input id="em-color" type="hidden" value="${escQ(mode.color)}"><button class="color-swatch" id="em-color-swatch" data-hex="${escQ(mode.color)}" style="background:${escQ(mode.color)};width:44px;height:34px;border-radius:7px" onclick="_cpOpenForId('em-color','em-color-swatch')" type="button"></button><span id="em-color-val" style="font-size:12px;color:var(--muted);font-family:monospace">${escQ(mode.color)}</span></div></div>
+    `<div class="field"><label>${t('lbl_mode_name')}</label><input id="em-name" type="text" value="${escHtml(mode.name)}" style="border:1px solid var(--border);background:var(--s2);color:var(--text);padding:8px;border-radius:7px;width:100%"></div>
+     <div class="field" style="margin-top:10px"><label>${t('lbl_mode_color')}</label><div style="display:flex;gap:8px;align-items:center"><input id="em-color" type="hidden" value="${safeColor(mode.color)}"><button class="color-swatch" id="em-color-swatch" data-hex="${safeColor(mode.color)}" style="background:${safeColor(mode.color)};width:44px;height:34px;border-radius:7px" onclick="_cpOpenForId('em-color','em-color-swatch')" type="button"></button><span id="em-color-val" style="font-size:12px;color:var(--muted);font-family:monospace">${safeColor(mode.color)}</span></div></div>
      <div class="field" style="margin-top:10px"><label>${t('lbl_mode_icon')}</label>${buildIconPicker(mode.icon)}</div>`,
     [
       {label:t('btn_delete'), cls:'btn danger', action: () => deleteMode(id)},
@@ -2315,7 +2330,7 @@ function saveMode(id) {
   const mode = config.modes.find(m => m.id === id);
   if (!mode) return;
   mode.name  = document.getElementById('em-name').value.trim() || mode.name;
-  mode.color = document.getElementById('em-color').value || mode.color;
+  mode.color = safeColor(document.getElementById('em-color').value, safeColor(mode.color));
   mode.icon  = _pickerIcon || mode.icon || 'zap';
   closeModal();
   markDirty();
@@ -2339,9 +2354,38 @@ function deleteMode(id) {
 //  LAUNCH PAGE — встроенный Raw Input слушатель
 // ═══════════════════════════════════════════════════════
 let _prevMode = null;
-async function updateListenerPill() {
+let _lastStatus = null;
+let _lastStatusKey = null;
+let _statusTimer = null;
+
+// Python pushes the status whenever it changes (start/stop, mode switch, keyboard unplugged);
+// the slow poll below only covers anything missed, and stops while the window is hidden.
+window.__bbOnStatus = st => applyListenerStatus(st);
+
+function startStatusSync() {
+  refreshStatus(true);
+  if (_statusTimer) clearInterval(_statusTimer);
+  _statusTimer = setInterval(() => { if (!document.hidden) refreshStatus(); }, 3000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatus(true); });
+}
+
+async function refreshStatus(force) {
   if (!window.pywebview) return;
-  const r = await window.pywebview.api.listener_status();
+  if (force) _lastStatusKey = null;
+  try { applyListenerStatus(await window.pywebview.api.listener_status()); } catch (e) {}
+}
+
+// Kept for existing callers
+async function updateListenerPill() { await refreshStatus(true); }
+async function refreshListenerStatus() { await refreshStatus(true); }
+
+function applyListenerStatus(r) {
+  if (!r) return;
+  const key = JSON.stringify(r) + '|' + _lang + '|' + (config?.modes || []).map(m => m.id + m.name + m.icon).join(',');
+  if (key === _lastStatusKey) return;   // nothing changed — leave the DOM alone
+  _lastStatusKey = key;
+  _lastStatus = r;
+
   const dot     = document.getElementById('binds-listener-dot');
   const txt     = document.getElementById('binds-listener-txt');
   const sdot    = document.getElementById('sidebar-listener-dot');
@@ -2350,11 +2394,14 @@ async function updateListenerPill() {
   const bar     = document.getElementById('mode-bar');
   const barTxt  = document.getElementById('mode-bar-txt');
   const barIcon = bar?.querySelector('.mode-icon');
+  const disconnected = r.running && r.connected === false;
 
   if (r.running) {
-    if (dot) { dot.style.background = 'var(--green)'; txt.textContent = t('listener_on'); txt.style.color = 'var(--green)'; }
-    if (sdot) { sdot.style.background = 'var(--green)'; stxt.textContent = t('listener_on'); stxt.style.color = 'var(--green)'; }
-    if (sbtn) sbtn.style.borderColor = 'var(--green)';
+    const col = disconnected ? 'var(--red)' : 'var(--green)';
+    const label = disconnected ? t('listener_disconnected') : t('listener_on');
+    if (dot) { dot.style.background = col; txt.textContent = label; txt.style.color = col; }
+    if (sdot) { sdot.style.background = col; stxt.textContent = label; stxt.style.color = col; }
+    if (sbtn) sbtn.style.borderColor = col;
 
     const modeObj = config?.modes?.find(m => m.id === r.mode);
     const modeName = modeObj?.name || r.mode || '—';
@@ -2367,14 +2414,13 @@ async function updateListenerPill() {
       }
       _prevMode = modeName;
       bar.classList.add('active-mode');
-      if (barTxt) barTxt.textContent = t('mode_bar_prefix') + modeName;
-      if (barIcon) barIcon.innerHTML = icon(modeObj?.icon || 'zap', 18);
+      if (barTxt) barTxt.textContent = disconnected ? t('listener_disconnected') : t('mode_bar_prefix') + modeName;
+      if (barIcon) barIcon.innerHTML = resolveModeIcon(modeObj?.icon || 'zap', 18);
     }
   } else {
     if (dot) { dot.style.background = 'var(--red)'; txt.textContent = t('listener_off'); txt.style.color = 'var(--red)'; }
     if (sdot) { sdot.style.background = 'var(--muted)'; stxt.textContent = t('listener_off'); stxt.style.color = 'var(--muted)'; }
     if (sbtn) sbtn.style.borderColor = 'var(--border)';
-
     if (bar) {
       _prevMode = null;
       bar.classList.remove('active-mode');
@@ -2382,25 +2428,25 @@ async function updateListenerPill() {
       if (barIcon) barIcon.innerHTML = icon('keyboard',18);
     }
   }
-}
 
-async function refreshListenerStatus() {
-  if (!window.pywebview) return;
-  const r = await window.pywebview.api.listener_status();
-  const dot  = document.getElementById('status-dot');
-  const lbl  = document.getElementById('status-label');
-  const hint = document.getElementById('status-hint');
-  const info = document.getElementById('listener-mode-info');
-  if (r.running) {
-    dot.className = 'status-dot running';
-    lbl.textContent = t('listener_running');
-    hint.textContent = t('listener_status_device')(r.device || r.vid_pid || '—');
-    if (info) info.textContent = t('listener_status_mode')(r.mode || '—', r.vid_pid || '—');
-  } else {
-    dot.className = 'status-dot stopped';
-    lbl.textContent = t('listener_not_running');
-    hint.textContent = t('hint_select_start');
-    if (info) info.textContent = '—';
+  // Launch page
+  const ldot  = document.getElementById('status-dot');
+  const llbl  = document.getElementById('status-label');
+  const lhint = document.getElementById('status-hint');
+  const linfo = document.getElementById('listener-mode-info');
+  if (ldot) {
+    if (r.running) {
+      ldot.className = 'status-dot running';
+      llbl.textContent = disconnected ? t('listener_disconnected') : t('listener_running');
+      lhint.textContent = t('listener_status_device')(r.device || r.vid_pid || '—');
+      const mName = config?.modes?.find(m => m.id === r.mode)?.name || r.mode || '—';
+      if (linfo) linfo.textContent = t('listener_status_mode')(mName, r.vid_pid || '—');
+    } else {
+      ldot.className = 'status-dot stopped';
+      llbl.textContent = t('listener_not_running');
+      lhint.textContent = t('hint_select_start');
+      if (linfo) linfo.textContent = '—';
+    }
   }
 }
 
@@ -2409,14 +2455,11 @@ async function startListener() {
   if (!config.selected_keyboard) {
     showToast(t('toast_no_keyboard'), 'err'); return;
   }
-  // Сохраняем конфиг чтобы слушатель получил актуальные биндинги
-  await window.pywebview.api.save_config(config);
-  dirty = false;
-  document.getElementById('apply-btn').classList.remove('dirty');
-  const r = await window.pywebview.api.start_listener(
-    config.selected_keyboard,
-    config.selected_keyboard_name || ''
-  );
+  await saveNow();   // the listener reads the saved config
+  let r;
+  try {
+    r = await window.pywebview.api.start_listener(config.selected_keyboard, config.selected_keyboard_name || '');
+  } catch (e) { r = {ok: false, error: String(e)}; }
   if (r.ok) {
     showToast(t('toast_listener_started'), 'ok');
   } else if (r.error === 'device_not_found') {
@@ -2424,47 +2467,78 @@ async function startListener() {
   } else {
     showToast(r.error || 'Error', 'err');
   }
-  setTimeout(() => { refreshListenerStatus(); updateListenerPill(); }, 800);
+  refreshStatus(true);
 }
 
 async function stopListener() {
   if (!window.pywebview) return;
   await window.pywebview.api.stop_listener();
   showToast(t('toast_listener_stopped'));
-  setTimeout(() => { refreshListenerStatus(); updateListenerPill(); }, 800);
+  refreshStatus(true);
 }
 
 // ═══════════════════════════════════════════════════════
 //  APPLY / SAVE
 // ═══════════════════════════════════════════════════════
 let _autoSaveTid = null;
+let _rev = 0;          // bumps on every edit, so a save that raced with a newer edit keeps it dirty
+let _saving = null;
+
 function markDirty() {
   dirty = true;
+  _rev++;
   document.getElementById('apply-btn').classList.add('dirty');
   clearTimeout(_autoSaveTid);
-  _autoSaveTid = setTimeout(async () => {
-    if (!window.pywebview || !dirty) return;
-    await window.pywebview.api.save_config(config);
-    await window.pywebview.api.update_listener_config(config);
-  }, 1500);
+  _autoSaveTid = setTimeout(saveNow, 1500);
 }
+
+// Writes the config now (Python skips the disk write if nothing changed) and updates the
+// running listener in the same call. Returns true on success.
+async function saveNow() {
+  clearTimeout(_autoSaveTid);
+  _autoSaveTid = null;
+  if (!window.pywebview || !config) return false;
+  if (_saving) await _saving;
+  const rev = _rev;
+  _saving = (async () => {
+    try {
+      const r = await window.pywebview.api.save_config(config);
+      if (r && r.ok) {
+        if (rev === _rev) { dirty = false; document.getElementById('apply-btn').classList.remove('dirty'); }
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  })();
+  const ok = await _saving;
+  _saving = null;
+  return ok;
+}
+
+// Called by Python right before the app quits, so a pending autosave is not lost
+window.__bbFlush = () => (dirty || _autoSaveTid) ? saveNow() : Promise.resolve(true);
 
 async function showKeyLog() {
   if (!window.pywebview) return;
   const log = await window.pywebview.api.listener_log();
   if (!log.length) { showToast(t('toast_log_empty'), 'err'); return; }
-  const modeLabel = id => config?.modes?.find(m => m.id === id)?.name || id;
+  const modeLabel = id => config?.modes?.find(m => m.id === id)?.name || id || '—';
+  const cell = (html, style) => `<td style="padding:3px 8px;${style||''}">${html}</td>`;
   const rows = log.slice().reverse().map(e => {
-    const resultCell = e.ok === false
-      ? `<td style="padding:3px 8px;color:var(--red);font-size:11px" title="${escHtml(e.error||'')}">✕ ${escHtml(e.error||'err')}</td>`
-      : e.ok === true
-        ? `<td style="padding:3px 8px;color:var(--green)">✓</td>`
-        : `<td style="padding:3px 8px;color:var(--muted)">—</td>`;
+    if (e.error === 'wrong_device') {
+      return `<tr style="font-size:12px">${cell('—','color:var(--muted)')}${cell(escHtml(modeLabel(e.mode)),'color:var(--muted)')}<td colspan="2" style="padding:3px 8px;color:var(--muted);font-size:11px">${escHtml(t('log_other_kb')(e.device || '', e.count || 1))}</td></tr>`;
+    }
+    let result;
+    if (e.note === 'filtered') result = cell(escHtml(t('log_filtered')), 'color:var(--muted);font-size:11px');
+    else if (e.note === 'capture') result = cell(escHtml(t('log_capture')), 'color:var(--muted);font-size:11px');
+    else if (e.ok === false) result = `<td style="padding:3px 8px;color:var(--red);font-size:11px" title="${escHtml(e.error||'')}">✕ ${escHtml(e.error||'err')}</td>`;
+    else if (e.ok === true) result = cell('✓' + (e.ms != null ? ` <span style="color:var(--muted);font-size:10px">${e.ms} ms</span>` : ''), 'color:var(--green)');
+    else result = cell(e.bind ? '…' : '—', 'color:var(--muted)');
     return `<tr style="font-size:12px">
-      <td style="padding:3px 8px;color:var(--cyan)">VK ${e.vk}</td>
-      <td style="padding:3px 8px;color:var(--muted)">${escHtml(modeLabel(e.mode))}</td>
-      <td style="padding:3px 8px;color:${e.bind ? 'var(--green)' : 'var(--muted)'}">${escHtml(e.bind || t('no_bind'))}</td>
-      ${resultCell}
+      ${cell('VK ' + escHtml(e.vk) + ` <span style="color:var(--muted);font-size:10px">${escHtml(keyTitle(e.vk))}</span>`, 'color:var(--cyan)')}
+      ${cell(escHtml(modeLabel(e.mode)), 'color:var(--muted)')}
+      ${cell(escHtml(e.bind || t('no_bind')), `color:${e.bind ? 'var(--green)' : 'var(--muted)'}`)}
+      ${result}
     </tr>`;
   }).join('');
   showModal(t('modal_key_log'),
@@ -2476,23 +2550,9 @@ async function showKeyLog() {
   );
 }
 
-async function pushConfigToListener() {
-  if (!window.pywebview) return;
-  await window.pywebview.api.save_config(config);
-}
-
 async function applyConfig() {
-  if (!window.pywebview) { showToast('Нет pywebview', 'err'); return; }
-  const r = await window.pywebview.api.save_config(config);
-  if (r.ok) {
-    dirty = false;
-    document.getElementById('apply-btn').classList.remove('dirty');
-    // Push fresh config to listener without restarting it
-    await window.pywebview.api.update_listener_config(config);
-    showToast(t('toast_config_saved'));
-  } else {
-    showToast(t('toast_config_error'), 'err');
-  }
+  if (!window.pywebview) { showToast('pywebview unavailable', 'err'); return; }
+  showToast(await saveNow() ? t('toast_config_saved') : t('toast_config_error'), dirty ? 'err' : 'ok');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2533,6 +2593,11 @@ function showToast(msg, type='ok') {
 //  UTILS
 // ═══════════════════════════════════════════════════════
 function escQ(s) { return String(s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+// Colours from config end up inside style="" attributes — accept only #rgb/#rrggbb
+function safeColor(c, fallback = '#7c8aff') { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(c || '')) ? hexExpand(c) : fallback; }
+function modeTargetMissing(b) {
+  return b && b.type === 'mode_switch' && b.target && b.target !== '__next__' && !config.modes.some(m => m.id === b.target);
+}
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // ═══════════════════════════════════════════════════════
@@ -2732,6 +2797,13 @@ function _applyTranspCSS(vals) {
   root.style.setProperty('--main-blur',       vals['main-blur'] + 'px');
 }
 
+let _transpRaf = 0, _transpPending = null;
+function _applyTranspWindowThrottled(alpha) {
+  _transpPending = alpha;
+  if (_transpRaf) return;
+  _transpRaf = requestAnimationFrame(() => { _transpRaf = 0; _applyTranspWindow(_transpPending); });
+}
+
 async function _applyTranspWindow(alpha) {
   if (window.pywebview?.api) {
     try { await window.pywebview.api.set_transparency(alpha); } catch(e) {}
@@ -2763,7 +2835,7 @@ function onTranspSlider(key, rawVal) {
   _applyTranspCSS(vals);
   const lbl = document.getElementById('tr-' + key + '-val');
   if (lbl) lbl.textContent = _transpLabel(key, val);
-  if (key === 'window') _applyTranspWindow(val);
+  if (key === 'window') _applyTranspWindowThrottled(val);
 }
 
 function resetTransp(key) {
