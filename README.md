@@ -13,11 +13,11 @@ Built on Windows Raw Input API — no drivers, no third-party software required.
 
 | Keyboard setup | Bindings |
 |---|---|
-| ![Keyboard](screenshots/BindBoard3.png) | ![Bindings](screenshots/BindBoard1.png) |
+| ![Keyboard](screenshots/keyboard.png) | ![Bindings](screenshots/bindings.png) |
 
-| Launch | Theme |
+| Launch | Settings |
 |---|---|
-| ![Launch](screenshots/BindBoard5.png) | ![Theme](screenshots/BindBoard.png) |
+| ![Launch](screenshots/launch.png) | ![Settings](screenshots/settings.png) |
 
 ---
 
