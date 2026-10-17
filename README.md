@@ -6,6 +6,7 @@ Built on Windows Raw Input API — no drivers, no third-party software required.
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![Reddit](https://img.shields.io/badge/Reddit-u%2FNo__Echo__2124-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/user/No_Echo_2124)
 
 ---
 
@@ -136,6 +137,12 @@ BindBoard/
 | `pystray` | System tray icon |
 | `Pillow` | Icon processing |
 | `pyinstaller` | EXE build (dev only) |
+
+---
+
+## Community
+
+Every update is announced on Reddit: [u/No_Echo_2124](https://www.reddit.com/user/No_Echo_2124). Ideas and bug reports are welcome there or in [Issues](https://github.com/Mark-mark-228/BindBoard/issues).
 
 ---
 
